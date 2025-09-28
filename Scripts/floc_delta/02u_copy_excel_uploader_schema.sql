@@ -1,3 +1,7 @@
+-- Only eval this file only once per session...
+
+
+-- excel_uploader 
 
 DROP SCHEMA IF EXISTS floc_delta_db.excel_uploader_equi_change CASCADE;
 DROP SCHEMA IF EXISTS floc_delta_db.excel_uploader_equi_create CASCADE;
@@ -11,6 +15,15 @@ ATTACH OR REPLACE DATABASE '/home/stephen/_working/coding/work/work-sql/database
 -- 
 COPY FROM DATABASE excel_uploader TO floc_delta_db (SCHEMA);
 
-
-
 DETACH DATABASE IF EXISTS excel_uploader;
+
+
+-- udfx
+
+DROP SCHEMA IF EXISTS floc_delta_db.udfx CASCADE;
+
+ATTACH OR REPLACE DATABASE '/home/stephen/_working/coding/work/work-sql/databases/udf_db.duckdb' AS udf_db;
+
+COPY FROM DATABASE udf_db TO floc_delta_db (SCHEMA);
+
+DETACH DATABASE IF EXISTS udf_db;

@@ -17,11 +17,11 @@
 
 -- https://duckdb.org/docs/stable/guides/snippets/sharing_macros.html
 
--- create macros in main schema
--- macros must be completely independent and mustn't depend on other 
--- macros or tables
+CREATE SCHEMA IF NOT EXISTS udfx;
 
-CREATE OR REPLACE MACRO get_east_north(gridref) AS TABLE 
+
+
+CREATE OR REPLACE MACRO udfx.get_east_north(gridref) AS TABLE 
 WITH cte_major AS (
     SELECT * FROM 
         (VALUES 

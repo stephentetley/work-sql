@@ -2,7 +2,7 @@
 
 
 ATTACH OR REPLACE DATABASE '/home/stephen/_working/coding/work/work-sql/databases/ztables_db.duckdb' AS ztables;
-ATTACH OR REPLACE DATABASE '/home/stephen/_working/coding/work/work-sql/databases/udf_db.duckdb' AS udfx;
+-- ATTACH OR REPLACE DATABASE '/home/stephen/_working/coding/work/work-sql/databases/udf_db.duckdb' AS udfx;
 
 
 CREATE OR REPLACE TABLE floc_delta_landing.worklist AS
