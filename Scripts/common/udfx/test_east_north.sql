@@ -11,7 +11,7 @@ SELECT
     t1.easting,
     t1.northing,
 FROM cte
-CROSS JOIN main.get_east_north(cte.gridref) t1
+CROSS JOIN udfx.get_east_north(cte.gridref) t1
 
 
 -- SELECT

@@ -54,7 +54,7 @@ FROM ai2_classrep.equi_masterdata
 )
 SELECT 
     t.ai2_reference AS ai2_reference,
-    t1."AI2 Parent (SAI)" AS ai2_parent_reference,
+    t1."AI2 Parent (SAI number)" AS ai2_parent_reference,
     printf('$1%04d', t.row_num) AS s4_equi_id,
     t1."S4 Name" AS s4_description,
     t1."S4 Category" AS s4_category,

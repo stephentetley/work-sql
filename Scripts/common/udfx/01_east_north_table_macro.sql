@@ -20,7 +20,6 @@
 CREATE SCHEMA IF NOT EXISTS udfx;
 
 
-
 CREATE OR REPLACE MACRO udfx.get_east_north(gridref) AS TABLE 
 WITH cte_major AS (
     SELECT * FROM 

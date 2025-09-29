@@ -31,7 +31,7 @@ SELECT
     t1.northing AS northing,
     t.solution_id AS solution_id,
 FROM floc_delta_landing.worklist t
-CROSS JOIN udfx.get_east_north(t.grid_ref) t1
+CROSS JOIN udfx_db.udfx.get_east_north(t.grid_ref) t1
 );
 
 DELETE FROM floc_delta.existing_flocs;
@@ -86,9 +86,9 @@ cte1 AS (
         t3.standard_floc_description AS name_3,
         t4.standard_floc_description AS name_4,
     FROM cte1 t1
-    LEFT JOIN ztables.s4_ztables.flocdes t2 ON t2.object_type = t1.func
-    LEFT JOIN ztables.s4_ztables.flocdes t3 ON t3.object_type = t1.proc_grp
-    LEFT JOIN ztables.s4_ztables.flocdes t4 ON t4.object_type = t1.proc
+    LEFT JOIN ztables_db.s4_ztables.flocdes t2 ON t2.object_type = t1.func
+    LEFT JOIN ztables_db.s4_ztables.flocdes t3 ON t3.object_type = t1.proc_grp
+    LEFT JOIN ztables_db.s4_ztables.flocdes t4 ON t4.object_type = t1.proc
 )  
 (SELECT  
     -- Level 1 (site)
