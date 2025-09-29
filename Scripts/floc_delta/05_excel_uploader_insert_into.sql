@@ -103,7 +103,7 @@ SELECT
     t.funcloc AS functional_location,
     'AIB_REFERENCE' AS class_name,
     'AI2_AIB_REFERENCE' AS characteristics,
-    '' AS char_value,
+    t.aib_reference AS char_value,
 FROM floc_delta.vw_new_flocs t;
 
 

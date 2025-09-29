@@ -55,6 +55,7 @@ CREATE OR REPLACE TABLE floc_delta.worklist(
     easting INTEGER,
     northing INTEGER,
     solution_id VARCHAR,
+    aib_reference VARCHAR,
     PRIMARY KEY (requested_floc)
 );
 
@@ -91,7 +92,7 @@ CREATE OR REPLACE TABLE floc_delta.existing_and_new_flocs (
     );
 
 
-CREATE OR REPLACE TABLE floc_delta.new_generated_flocs(
+CREATE OR REPLACE TABLE floc_delta.new_generated_flocs (
     funcloc VARCHAR NOT NULL,
     floc_name VARCHAR,
     floc_category INTEGER,
@@ -129,9 +130,11 @@ SELECT
     IF (t.user_status IS NULL, t2.user_status, t.user_status) AS user_status,
     IF (t.easting IS NULL, t2.easting, t.easting) AS easting,
     IF (t.northing IS NULL, t2.northing, t.northing) AS northing,
+    t3.aib_reference AS aib_reference
 FROM floc_delta.new_generated_flocs t
 LEFT OUTER JOIN floc_delta.vw_existing_ancestor t1 ON t1.new_funcloc = t.funcloc
-LEFT OUTER JOIN floc_delta.existing_flocs t2 ON t2.funcloc = t1.existing_ancestor;
+LEFT OUTER JOIN floc_delta.existing_flocs t2 ON t2.funcloc = t1.existing_ancestor
+LEFT OUTER JOIN floc_delta.worklist t3 ON t3.requested_floc = t.funcloc;
 
 -- NOTE list(plant_uml1).... is not providing a sufficient ordering
 CREATE OR REPLACE VIEW floc_delta.vw_plant_uml_export AS

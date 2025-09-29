@@ -30,6 +30,7 @@ SELECT
     t1.easting AS easting,
     t1.northing AS northing,
     t.solution_id AS solution_id,
+    t.aib_reference AS aib_reference,
 FROM floc_delta_landing.worklist t
 CROSS JOIN udfx_db.udfx.get_east_north(t.grid_ref) t1
 );
