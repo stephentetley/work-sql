@@ -14,7 +14,9 @@ DROP SCHEMA IF EXISTS asset_replace_db.excel_uploader_equi_create CASCADE;
 DROP SCHEMA IF EXISTS asset_replace_db.excel_uploader_floc_create CASCADE;
 
 
-ATTACH OR REPLACE DATABASE '/home/stephen/_working/coding/work/work-sql/databases/excel_uploader_db.duckdb' AS excel_uploader;
+ATTACH OR REPLACE DATABASE 
+    '/home/stephen/_working/coding/work/work-sql/databases/excel_uploader_db.duckdb' 
+AS excel_uploader;
 
 -- This relies on the main database being called `asset_replace_db`, check this with:
 -- SELECT current_database();

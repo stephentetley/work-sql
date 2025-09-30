@@ -54,6 +54,8 @@ SELECT
     t.category AS 'category',
     t.equi_description AS 'equi_description',
     t.object_type AS 'object_type',
+    t.gross_weight AS 'gross_weight',
+    t.unit_of_weight AS 'unit_of_weight',
     t.startup_date AS 'start_up_date',
     t.manufacturer AS 'manufacturer',
     t.model_number AS 'model_number',

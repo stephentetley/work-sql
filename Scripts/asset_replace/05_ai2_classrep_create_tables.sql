@@ -23,6 +23,7 @@ CREATE OR REPLACE TABLE ai2_classrep.equi_masterdata (
     item_name VARCHAR,
     equipment_type VARCHAR NOT NULL,
     installed_from DATE,
+    weight_kg DECIMAL(18, 3),
     manufacturer VARCHAR,
     model VARCHAR,
     specific_model_frame VARCHAR,

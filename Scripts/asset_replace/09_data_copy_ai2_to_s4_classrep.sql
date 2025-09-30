@@ -97,6 +97,8 @@ SELECT
     t.model AS model_number,
     t.specific_model_frame AS manufact_part_number,
     t.serial_number AS serial_number,
+    t.weight_kg AS gross_weight,
+    IF(t.weight_kg IS NOT NULL, 'KG', null) AS unit_of_weight,
     t.pandi_tag AS technical_ident_number,
     t1.s4_position AS display_position,
     t1.s4_class catalog_profile,
@@ -113,7 +115,7 @@ SELECT
     t2.northing AS northing,
 FROM ai2_classrep.equi_masterdata t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 ON t1.ai2_reference = t.ai2_reference
-CROSS JOIN udfx.get_east_north(t.grid_ref) t2
+CROSS JOIN udfx_db.udfx.get_east_north(t.grid_ref) t2
 ;
 
 DELETE FROM s4_classrep.equi_asset_condition;

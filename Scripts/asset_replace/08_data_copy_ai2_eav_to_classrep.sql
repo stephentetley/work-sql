@@ -28,6 +28,7 @@ SELECT
     regexp_extract(t.common_name, '.*/([^[/]+)/EQUIPMENT:', 1) AS item_name,
     regexp_extract(t.common_name, '.*/(EQUIPMENT: .*)$', 1) AS equipment_type,
     (t.installed_from:: DATE) AS installed_from,
+    TRY_CAST(eav4.attr_value AS DECIMAL) AS weight_kg,
     t.manufacturer AS manufacturer,
     t.model AS model,
     eav1.attr_value AS specific_model_frame,
@@ -39,6 +40,7 @@ FROM ai2_eav.equipment_masterdata AS t
 LEFT JOIN ai2_eav.equipment_eav eav1 ON eav1.ai2_reference = t.ai2_reference AND eav1.attr_name = 'Specific Model/Frame'
 LEFT JOIN ai2_eav.equipment_eav eav2 ON eav2.ai2_reference = t.ai2_reference AND eav2.attr_name = 'Serial No'
 LEFT JOIN ai2_eav.equipment_eav eav3 ON eav3.ai2_reference = t.ai2_reference AND eav3.attr_name = 'P AND I Tag No'
+LEFT JOIN ai2_eav.equipment_eav eav4 ON eav4.ai2_reference = t.ai2_reference AND eav4.attr_name = 'Weight kg'
 ;
 
 
