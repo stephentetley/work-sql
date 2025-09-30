@@ -60,6 +60,7 @@ SELECT
     t.s4_floc AS s4_floc,
     t.s4_superord_equi AS s4_superord_equi,
     TRY_CAST(t.s4_position AS INTEGER) AS s4_position,
+    t.solution_id AS solution_id,
 FROM ai2_landing.worklist t; 
     
 

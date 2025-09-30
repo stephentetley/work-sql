@@ -146,8 +146,19 @@ UNION
     t1.ai2_parent_reference AS ai2_aib_reference,
 FROM ai2_classrep.equi_masterdata t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 ON t1.ai2_reference = t.ai2_reference);
- 
--- TODO shouldn't have these deletes, some other type
+
+-- THIS IS SOURCE DATA SPECIFIC depends on `ai2_to_s4_mapping` table
+
+DELETE FROM s4_classrep.equi_solution_id;
+INSERT OR REPLACE INTO s4_classrep.equi_solution_id BY NAME 
+(SELECT DISTINCT ON (t.ai2_reference)
+    t1.equi_equi_id AS equipment_id,
+    1 AS value_index,
+    t1.solution_id AS solution_id,
+FROM ai2_classrep.equi_masterdata t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 ON t1.ai2_reference = t.ai2_reference);
+
+-- TODO shouldn't have these deletes here, some other type
 -- can legitimately write to podetu...
 
 DELETE FROM s4_classrep.equiclass_lstnut;

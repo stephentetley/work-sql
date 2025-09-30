@@ -72,7 +72,13 @@ CREATE OR REPLACE TABLE s4_classrep.equi_east_north (
     PRIMARY KEY(equipment_id)
 );
 
-
+-- Just allow 1 solution_id for time being...
+CREATE OR REPLACE TABLE s4_classrep.equi_solution_id (
+    equipment_id VARCHAR NOT NULL,
+    value_index INTEGER,
+    solution_id VARCHAR,
+    PRIMARY KEY(equipment_id)
+);
 
 
 

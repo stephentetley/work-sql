@@ -13,6 +13,7 @@ CREATE OR REPLACE TABLE ai2_classrep.ai2_to_s4_mapping (
     s4_floc VARCHAR,
     s4_superord_equi VARCHAR,
     s4_position INTEGER,
+    solution_id VARCHAR,
     PRIMARY KEY (equi_equi_id)
 );
 

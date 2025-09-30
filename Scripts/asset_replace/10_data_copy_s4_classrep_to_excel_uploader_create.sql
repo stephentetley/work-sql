@@ -88,6 +88,8 @@ SELECT * FROM get_excel_loader_characteristics_for('ASSET_CONDITION', s4_classre
 UNION BY NAME
 SELECT * FROM get_excel_loader_characteristics_for('EAST_NORTH', s4_classrep.equi_east_north )
 UNION BY NAME
+SELECT * FROM get_excel_loader_characteristics_for('SOLUTION_ID', s4_classrep.equi_solution_id)
+UNION BY NAME
 SELECT * FROM get_excel_loader_characteristics_for('LSTNUT', s4_classrep.equiclass_lstnut)
 UNION BY NAME
 SELECT * FROM get_excel_loader_characteristics_for('NETWMB', s4_classrep.equiclass_netwmb)
