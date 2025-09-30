@@ -7,12 +7,12 @@ CREATE OR REPLACE TEMPORARY MACRO rename_as_del(equi_description) AS
 
 DELETE FROM excel_uploader_equi_change.equipment_data;
 INSERT INTO excel_uploader_equi_change.equipment_data BY NAME
-SELECT DISTINCT ON ("Existing S4 Record")
-    "Existing S4 Record" AS equi,
-    rename_as_del("S4 Name") AS equi_description,
+SELECT DISTINCT ON (t.existing_s4_record)
+    t.existing_s4_record AS equi,
+    rename_as_del(t.s4_name) AS equi_description,
     '9999' AS position,
     'DISP' AS status_of_an_object,
-FROM ai2_landing.worklist
-WHERE "Existing S4 Record" IS NOT NULL OR "Existing S4 Record" <> '';
+FROM ai2_landing.worklist t
+WHERE t.existing_s4_record IS NOT NULL OR t.existing_s4_record <> '';
 
 

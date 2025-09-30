@@ -43,29 +43,24 @@ LEFT JOIN ai2_eav.equipment_eav eav3 ON eav3.ai2_reference = t.ai2_reference AND
 
 
 
--- category and object_type should be in worklist...
+-- equi_equi_id is the key field..
 DELETE FROM ai2_classrep.ai2_to_s4_mapping;
 INSERT INTO ai2_classrep.ai2_to_s4_mapping BY NAME
-WITH cte AS (
-SELECT DISTINCT ON (ai2_reference) 
-    row_number() OVER () AS row_num,
-    ai2_reference AS ai2_reference,
-FROM ai2_classrep.equi_masterdata
-)
-SELECT 
-    t.ai2_reference AS ai2_reference,
-    t1."AI2 Parent (SAI number)" AS ai2_parent_reference,
-    printf('$1%04d', t.row_num) AS s4_equi_id,
-    t1."S4 Name" AS s4_description,
-    t1."S4 Category" AS s4_category,
-    t1."S4 Object Type" AS s4_object_type,
-    t1."S4 Class" AS s4_class,
-    t1."S4 Floc" AS s4_floc,
-    t1."S4 Superord Equipment" AS s4_superord_equi,
-    t1."S4 Position" AS s4_position,
-FROM cte t
-JOIN ai2_landing.worklist t1 ON t1."Operational AI2 record (PLI)" = t.ai2_reference
-;
+SELECT
+    t.equi_equi_id AS equi_equi_id,
+    t.operational_AI2_record_pli AS ai2_reference,
+    t.ai2_parent_sai AS ai2_parent_reference,
+    t.existing_s4_record AS s4_equi_id,
+    t.s4_name AS s4_description,
+    t.s4_category AS s4_category,
+    t.s4_object_type AS s4_object_type,
+    t.s4_class AS s4_class,
+    t.s4_floc AS s4_floc,
+    t.s4_superord_equi AS s4_superord_equi,
+    TRY_CAST(t.s4_position AS INTEGER) AS s4_position,
+FROM ai2_landing.worklist t; 
+    
+
 
 DELETE FROM ai2_classrep.equi_memo_line;
 INSERT OR IGNORE INTO ai2_classrep.equi_memo_line BY NAME
@@ -125,18 +120,17 @@ LEFT JOIN ai2_eav.equipment_eav eav13 ON eav13.ai2_reference = t.ai2_reference A
 -- Needs a filter to only pick up 'MODEM'...
 CREATE OR REPLACE MACRO classrep_modem() AS TABLE (
 WITH cte1 AS (
-SELECT 
-    t1.*, 
-FROM  
-    ai2_classrep.equi_masterdata t
-JOIN ai2_eav.equipment_eav t1 ON t1.ai2_reference = t.ai2_reference
-WHERE t.equipment_type = 'EQUIPMENT: MODEM'
+    SELECT 
+        t1.*, 
+    FROM  
+        ai2_classrep.equi_masterdata t
+    JOIN ai2_eav.equipment_eav t1 ON t1.ai2_reference = t.ai2_reference
+    WHERE t.equipment_type = 'EQUIPMENT: MODEM'
 ), cte2 AS (
-PIVOT cte1 
-ON attr_name IN ("Location On Site"
-                    )
-USING any_value(attr_value)
-GROUP BY ai2_reference
+    PIVOT cte1 
+    ON attr_name IN ("Location On Site")
+    USING any_value(attr_value)
+    GROUP BY ai2_reference
 )
 SELECT * from cte2
 );

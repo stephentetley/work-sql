@@ -1,4 +1,23 @@
 
+-- Worklist
+CREATE OR REPLACE MACRO read_equi_replace_worklist(xlsx_file) AS TABLE
+SELECT 
+    t."Operational AI2 record (PLI)" AS operational_AI2_record_pli,
+    t."Deleted AI2 record" AS deleted_ai2_record,
+    TRY_CAST(t."Batch" AS INTEGER) AS batch,
+    t."Equipment Transit ID" AS equi_equi_id,
+    t."Existing S4 Record" AS existing_s4_record,
+    t."AI2 Parent (SAI number)" AS ai2_parent_sai,
+    t."S4 Category" AS s4_category,
+    t."S4 Object Type" AS s4_object_type,
+    t."S4 Class" AS s4_class,
+    t."S4 Name" AS s4_name,
+    t."S4 Floc" AS s4_floc,
+    t."S4 Superord Equipment" AS s4_superord_equi,
+    t."S4 Position" AS s4_position,
+    t."Solution ID" AS solution_id,
+FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true, sheet='Worklist') AS t;
+
 -- Master data
 CREATE OR REPLACE MACRO read_ai2_export_masterdata(xlsx_file) AS TABLE
 SELECT 

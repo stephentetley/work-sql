@@ -3,12 +3,12 @@
 
 CREATE OR REPLACE TABLE floc_delta_landing.worklist AS
 SELECT * FROM read_floc_delta_worklist(
-    '/home/stephen/_working/work/2025/floc_delta/dra05/02_DRA06_floc_delta_worklist.xlsx'
+    '/home/stephen/_working/work/2025/floc_delta/bea07/BEA07_floc_delta_worklist.xlsx'
 );
 
 
 CREATE OR REPLACE TABLE floc_delta_landing.ih06_floc_exports AS
 -- Use UNION if reading more than one IH06 export...
 SELECT * FROM read_ih06_export(
-    '/home/stephen/_working/work/2025/floc_delta/dra05/dra06_ih06_with_east_north.xlsx'
+    '/home/stephen/_working/work/2025/floc_delta/bea07/BEA07_ih06_existing_floc_export.xlsx'
 );

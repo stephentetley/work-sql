@@ -6,17 +6,17 @@ CREATE SCHEMA IF NOT EXISTS ai2_landing;
 
 CREATE OR REPLACE TABLE ai2_landing.worklist AS
 SELECT 
-    t.*
-FROM read_xlsx(
-    '/home/stephen/_working/work/2025/equi_translation/dra05/dra05_equi_assetrep_worklist.xlsx', 
-    all_varchar=true) AS t;
+    *
+FROM read_equi_replace_worklist(
+    '/home/stephen/_working/work/2025/equi_translation/bea07/bea07_equi_assetrep_worklist.xlsx'
+);
 
 
 CREATE OR REPLACE TABLE ai2_landing.masterdata AS
 SELECT 
     *
 FROM read_ai2_export_masterdata(
-    '/home/stephen/_working/work/2025/equi_translation/dra05/ai2_equi_masterdata_export.xlsx'
+    '/home/stephen/_working/work/2025/equi_translation/bea07/bea07_ai2_equi_masterdata_export.xlsx'
 );
 
 -- use `UNION` to concat multiple files... 
@@ -24,7 +24,7 @@ CREATE OR REPLACE TABLE ai2_landing.eavdata AS
 (SELECT 
     *
 FROM read_ai2_export_eavdata(
-    '/home/stephen/_working/work/2025/equi_translation/dra05/ai2_equi_masterdata_export.xlsx'
+    '/home/stephen/_working/work/2025/equi_translation/bea07/bea07_ai2_equi_masterdata_export.xlsx'
     )
 )
 --UNION 

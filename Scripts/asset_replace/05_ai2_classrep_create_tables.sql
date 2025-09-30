@@ -2,7 +2,8 @@ CREATE SCHEMA IF NOT EXISTS ai2_classrep;
 
 
 CREATE OR REPLACE TABLE ai2_classrep.ai2_to_s4_mapping (
-    ai2_reference VARCHAR NOT NULL,
+    equi_equi_id VARCHAR NOT NULL,
+    ai2_reference VARCHAR,
     ai2_parent_reference VARCHAR,
     s4_equi_id VARCHAR,
     s4_description VARCHAR,
@@ -12,7 +13,7 @@ CREATE OR REPLACE TABLE ai2_classrep.ai2_to_s4_mapping (
     s4_floc VARCHAR,
     s4_superord_equi VARCHAR,
     s4_position INTEGER,
-    PRIMARY KEY (ai2_reference)
+    PRIMARY KEY (equi_equi_id)
 );
 
 

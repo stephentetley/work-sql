@@ -1,7 +1,7 @@
 
 CREATE OR REPLACE MACRO modem_to_netwmo() AS TABLE
 SELECT
-    t1.s4_equi_id AS equipment_id,  
+    t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
@@ -11,7 +11,7 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1 ON t1.ai2_reference = t.ai2_reference;
 
 CREATE OR REPLACE MACRO network_to_netwmb() AS TABLE
 SELECT
-    t1.s4_equi_id AS equipment_id,  
+    t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
@@ -21,7 +21,7 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1 ON t1.ai2_reference = t.ai2_reference;
 
 CREATE OR REPLACE MACRO power_supply_to_podetu() AS TABLE
 SELECT
-    t1.s4_equi_id AS equipment_id,  
+    t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
@@ -31,7 +31,7 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1 ON t1.ai2_reference = t.ai2_reference;
 
 CREATE OR REPLACE MACRO telemetry_outstation_to_netwtl() AS TABLE
 SELECT
-    t1.s4_equi_id AS equipment_id,  
+    t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
@@ -40,7 +40,7 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1 ON t1.ai2_reference = t.ai2_reference;
 
 CREATE OR REPLACE MACRO ultrasonic_level_instrument_to_lstnut() AS TABLE
 SELECT
-    t1.s4_equi_id AS equipment_id,  
+    t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     -- Relay 1
     t."Relay 1 Function" AS lstn_relay_1_function,
@@ -82,7 +82,7 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1 ON t1.ai2_reference = t.ai2_reference;
 DELETE FROM s4_classrep.equi_masterdata;
 INSERT OR REPLACE INTO s4_classrep.equi_masterdata BY NAME
 SELECT 
-    t1.s4_equi_id AS equipment_id,
+    t1.equi_equi_id AS equipment_id,
     t1.s4_description AS equi_description,
     t1.s4_floc AS functional_location,
     t1.s4_superord_equi AS superord_id,
@@ -108,7 +108,7 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1 ON t1.ai2_reference = t.ai2_reference;
 DELETE FROM s4_classrep.equi_east_north;
 INSERT OR REPLACE INTO s4_classrep.equi_east_north BY NAME
 SELECT 
-    t1.s4_equi_id AS equipment_id,
+    t1.equi_equi_id AS equipment_id,
     t2.easting AS easting,
     t2.northing AS northing,
 FROM ai2_classrep.equi_masterdata t
@@ -119,7 +119,7 @@ CROSS JOIN udfx.get_east_north(t.grid_ref) t2
 DELETE FROM s4_classrep.equi_asset_condition;
 INSERT OR REPLACE INTO s4_classrep.equi_asset_condition BY NAME
 SELECT 
-    t1.s4_equi_id AS equipment_id,
+    t1.equi_equi_id AS equipment_id,
     upper(t2.condition_grade) AS condition_grade,
     upper(t2.condition_grade_reason) AS condition_grade_reason,
     t2.survey_year AS survey_date,
@@ -132,14 +132,14 @@ LEFT JOIN ai2_classrep.equi_agasp t2 ON t2.ai2_reference = t.ai2_reference;
 DELETE FROM s4_classrep.equi_aib_reference;
 INSERT OR REPLACE INTO s4_classrep.equi_aib_reference BY NAME 
 (SELECT DISTINCT ON (t.ai2_reference)
-    t1.s4_equi_id AS equipment_id,
+    t1.equi_equi_id AS equipment_id,
     1 AS value_index,
     t.ai2_reference AS ai2_aib_reference,
 FROM ai2_classrep.equi_masterdata t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 ON t1.ai2_reference = t.ai2_reference)
 UNION
 (SELECT DISTINCT ON (t.ai2_reference)
-    t1.s4_equi_id AS equipment_id,
+    t1.equi_equi_id AS equipment_id,
     2 AS value_index,
     t1.ai2_parent_reference AS ai2_aib_reference,
 FROM ai2_classrep.equi_masterdata t
