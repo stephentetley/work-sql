@@ -78,6 +78,30 @@ SELECT
 FROM ai2_classrep.equiclass_ultrasonic_level_instrument t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 ON t1.ai2_reference = t.ai2_reference;
 
+CREATE OR REPLACE MACRO flap_valve_to_valvfl() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,  
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+    udf_local.convert_to_mm(t."Size", t."Size Units") AS valv_inlet_size_mm,
+FROM ai2_classrep.equiclass_flap_valve t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 ON t1.ai2_reference = t.ai2_reference;
+
+CREATE OR REPLACE MACRO non_return_valve_to_valvnr() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,  
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+    udf_local.convert_to_mm(t."Size", t."Size Units") AS valv_inlet_size_mm,
+FROM ai2_classrep.equiclass_flap_valve t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 ON t1.ai2_reference = t.ai2_reference;
+
+
+
+-- non-equiclass tables
+
 
 DELETE FROM s4_classrep.equi_masterdata;
 INSERT OR REPLACE INTO s4_classrep.equi_masterdata BY NAME
@@ -158,31 +182,39 @@ INSERT OR REPLACE INTO s4_classrep.equi_solution_id BY NAME
 FROM ai2_classrep.equi_masterdata t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 ON t1.ai2_reference = t.ai2_reference);
 
--- TODO shouldn't have these deletes here, some other type
--- can legitimately write to podetu...
+-- Delete from equiclass tables before _any_ writes
+-- An equiclass table may have more than one source
 
 DELETE FROM s4_classrep.equiclass_lstnut;
+DELETE FROM s4_classrep.equiclass_netwmb;
+DELETE FROM s4_classrep.equiclass_netwmo;
+DELETE FROM s4_classrep.equiclass_netwtl;
+DELETE FROM s4_classrep.equiclass_podetu;
+DELETE FROM s4_classrep.equiclass_valvfl;
+DELETE FROM s4_classrep.equiclass_valvnr;
+
 INSERT OR REPLACE INTO s4_classrep.equiclass_lstnut BY NAME
 SELECT * FROM ultrasonic_level_instrument_to_lstnut();
 
 
-DELETE FROM s4_classrep.equiclass_netwmb;
 INSERT OR REPLACE INTO s4_classrep.equiclass_netwmb BY NAME
 SELECT * FROM network_to_netwmb();
 
-DELETE FROM s4_classrep.equiclass_netwmo;
 INSERT OR REPLACE INTO s4_classrep.equiclass_netwmo BY NAME
 SELECT * FROM modem_to_netwmo();
 
 
-DELETE FROM s4_classrep.equiclass_netwtl;
 INSERT OR REPLACE INTO s4_classrep.equiclass_netwtl BY NAME
 SELECT * FROM telemetry_outstation_to_netwtl();
 
-DELETE FROM s4_classrep.equiclass_podetu;
 INSERT OR REPLACE INTO s4_classrep.equiclass_podetu BY NAME
 SELECT * FROM power_supply_to_podetu();
 
+INSERT OR REPLACE INTO s4_classrep.equiclass_valvfl BY NAME
+SELECT * FROM flap_valve_to_valvfl();
+
+INSERT OR REPLACE INTO s4_classrep.equiclass_valvnr BY NAME
+SELECT * FROM non_return_valve_to_valvnr();
 
 
 

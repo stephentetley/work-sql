@@ -188,3 +188,27 @@ CREATE OR REPLACE TABLE s4_classrep.equiclass_netwmo (
     PRIMARY KEY(equipment_id)
 );
 
+CREATE OR REPLACE TABLE s4_classrep.equiclass_valvfl (
+    equipment_id VARCHAR NOT NULL, 
+    location_on_site VARCHAR,
+    manufacturers_asset_life_yr INTEGER,
+    memo_line VARCHAR,
+    uniclass_code VARCHAR,
+    uniclass_desc VARCHAR,
+    valv_inlet_size_mm INTEGER,
+    PRIMARY KEY(equipment_id)
+);
+
+
+CREATE OR REPLACE TABLE s4_classrep.equiclass_valvnr (
+    equipment_id VARCHAR NOT NULL, 
+    location_on_site VARCHAR,
+    manufacturers_asset_life_yr INTEGER,
+    memo_line VARCHAR,
+    uniclass_code VARCHAR,
+    uniclass_desc VARCHAR,
+    valv_flow_litres_per_sec DECIMAL(7, 2),
+    valv_inlet_size_mm INTEGER,
+    valv_rated_temperature_deg_c INTEGER,
+    PRIMARY KEY(equipment_id)
+);

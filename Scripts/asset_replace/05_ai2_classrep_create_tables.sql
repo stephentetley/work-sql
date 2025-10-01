@@ -183,3 +183,19 @@ CREATE OR REPLACE TABLE ai2_classrep.equiclass_ultrasonic_level_instrument (
 PRIMARY KEY(ai2_reference));
 
 
+
+CREATE OR REPLACE TABLE ai2_classrep.equiclass_flap_valve (
+    ai2_reference VARCHAR,
+    "Location On Site" VARCHAR,
+    "Size" DECIMAL(28, 6),
+    "Size Units" VARCHAR,
+PRIMARY KEY(ai2_reference));
+
+
+CREATE OR REPLACE TABLE ai2_classrep.equiclass_non_return_valve (
+    ai2_reference VARCHAR,
+    "Location On Site" VARCHAR,
+    "Size" DECIMAL(28, 6),
+    "Size Units" VARCHAR,
+PRIMARY KEY(ai2_reference));
+

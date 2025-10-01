@@ -247,4 +247,50 @@ DELETE FROM ai2_classrep.equiclass_ultrasonic_level_instrument;
 INSERT OR IGNORE INTO ai2_classrep.equiclass_ultrasonic_level_instrument BY NAME
 SELECT * FROM classrep_ultrasonic_level_instrument();
 
+-- Needs a filter to only pick up 'flap_valve'...
+CREATE OR REPLACE MACRO classrep_flap_valve() AS TABLE (
+WITH cte1 AS (
+SELECT 
+    t1.*, 
+FROM  
+    ai2_classrep.equi_masterdata t
+JOIN ai2_eav.equipment_eav t1 ON t1.ai2_reference = t.ai2_reference
+WHERE t.equipment_type = 'EQUIPMENT: FLAP VALVE'
+), cte2 AS (
+PIVOT cte1 
+ON attr_name IN ("Location On Site", 
+                    "Size", "Size Units"
+                    )
+USING any_value(attr_value)
+GROUP BY ai2_reference
+)
+SELECT * from cte2
+);
 
+DELETE FROM ai2_classrep.equiclass_flap_valve;
+INSERT OR IGNORE INTO ai2_classrep.equiclass_flap_valve BY NAME
+SELECT * FROM classrep_flap_valve();
+
+-- Needs a filter to only pick up 'non_return_valve'...
+CREATE OR REPLACE MACRO classrep_non_return_valve() AS TABLE (
+WITH cte1 AS (
+SELECT 
+    t1.*, 
+FROM  
+    ai2_classrep.equi_masterdata t
+JOIN ai2_eav.equipment_eav t1 ON t1.ai2_reference = t.ai2_reference
+WHERE t.equipment_type = 'EQUIPMENT: NON RETURN VALVE'
+), cte2 AS (
+PIVOT cte1 
+ON attr_name IN ("Location On Site", 
+                    "Size", "Size Units"
+                    )
+USING any_value(attr_value)
+GROUP BY ai2_reference
+)
+SELECT * from cte2
+);
+
+DELETE FROM ai2_classrep.equiclass_non_return_valve;
+INSERT OR IGNORE INTO ai2_classrep.equiclass_non_return_valve BY NAME
+SELECT * FROM classrep_non_return_valve();

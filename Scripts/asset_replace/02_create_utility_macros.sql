@@ -41,3 +41,21 @@ CREATE OR REPLACE MACRO udf_local.format_signal3(smin, smax, units) AS
         )
 SELECT smini || ' - ' || smaxi || ' ' || unitsu FROM cte1
 );
+
+CREATE OR REPLACE MACRO udf_local.convert_to_mm(sz, units) AS 
+(WITH 
+    cte1 AS (
+        SELECT upper(units) AS unitsu
+        ),
+    cte2 AS ( 
+        SELECT 
+        CASE 
+            WHEN unitsu = 'MM' OR unitsu = 'MILLIMETRES' THEN sz
+            WHEN unitsu = 'CM' OR unitsu = 'CENTIMETRES'  THEN sz * 10
+            WHEN unitsu = 'M'  OR unitsu = 'METRES' THEN sz / 1000.0
+            ELSE null
+        END AS answer
+        FROM cte1
+       ) 
+SELECT answer FROM cte2
+);
