@@ -48,6 +48,25 @@ SELECT
 FROM cte2
 );
 
+CREATE OR REPLACE MACRO get_solution_id_excel_loader_characteristics() AS TABLE (
+WITH cte1 AS (
+SELECT COLUMNS(* EXCLUDE (value_index))
+FROM s4_classrep.equi_solution_id
+), cte2 AS (
+UNPIVOT cte1
+ON COLUMNS (* EXCLUDE (equipment_id))
+INTO 
+    NAME 'characteristics'
+    VALUE 'char_value'
+)
+SELECT 
+    equipment_id AS equi,
+    'SOLUTION_ID' AS class_name, 
+    upper(characteristics) AS characteristics,
+    char_value,
+FROM cte2
+);
+
 CREATE OR REPLACE MACRO s4_classrep_to_excel_uploader.translate_equi_masterdata() AS TABLE
 SELECT 
     t.equipment_id AS 'equi',
@@ -84,11 +103,11 @@ INSERT INTO excel_uploader_equi_create.classification BY NAME
 (
 SELECT * FROM get_aib_reference_excel_loader_characteristics()
 UNION BY NAME
+SELECT * FROM get_solution_id_excel_loader_characteristics()
+UNION BY NAME
 SELECT * FROM get_excel_loader_characteristics_for('ASSET_CONDITION', s4_classrep.equi_asset_condition)
 UNION BY NAME
 SELECT * FROM get_excel_loader_characteristics_for('EAST_NORTH', s4_classrep.equi_east_north )
-UNION BY NAME
-SELECT * FROM get_excel_loader_characteristics_for('SOLUTION_ID', s4_classrep.equi_solution_id)
 UNION BY NAME
 SELECT * FROM get_excel_loader_characteristics_for('LSTNUT', s4_classrep.equiclass_lstnut)
 UNION BY NAME
