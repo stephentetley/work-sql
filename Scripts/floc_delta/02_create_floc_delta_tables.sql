@@ -24,7 +24,7 @@ SELECT
     t."Object Type" AS object_type,
     t."Level 5 Class Type" AS class_type,
     t."Asset Status" AS asset_status,
-    t."Level 5 System Type" AS level5_system_type,
+    t."Level 5 System Type Name" AS level5_system_type,
     t."AIB Reference" AS aib_reference,
     t."Solution ID" AS solution_id,
     t."Grid Ref" AS grid_ref
