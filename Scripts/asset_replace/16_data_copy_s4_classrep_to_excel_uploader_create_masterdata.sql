@@ -1,25 +1,14 @@
 CREATE SCHEMA IF NOT EXISTS s4_classrep_to_excel_uploader;
 
--- Serial numbers may already be mangeled by excel at this point...
-
---CREATE OR REPLACE MACRO excel_safe_number(str) AS (
---    CASE WHEN regexp_full_match(str :: VARCHAR, '\d+\.\d+E\+\d+') THEN '''' || TRY_CAST(str AS HUGEINT)
---    ELSE str
---    END
---);
-
---SELECT excel_safe_number('12345678');
---SELECT excel_safe_number('1.69E+18');
---SELECT TRY_CAST('1.69E+18' AS HUGEINT);
 
 
 CREATE OR REPLACE MACRO get_excel_loader_characteristics_for(s4_class_name, table_name) AS TABLE (
 WITH cte AS (
-UNPIVOT (SELECT CAST(COLUMNS(*) AS VARCHAR) FROM query_table(table_name::VARCHAR))
-ON COLUMNS (* EXCLUDE (equipment_id))
-INTO 
-    NAME 'characteristics'
-    VALUE 'char_value'
+    UNPIVOT (SELECT CAST(COLUMNS(*) AS VARCHAR) FROM query_table(table_name::VARCHAR))
+    ON COLUMNS (* EXCLUDE (equipment_id))
+    INTO 
+        NAME 'characteristics'
+        VALUE 'char_value'
 ) 
 SELECT 
     equipment_id AS equi,
@@ -31,14 +20,14 @@ FROM cte
 
 CREATE OR REPLACE MACRO get_aib_reference_excel_loader_characteristics() AS TABLE (
 WITH cte1 AS (
-SELECT COLUMNS(* EXCLUDE (value_index))
-FROM s4_classrep.equi_aib_reference
+    SELECT COLUMNS(* EXCLUDE (value_index))
+    FROM s4_classrep.equi_aib_reference
 ), cte2 AS (
-UNPIVOT cte1
-ON COLUMNS (* EXCLUDE (equipment_id))
-INTO 
-    NAME 'characteristics'
-    VALUE 'char_value'
+    UNPIVOT cte1
+    ON COLUMNS (* EXCLUDE (equipment_id))
+    INTO 
+        NAME 'characteristics'
+        VALUE 'char_value'
 )
 SELECT 
     equipment_id AS equi,
@@ -50,14 +39,14 @@ FROM cte2
 
 CREATE OR REPLACE MACRO get_solution_id_excel_loader_characteristics() AS TABLE (
 WITH cte1 AS (
-SELECT COLUMNS(* EXCLUDE (value_index))
-FROM s4_classrep.equi_solution_id
+    SELECT COLUMNS(* EXCLUDE (value_index))
+    FROM s4_classrep.equi_solution_id
 ), cte2 AS (
-UNPIVOT cte1
-ON COLUMNS (* EXCLUDE (equipment_id))
-INTO 
-    NAME 'characteristics'
-    VALUE 'char_value'
+    UNPIVOT cte1
+    ON COLUMNS (* EXCLUDE (equipment_id))
+    INTO 
+        NAME 'characteristics'
+        VALUE 'char_value'
 )
 SELECT 
     equipment_id AS equi,
@@ -108,21 +97,4 @@ UNION BY NAME
 SELECT * FROM get_excel_loader_characteristics_for('ASSET_CONDITION', s4_classrep.equi_asset_condition)
 UNION BY NAME
 SELECT * FROM get_excel_loader_characteristics_for('EAST_NORTH', s4_classrep.equi_east_north )
-UNION BY NAME
-SELECT * FROM get_excel_loader_characteristics_for('LSTNUT', s4_classrep.equiclass_lstnut)
-UNION BY NAME
-SELECT * FROM get_excel_loader_characteristics_for('NETWMB', s4_classrep.equiclass_netwmb)
-UNION BY NAME
-SELECT * FROM get_excel_loader_characteristics_for('NETWMO', s4_classrep.equiclass_netwmo)
-UNION BY NAME
-SELECT * FROM get_excel_loader_characteristics_for('NETWTL', s4_classrep.equiclass_netwtl)
-UNION BY NAME
-SELECT * FROM get_excel_loader_characteristics_for('PODETU', s4_classrep.equiclass_podetu)
-UNION BY NAME
-SELECT * FROM get_excel_loader_characteristics_for('VALVFL', s4_classrep.equiclass_valvfl)
-UNION BY NAME
-SELECT * FROM get_excel_loader_characteristics_for('VALVNR', s4_classrep.equiclass_valvnr)
 );
-
-
-
