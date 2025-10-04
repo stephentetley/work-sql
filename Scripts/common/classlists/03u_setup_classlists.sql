@@ -1,4 +1,6 @@
-
+-- Note using prepared statements is not particularly an advantage
+-- It was supposed to allow easy running of user-specific scripts
+-- but it obscures what's going on
 
 EXECUTE load_classlist('/home/stephen/_working/work/2025/asset_data_facts/s4_classlists/002_equi_classlist.20250822.xlsx');
 EXECUTE norm_classlist(1);
