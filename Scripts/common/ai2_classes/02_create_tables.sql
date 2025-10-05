@@ -58,33 +58,28 @@ CREATE OR REPLACE TABLE ai2_classlists.equi_characteristics (
     PRIMARY KEY(class_name, attribute_name)
 );
 
---CREATE OR REPLACE TEMPORARY TABLE ai2_equi_chracteristics AS
---SELECT
---    *
---FROM read_asset_types_attributes(
---    '/home/stephen/_working/work/2025/asset_data_facts/ai2_metadata/AI2AssetTypeAttributes20250123.xlsx'
---)
---ORDER BY class_name;
---
---CREATE OR REPLACE MACRO make_eq_attribute_set(descr) AS 
---    replace(descr :: VARCHAR, 'EQUIPMENT:', 'eq').lower()
---;
---
---
---SELECT  
-----    eq_attribute_set(class_description),
---    *,
---FROM ai2_equi_chracteristics
---WHERE lower(attribute_set_name) = make_eq_attribute_set(class_description)
---ORDER BY class_description, attribute_set_name, attribute_name;
---
---
---SELECT DISTINCT ON (data_type) 
-----    eq_attribute_set(class_description),
---    *,
---FROM ai2_equi_chracteristics
---ORDER BY data_type;
---
---
---SELECT decode_data_type('INTEGER7');
---
+
+CREATE OR REPLACE VIEW ai2_classlists.vw_equiclass_characteristics AS
+SELECT * 
+FROM ai2_classlists.equi_characteristics t
+WHERE t.attribute_description NOT IN (
+    'Asset Name',
+    'Asset Reference',
+    'Asset Status',
+    'Common Name',
+    'Criticality Comments',
+    'Installed From Date',
+    'Location On Site',
+    'Manufacturer',
+    'Memo Line 1',
+    'Memo Line 2',
+    'Memo Line 3',
+    'Memo Line 4',
+    'Memo Line 5',
+    'Model Name',
+    'P AND I Tag No',
+    'Serial No',
+    'Specific Model/Frame',
+);
+
+

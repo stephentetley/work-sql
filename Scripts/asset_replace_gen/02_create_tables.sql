@@ -1,6 +1,9 @@
 
 CREATE SCHEMA IF NOT EXISTS asset_replace_gen;
 
+-- TODO create a view of ai2_classes_db.ai2_classlists.equi_characteristics
+-- and drop the master data and common data attributes...
+
 CREATE OR REPLACE TABLE asset_replace_gen.ai2_equipment_used (
     equipment_type_name VARCHAR,
 );

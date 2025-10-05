@@ -26,7 +26,4 @@ ORDER BY t.class_name ASC;
 --SELECT * FROM s4_classrep_tables_ddl;
 
 
---COPY 
---    (SELECT sql_text FROM s4_classrep_tables_ddl) 
---TO '/home/stephen/_working/coding/work/work-sql/Scripts/output/s4_equiclass_ddl.txt'
---WITH (FORMAT csv, HEADER false, QUOTE '');
+
