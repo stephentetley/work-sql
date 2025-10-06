@@ -10,8 +10,8 @@ AS udfx_db (READ_ONLY);
 -- classlists - attached, not copied
 
 ATTACH OR REPLACE DATABASE 
-    '/home/stephen/_working/coding/work/work-sql/databases/classlists_db.duckdb' 
-AS classlists_db (READ_ONLY);
+    '/home/stephen/_working/coding/work/work-sql/databases/s4_classes_db.duckdb' 
+AS s4_classes_db (READ_ONLY);
 
 -- classlists - attached, not copied
 

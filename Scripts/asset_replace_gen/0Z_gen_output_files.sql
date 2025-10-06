@@ -1,8 +1,5 @@
 
 
-
-
-
 COPY 
     (SELECT sql_text FROM ai2_classrep_tables_ddl) 
 TO '/home/stephen/_working/coding/work/work-sql/Scripts/output/08g_ai2_classrep_create_equiclass_tables.sql'
