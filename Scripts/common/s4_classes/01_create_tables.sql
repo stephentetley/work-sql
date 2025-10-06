@@ -19,6 +19,7 @@
 
 
 CREATE SCHEMA IF NOT EXISTS s4_classlists;
+CREATE SCHEMA IF NOT EXISTS s4_classlists_landing;
 
 CREATE OR REPLACE TABLE s4_classlists.floc_characteristics (
     class_name TEXT NOT NULL,
