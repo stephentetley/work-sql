@@ -18,3 +18,12 @@ COPY
     (SELECT sql_text FROM ai2_eav_to_classrep_inserts) 
 TO '/home/stephen/_working/coding/work/work-sql/Scripts/output/13g_data_copy_ai2_eav_to_classrep_equiclass.sql'
 WITH (FORMAT csv, HEADER false, QUOTE '');
+
+COPY 
+    (SELECT sql_text FROM s4_classrep_to_excel_uploader_chars) 
+TO '/home/stephen/_working/coding/work/work-sql/Scripts/output/17g_data_copy_s4_classrep_to_excel_uploader_create_eavdata.sql'
+WITH (FORMAT csv, HEADER false, QUOTE '');
+
+
+
+
