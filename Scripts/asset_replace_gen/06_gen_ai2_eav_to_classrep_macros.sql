@@ -21,7 +21,7 @@ SELECT
     concat_ws(E'\n',
         '(',
         list_sort(t.attributes_list).list_transform(lambda s: squote(s)).list_aggregate('string_agg', E',\n\t'),
-        ');'
+        ')'
         ) AS attributes_text,
 FROM cte1 t
 )

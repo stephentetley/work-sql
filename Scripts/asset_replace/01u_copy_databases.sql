@@ -1,4 +1,5 @@
--- Be careful evaluating this file...
+-- Only evaluate this file on a fresh database
+--
 -- If you `COPY FROM DATABASE ...` any macros get copied into the 
 -- `floc_delta_db.main` schema and then they will cause conflicts if
 -- this file is evaluated again.

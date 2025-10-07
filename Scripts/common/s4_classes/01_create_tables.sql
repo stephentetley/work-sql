@@ -100,6 +100,7 @@ SELECT
     END AS refined_char_type,
     CASE 
         WHEN t.char_type = 'CHAR' THEN 'VARCHAR'
+        WHEN t.char_type = 'ENUM' THEN 'VARCHAR'
         WHEN t.char_type = 'NUM' AND (t.char_precision IS NULL OR t.char_precision = 0) AND t.char_length < 10 THEN 'INTEGER'
         WHEN t.char_type = 'NUM' AND (t.char_precision IS NULL OR t.char_precision = 0) AND t.char_length >= 10 AND t.char_length < 19 THEN 'BIGINT'
         WHEN t.char_type = 'NUM' AND (t.char_precision IS NULL OR t.char_precision = 0) AND t.char_length >= 19 THEN 'HUGEINT'
