@@ -26,11 +26,11 @@ COPY
 TO '/home/stephen/_working/coding/work/work-sql/Scripts/output/15g_delete_from_s4_classrep_tables.sql'
 WITH (FORMAT csv, HEADER false, QUOTE '');
 
--- TODO table needs generating
---COPY 
---    (SELECT sql_text FROM insert_into_s4_classrep_tables) 
---TO '/home/stephen/_working/coding/work/work-sql/Scripts/output/16g_insert_into_s4_classrep_tables.sql'
---WITH (FORMAT csv, HEADER false, QUOTE '');
+
+COPY 
+    (SELECT sql_text FROM insert_into_s4_classrep_tables) 
+TO '/home/stephen/_working/coding/work/work-sql/Scripts/output/16g_insert_into_s4_classrep_tables.sql'
+WITH (FORMAT csv, HEADER false, QUOTE '');
 
 
 
