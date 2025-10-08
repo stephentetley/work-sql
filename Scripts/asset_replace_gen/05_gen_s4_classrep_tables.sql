@@ -6,7 +6,7 @@ WITH cte AS (
         array_agg(format(E'    {} {},', lower(t.char_name), t.ddl_data_type)) AS field_elements,
     FROM s4_classes_db.s4_classlists.vw_refined_equi_characteristic_defs t
     JOIN s4_classes_db.s4_classlists.vw_equi_class_defs t1 ON t1.class_name = t.class_name 
-    WHERE EXISTS (FROM asset_replace_gen.s4_classes_used t2 WHERE t2.class_name = t.class_name)
+    WHERE EXISTS (FROM asset_replace_gen.vw_s4_classes_used t2 WHERE t2.s4_class_name = t.class_name)
     AND t1.is_object_class = true
     GROUP BY t.class_name
 )

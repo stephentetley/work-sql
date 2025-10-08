@@ -1,8 +1,8 @@
 
-DELETE FROM asset_replace_gen.s4_classes_used;
-DELETE FROM asset_replace_gen.ai2_equipment_used;
+DELETE FROM asset_replace_gen.s4_equipment;
+DELETE FROM asset_replace_gen.ai2_equipment;
 
-INSERT INTO asset_replace_gen.s4_classes_used BY NAME
+INSERT INTO asset_replace_gen.s4_equipment BY NAME
 SELECT 
     *
 FROM read_worklist_for_s4_classes(
@@ -10,7 +10,7 @@ FROM read_worklist_for_s4_classes(
 );
 
 
-INSERT INTO asset_replace_gen.ai2_equipment_used BY NAME
+INSERT INTO asset_replace_gen.ai2_equipment BY NAME
 SELECT 
     *
 FROM read_ai2_masterdata_for_equipment(

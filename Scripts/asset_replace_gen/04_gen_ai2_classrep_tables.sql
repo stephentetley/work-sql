@@ -6,7 +6,7 @@ WITH cte AS (
         'equiclass_' || t.class_table_name AS table_name,
         array_agg(format(E'    "{}" {},', t.attribute_description, t.ddl_data_type)) AS field_elements,
     FROM ai2_classes_db.ai2_classlists.vw_equiclass_characteristics t
-    WHERE EXISTS (FROM asset_replace_gen.ai2_equipment_used t1 WHERE t1.equipment_type_name = t.class_description) 
+    WHERE EXISTS (FROM asset_replace_gen.vw_ai2_equipment_types_used t1 WHERE t1.equipment_type_name = t.class_description) 
     GROUP BY t.class_table_name
 )
 SELECT 
