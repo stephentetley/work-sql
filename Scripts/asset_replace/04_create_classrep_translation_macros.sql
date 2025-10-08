@@ -118,18 +118,29 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'CONTTR';
 
+--
+--CREATE OR REPLACE MACRO diaphram_pump_to_pumpdi() AS TABLE
+--SELECT
+--    t1.equi_equi_id AS equipment_id,
+--    t."Location On Site" AS location_on_site,
+--    'TEMP_VALUE' AS uniclass_code,
+--    'TEMP_VALUE' AS uniclass_desc,
+--FROM ai2_classrep.equiclass_diaphram_pump t
+--JOIN ai2_classrep.ai2_to_s4_mapping t1 
+--    ON t1.ai2_reference = t.ai2_reference
+--WHERE t1.s4_class = 'PUMPDI';
 
-CREATE OR REPLACE MACRO diaphram_pump_to_pumpdi() AS TABLE
+
+CREATE OR REPLACE MACRO diaphragm_pump_to_pumpdi() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_diaphram_pump t
+FROM ai2_classrep.equiclass_diaphragm_pump t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMPDI';
-
 
 CREATE OR REPLACE MACRO direct_online_starter_to_stardo() AS TABLE
 SELECT
@@ -228,25 +239,25 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
 WHERE t1.s4_class = 'FSTNIP';
 
 
-CREATE OR REPLACE MACRO isolating_valve_to_valvba() AS TABLE
+CREATE OR REPLACE MACRO isolating_valves_to_valvba() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_isolating_valve t
+FROM ai2_classrep.equiclass_isolating_valves t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VALVBA';
 
 
-CREATE OR REPLACE MACRO isolating_valve_to_valvbp() AS TABLE
+CREATE OR REPLACE MACRO isolating_valves_to_valvbp() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_isolating_valve t
+FROM ai2_classrep.equiclass_isolating_valves t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VALVBP';
@@ -409,6 +420,17 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VALVPR';
 
+-- caution - have we got the s4 class right?
+CREATE OR REPLACE MACRO pressure_regulating_valve_to_valvpr() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_pressure_regulating_valve t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'VALVPR';
 
 CREATE OR REPLACE MACRO pressure_regulating_valve_to_valvre() AS TABLE
 SELECT
@@ -494,6 +516,16 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'TSTNTT';
 
+CREATE OR REPLACE MACRO thermal_flow_instrument_to_fstnth() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_thermal_flow_instrument t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'FSTNTH';
 
 CREATE OR REPLACE MACRO trace_heaters_to_heattr() AS TABLE
 SELECT

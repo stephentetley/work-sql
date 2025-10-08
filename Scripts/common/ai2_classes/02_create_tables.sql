@@ -69,7 +69,6 @@ WHERE t.attribute_description NOT IN (
     'Common Name',
     'Criticality Comments',
     'Installed From Date',
-    'Location On Site',
     'Manufacturer',
     'Memo Line 1',
     'Memo Line 2',

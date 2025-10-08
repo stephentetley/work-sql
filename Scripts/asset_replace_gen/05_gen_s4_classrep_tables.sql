@@ -23,7 +23,6 @@ FROM cte t
 ORDER BY t.class_name ASC; 
 
 
---SELECT * FROM s4_classrep_tables_ddl;
 
 
 

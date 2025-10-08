@@ -1,4 +1,4 @@
--- Prelude - copy from the input data...
+
 
 DELETE FROM ai2_eav.equipment_masterdata;
 INSERT OR IGNORE INTO ai2_eav.equipment_masterdata BY NAME

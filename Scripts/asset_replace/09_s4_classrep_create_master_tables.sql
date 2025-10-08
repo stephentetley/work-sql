@@ -1,3 +1,4 @@
+
 CREATE SCHEMA IF NOT EXISTS s4_classrep;
 
 CREATE OR REPLACE TABLE s4_classrep.equi_masterdata (

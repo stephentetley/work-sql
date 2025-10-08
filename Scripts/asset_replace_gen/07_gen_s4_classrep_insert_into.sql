@@ -3,7 +3,7 @@
 CREATE OR REPLACE TEMPORARY TABLE delete_from_s4_classrep_tables AS
 WITH cte1 AS (
     SELECT 
-        array_agg(format(E'DELETE FROM s4_classrep.s4_classrep.equiclass_{};', lower(t.class_name))) AS delete_lines,
+        array_agg(format(E'DELETE FROM s4_classrep.equiclass_{};', lower(t.class_name))) AS delete_lines,
     FROM s4_classes_db.s4_classlists.vw_equi_class_defs t
     WHERE EXISTS (FROM asset_replace_gen.vw_s4_classes_used t1 WHERE t1.s4_class_name = t.class_name)
 )

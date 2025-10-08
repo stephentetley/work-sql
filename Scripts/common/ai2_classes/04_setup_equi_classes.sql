@@ -17,3 +17,4 @@ FROM cte t
 JOIN ai2_classlists_landing.asset_type_attributes t1 
     ON t1.class_description = t.class_name
     AND t1.attribute_set_name = t.attribute_set_name;
+    
