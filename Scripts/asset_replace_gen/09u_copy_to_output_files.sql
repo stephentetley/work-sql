@@ -36,7 +36,7 @@ WITH (FORMAT csv, HEADER false, QUOTE '');
 
 COPY 
     (SELECT sql_text FROM s4_classrep_to_excel_uploader_chars) 
-TO '/home/stephen/_working/coding/work/work-sql/Scripts/output/18g_data_copy_s4_classrep_to_excel_uploader_create_eavdata.sql'
+TO '/home/stephen/_working/coding/work/work-sql/Scripts/output/18g_data_copy_s4_classrep_to_eu_create_eavdata.sql'
 WITH (FORMAT csv, HEADER false, QUOTE '');
 
 
