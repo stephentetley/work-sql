@@ -1,7 +1,7 @@
 
 
 
-CREATE SCHEMA IF NOT EXISTS ai2_landing;
+
 
 
 CREATE OR REPLACE TABLE ai2_landing.worklist AS

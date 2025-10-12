@@ -1,4 +1,6 @@
 
+CREATE SCHEMA IF NOT EXISTS ai2_landing;
+
 CREATE SCHEMA IF NOT EXISTS ai2_eav;
 
 CREATE OR REPLACE TABLE ai2_eav.equipment_masterdata(
