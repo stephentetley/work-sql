@@ -288,13 +288,13 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMPDI';
 
-CREATE OR REPLACE MACRO direct_online_starter_to_stardo() AS TABLE
+CREATE OR REPLACE MACRO direct_on_line_starter_to_stardo() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_direct_online_starter t
+FROM ai2_classrep.equiclass_direct_on_line_starter t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'STARDO';
