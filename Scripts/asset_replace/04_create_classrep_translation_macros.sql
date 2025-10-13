@@ -486,6 +486,7 @@ CREATE OR REPLACE MACRO isolating_valves_to_valvba() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_mm(t."Size", t."Size Units") AS valv_inlet_size_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_isolating_valves t
@@ -498,6 +499,7 @@ CREATE OR REPLACE MACRO isolating_valves_to_valvbp() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_mm(t."Size", t."Size Units") AS valv_inlet_size_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_isolating_valves t
@@ -510,6 +512,7 @@ CREATE OR REPLACE MACRO isolating_valves_to_valvga() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_mm(t."Size", t."Size Units") AS valv_inlet_size_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_isolating_valves t
@@ -522,6 +525,7 @@ CREATE OR REPLACE MACRO isolating_valves_to_valvft() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_mm(t."Size", t."Size Units") AS valv_inlet_size_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_isolating_valves t
@@ -529,10 +533,16 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VALVFT';
 
+
 CREATE OR REPLACE MACRO kiosk_to_kiskki() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    t."Kiosk Material" AS kisk_material,
+    udfx_db.udfx.convert_to_mm(t."Kiosk Base Height (m)", 'METRES') AS kisk_base_height_mm,
+    udfx_db.udfx.convert_to_mm(t."Kiosk Depth (m)", 'METRES') AS kisk_depth_mm,
+    udfx_db.udfx.convert_to_mm(t."Kiosk Height (m)", 'METRES') AS kisk_height_mm,
+    udfx_db.udfx.convert_to_mm(t."Kiosk Width (m)", 'METRES') AS kisk_width_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_kiosk t
