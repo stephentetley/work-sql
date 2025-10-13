@@ -403,7 +403,7 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-    udf_local.convert_to_mm(t."Size", t."Size Units") AS valv_inlet_size_mm,
+    udfx_db.udfx.convert_to_mm(t."Size", t."Size Units") AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_flap_valve t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -667,7 +667,7 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-    udf_local.convert_to_mm(t."Size", t."Size Units") AS valv_inlet_size_mm,
+    udfx_db.udfx.convert_to_mm(t."Size", t."Size Units") AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_non_return_valve t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
