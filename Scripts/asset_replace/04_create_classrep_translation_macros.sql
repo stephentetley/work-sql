@@ -269,6 +269,8 @@ CREATE OR REPLACE MACRO davit_sockets_to_lldsds() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+
+    t."Test Cert No" AS test_cert_no,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_davit_sockets t
@@ -403,7 +405,7 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-    udfx_db.udfx.convert_to_mm(t."Size", t."Size Units") AS valv_inlet_size_mm,
+    udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_flap_valve t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -486,7 +488,7 @@ CREATE OR REPLACE MACRO isolating_valves_to_valvba() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
-    udfx_db.udfx.convert_to_mm(t."Size", t."Size Units") AS valv_inlet_size_mm,
+    udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_inlet_size_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_isolating_valves t
@@ -499,7 +501,7 @@ CREATE OR REPLACE MACRO isolating_valves_to_valvbp() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
-    udfx_db.udfx.convert_to_mm(t."Size", t."Size Units") AS valv_inlet_size_mm,
+    udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_inlet_size_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_isolating_valves t
@@ -512,7 +514,7 @@ CREATE OR REPLACE MACRO isolating_valves_to_valvga() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
-    udfx_db.udfx.convert_to_mm(t."Size", t."Size Units") AS valv_inlet_size_mm,
+    udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_inlet_size_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_isolating_valves t
@@ -525,7 +527,7 @@ CREATE OR REPLACE MACRO isolating_valves_to_valvft() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
-    udfx_db.udfx.convert_to_mm(t."Size", t."Size Units") AS valv_inlet_size_mm,
+    udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_inlet_size_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_isolating_valves t
@@ -538,11 +540,12 @@ CREATE OR REPLACE MACRO kiosk_to_kiskki() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
-    t."Kiosk Material" AS kisk_material,
-    udfx_db.udfx.convert_to_mm(t."Kiosk Base Height (m)", 'METRES') AS kisk_base_height_mm,
-    udfx_db.udfx.convert_to_mm(t."Kiosk Depth (m)", 'METRES') AS kisk_depth_mm,
-    udfx_db.udfx.convert_to_mm(t."Kiosk Height (m)", 'METRES') AS kisk_height_mm,
-    udfx_db.udfx.convert_to_mm(t."Kiosk Width (m)", 'METRES') AS kisk_width_mm,
+    udf_local.cat_flap_available_to_kisk_cat_flap_available(t."Cat Flap Available") AS kisk_cat_flap_available,
+    udf_local.kiosk_material_to_kisk_material(t."Kiosk Material") AS kisk_material,
+    udfx_db.udfx.convert_to_millimetres(t."Kiosk Base Height (m)", 'METRES') AS kisk_base_height_mm,
+    udfx_db.udfx.convert_to_millimetres(t."Kiosk Depth (m)", 'METRES') AS kisk_depth_mm,
+    udfx_db.udfx.convert_to_millimetres(t."Kiosk Height (m)", 'METRES') AS kisk_height_mm,
+    udfx_db.udfx.convert_to_millimetres(t."Kiosk Width (m)", 'METRES') AS kisk_width_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_kiosk t
@@ -677,7 +680,7 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-    udfx_db.udfx.convert_to_mm(t."Size", t."Size Units") AS valv_inlet_size_mm,
+    udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_non_return_valve t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -796,6 +799,20 @@ CREATE OR REPLACE MACRO pulsation_damper_to_veprpd() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    t."Bar Litres" AS vepr_bar_litres,
+    t."Manufactured Year" AS vepr_manufactured_year,
+    t."P.V.Capacity Ltrs" AS vepr_pv_capacity_ltrs_l,
+    t."PV Verification Status" AS vepr_pv_verification_status,
+    t."PV Verification Status Date" AS vepr_pv_verification_date,
+    IF(t."S.W.P or S.O.L. Units" = 'BAR', t."S.W.P or S.O.L.", null) AS vepr_safe_working_pressure_bar,
+    t."YWRef" AS statutory_reference_number,
+    t."Test Cert No" AS test_cert_no,
+    t."Test Pressure bars" AS vepr_test_pressure_bar,
+    t."Written Scheme No" AS vepr_written_scheme_number,
+    udf_local.swp_type_location_to_vper_swp_type(t."Safe Working Procedure Type - Location") AS vepr_swp_type,
+    udf_local.swp_type_location_to_vper_swp_location(t."Safe Working Procedure Type - Location") AS vepr_swp_location,
+    t."Safe Working Procedure Name" AS vepr_swp_name,
+    t."Safe Working Procedure Date" AS vepr_swp_date,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_pulsation_damper t
@@ -913,15 +930,30 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
 WHERE t1.s4_class = 'STRNER';
 
 
+-- NOTE equimixin_integral_motor does not currently exist but the test data
+-- currently doesn't call this translation
 CREATE OR REPLACE MACRO submersible_centrifugal_pump_to_pumsmo() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    t2."Insulation Class" AS insulation_class_deg_c,
+    t2."IP Rating" AS ip_rating,
+    udfx_db.udfx.convert_to_liters_per_second(t."Flow", t."Flow Units") AS pums_flow_litres_per_sec,
+    t."Impeller Type" AS pums_impeller_type,
+    udfx_db.udfx.convert_to_metres(t."Duty Head", t."Duty Head Units") AS pums_installed_design_head_m,
+    udf_local.lifting_type_to_pums_lifting_type(t."Lifting Type") AS pums_lifting_type,
+    t2."Current In" AS pums_rated_current_a,
+    udfx_db.udfx.convert_to_kilowatts(t2."Rating (Power)", t2."Rating Units") AS pums_rated_power_kw,
+    t2."Speed (RPM)" AS pums_rated_speed_rpm,
+    t2."Voltage In" AS pums_rated_voltage,
+    udf_local.voltage_oc_or_dc_to_voltage_units(t2."Voltage In (AC Or DC)") AS pums_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_submersible_centrifugal_pump t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
+JOIN ai2_classrep.equimixin_integral_motor t2 
+    ON t2.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMSMO';
 
 

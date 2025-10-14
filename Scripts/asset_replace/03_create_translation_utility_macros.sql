@@ -43,3 +43,111 @@ SELECT smini || ' - ' || smaxi || ' ' || unitsu FROM cte1
 );
 
 
+CREATE OR REPLACE MACRO udf_local.lifting_type_to_pums_lifting_type(value) AS 
+(WITH 
+    cte1 AS (
+        SELECT upper(value) AS valueu
+        ),
+    cte2 AS ( 
+        SELECT 
+        CASE 
+            WHEN valueu = 'BLUE ROPE' THEN 'BLUE ROPE'
+            WHEN valueu = 'CHAIN' THEN 'CHAIN'
+            ELSE null
+        END AS answer
+        FROM cte1
+       ) 
+SELECT answer FROM cte2
+);
+
+CREATE OR REPLACE MACRO udf_local.voltage_oc_or_dc_to_voltage_units(value) AS 
+(WITH 
+    cte1 AS (
+        SELECT upper(value) AS valueu
+        ),
+    cte2 AS ( 
+        SELECT 
+        CASE 
+            WHEN valueu = 'AC' OR valueu = 'ALTERNATING CURRENT' THEN 'VAC'
+            WHEN valueu = 'DC' OR valueu = 'DIRECT CURRENT' THEN 'VDC'
+            ELSE null
+        END AS answer
+        FROM cte1
+       ) 
+SELECT answer FROM cte2
+);
+
+
+CREATE OR REPLACE MACRO udf_local.cat_flap_available_to_kisk_cat_flap_available(value) AS 
+(WITH 
+    cte1 AS (
+        SELECT upper(value) AS valueu
+        ),
+    cte2 AS ( 
+        SELECT 
+        CASE 
+            WHEN valueu = 'C+H' OR valueu = 'CABLE AND HOSE' THEN 'YES'
+            WHEN valueu = 'CABLE' THEN 'YES'
+            WHEN valueu = 'NONE' THEN 'NO'
+            ELSE null
+        END AS answer
+        FROM cte1
+       ) 
+SELECT answer FROM cte2
+);
+
+
+CREATE OR REPLACE MACRO udf_local.kiosk_material_to_kisk_material(value) AS 
+(WITH 
+    cte1 AS (
+        SELECT upper(value) AS valueu
+        ),
+    cte2 AS ( 
+        SELECT 
+        CASE 
+            WHEN valueu = 'GRP' OR valueu = 'GRP' THEN 'GLASS REINFORCED PLASTIC'
+            WHEN valueu = 'STEL' OR valueu = 'STEEL' THEN 'STEEL'
+            WHEN valueu = 'BRK' OR valueu = 'BRICK' THEN 'BRICK'
+            ELSE null
+        END AS answer
+        FROM cte1
+       ) 
+SELECT answer FROM cte2
+);
+
+
+CREATE OR REPLACE MACRO udf_local.swp_type_location_to_vper_swp_type(value) AS 
+(WITH 
+    cte1 AS (
+        SELECT upper(value) AS valueu
+        ),
+    cte2 AS ( 
+        SELECT 
+        CASE 
+            WHEN valueu = 'GEN' OR valueu = 'GENERIC - SAFEGUARD' THEN 'GENERIC'
+            WHEN valueu = 'BES' OR valueu = 'BESPOKE - IMS' THEN 'BESPOKE'
+            ELSE null
+        END AS answer
+        FROM cte1
+       ) 
+SELECT answer FROM cte2
+);
+
+
+CREATE OR REPLACE MACRO udf_local.swp_type_location_to_vper_swp_location(value) AS 
+(WITH 
+    cte1 AS (
+        SELECT upper(value) AS valueu
+        ),
+    cte2 AS ( 
+        SELECT 
+        CASE 
+            WHEN valueu = 'GEN' OR valueu = 'GENERIC - SAFEGUARD' THEN 'SAFEGUARD'
+            WHEN valueu = 'BES' OR valueu = 'BESPOKE - IMS' THEN 'IMS'
+            ELSE null
+        END AS answer
+        FROM cte1
+       ) 
+SELECT answer FROM cte2
+);
+
