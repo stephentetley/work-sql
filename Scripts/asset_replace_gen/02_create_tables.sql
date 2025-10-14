@@ -47,4 +47,25 @@ SELECT
     regexp_extract(t."Common Name", '(EQUIPMENT:.*)', 1) AS equipment_type_name,
 FROM read_xlsx(src :: VARCHAR, sheet='Sheet1', all_varchar=true) t;
 
+CREATE OR REPLACE TEMPORARY MACRO table_prefix(str) AS 
+(WITH 
+    cte1 AS (
+        SELECT upper(str) AS stru
+        ),
+    cte2 AS ( 
+        SELECT 
+        CASE 
+            WHEN stru = 'EQUICLASS' THEN 'equiclass_'
+            WHEN stru = 'EQUIMIXIN' THEN 'equimixin_'
+            ELSE null
+        END AS answer
+        FROM cte1
+       ) 
+SELECT answer FROM cte2
+);
+
+CREATE OR REPLACE TEMPORARY MACRO squote(str) AS (
+    '''' || (str :: VARCHAR) || ''''
+);
+
 

@@ -149,6 +149,12 @@ CREATE OR REPLACE MACRO centrifugal_pump_to_pumpce() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_liters_per_second(t."Flow", t."Flow Units") AS pump_flow_litres_per_sec,
+    t."Impeller Type" AS pump_impeller_type,
+    udfx_db.udfx.convert_to_metres(t."Duty Head", t."Duty Head Units") AS pump_installed_design_head_m,
+    t."No Of Stages" AS pump_number_of_stage,
+    udfx_db.udfx.convert_to_kilowatts(t."Rating (Power)", t."Rating Units") AS pump_rated_power_kw,
+    t."Speed (RPM)" AS pump_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_centrifugal_pump t
@@ -283,11 +289,17 @@ CREATE OR REPLACE MACRO diaphragm_pump_to_pumpdi() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_liters_per_second(t."Flow", t."Flow Units") AS pump_flow_litres_per_sec,
+    udfx_db.udfx.convert_to_metres(t."Duty Head", t."Duty Head Units") AS pump_installed_design_head_m,
+    t2."Insulation Class" AS insulation_class_deg_c,
+    t2."IP Rating" AS ip_rating,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_diaphragm_pump t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
+JOIN ai2_classrep.equimixin_integral_motor t2 
+    ON t2.ai2_reference = t.ai2_reference    
 WHERE t1.s4_class = 'PUMPDI';
 
 CREATE OR REPLACE MACRO direct_on_line_starter_to_stardo() AS TABLE
@@ -930,8 +942,8 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
 WHERE t1.s4_class = 'STRNER';
 
 
--- NOTE equimixin_integral_motor does not currently exist but the test data
--- currently doesn't call this translation
+-- NOTE submersible_centrifugal_pump does not currently exist in the test data
+-- so this hasn't been run
 CREATE OR REPLACE MACRO submersible_centrifugal_pump_to_pumsmo() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
