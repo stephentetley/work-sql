@@ -9,7 +9,7 @@ SELECT * FROM
 ) 
 SELECT
     cte.sz_inches AS inches,
-    udfx.convert_to_mm(cte.sz_inches, 'INCHES') AS mm,
+    udfx.convert_to_millimetres(cte.sz_inches, 'INCHES') AS mm,
 FROM cte;
 
 
@@ -23,5 +23,9 @@ SELECT * FROM
 ) 
 SELECT
     cte.sz_meters AS metres,
-    udfx.convert_to_mm(cte.sz_meters, 'METRES') AS mm,
+    udfx.convert_to_millimetres(cte.sz_meters, 'METRES') AS mm,
 FROM cte;
+
+
+
+

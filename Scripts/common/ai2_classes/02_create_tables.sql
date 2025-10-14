@@ -48,14 +48,16 @@ FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true, sheet='Sheet1') t;
 
 CREATE OR REPLACE TABLE ai2_classlists.equi_characteristics (
     class_name VARCHAR NOT NULL,
-    class_description VARCHAR,
+    class_description VARCHAR NOT NULL,
+    class_derivation VARCHAR NOT NULL,
+    attribute_set_name VARCHAR,
     class_table_name VARCHAR,
     attribute_name VARCHAR NOT NULL,
     attribute_description VARCHAR,
     data_type VARCHAR,
     ddl_data_type VARCHAR,
     enum_name VARCHAR,
-    PRIMARY KEY(class_name, attribute_name)
+    PRIMARY KEY(class_name, attribute_set_name, attribute_name)
 );
 
 

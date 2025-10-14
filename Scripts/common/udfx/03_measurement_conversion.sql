@@ -18,7 +18,7 @@
 -- https://duckdb.org/docs/stable/guides/snippets/sharing_macros.html
 
 
-CREATE OR REPLACE MACRO udfx.convert_to_mm(sz, units) AS 
+CREATE OR REPLACE MACRO udfx.convert_to_millimetres(sz, units) AS 
 (WITH 
     cte1 AS (
         SELECT upper(units) AS unitsu
@@ -27,9 +27,9 @@ CREATE OR REPLACE MACRO udfx.convert_to_mm(sz, units) AS
         SELECT 
         CASE 
             WHEN unitsu = 'MM' OR unitsu = 'MILLIMETRES' THEN sz
-            WHEN unitsu = 'CM' OR unitsu = 'CENTIMETRES'  THEN sz * 10
+            WHEN unitsu = 'CM' OR unitsu = 'CENTIMETRES'  THEN sz * 10.0
             WHEN unitsu = 'M'  OR unitsu = 'METRES' THEN sz * 1000.0
-            WHEN unitsu = 'INCHES' THEN sz * 25.4
+            WHEN unitsu = 'IN' OR unitsu = 'INCH' OR unitsu = 'INCHES' THEN sz * 25.4
             WHEN unitsu = 'FEET' THEN sz * 304.8
             ELSE null
         END AS answer
@@ -38,3 +38,60 @@ CREATE OR REPLACE MACRO udfx.convert_to_mm(sz, units) AS
 SELECT round(answer, 0) FROM cte2
 );
 
+CREATE OR REPLACE MACRO udfx.convert_to_metres(sz, units) AS 
+(WITH 
+    cte1 AS (
+        SELECT upper(units) AS unitsu
+        ),
+    cte2 AS ( 
+        SELECT 
+        CASE 
+            WHEN unitsu = 'MM' OR unitsu = 'MILLIMETRES' THEN sz * 1000.0
+            WHEN unitsu = 'CM' OR unitsu = 'CENTIMETRES'  THEN sz * 100.0
+            WHEN unitsu = 'M'  OR unitsu = 'METRES' THEN sz
+            WHEN unitsu = 'IN' OR unitsu = 'INCH' OR unitsu = 'INCHES' THEN sz / 39.37
+            WHEN unitsu = 'FEET' THEN sz / 3.281
+            ELSE null
+        END AS answer
+        FROM cte1
+       ) 
+SELECT round(answer, 0) FROM cte2
+);
+
+
+CREATE OR REPLACE MACRO udfx.convert_to_liters_per_second(fl, units) AS 
+(WITH 
+    cte1 AS (
+        SELECT upper(units) AS unitsu
+        ),
+    cte2 AS ( 
+        SELECT 
+        CASE 
+            WHEN unitsu = 'L/S' OR unitsu = 'LITRES PER SECOND' THEN fl
+            WHEN unitsu = 'L/MIN' OR unitsu = 'LITRE PER MINUTE' THEN fl / 60.0
+            WHEN unitsu = 'L/HR'  OR unitsu = 'LITRE PER HOUR' THEN fl / 3600.0
+            WHEN unitsu = 'M³/S' OR unitsu = 'CUBIC METRE PER SECOND' THEN fl * 1000
+            WHEN unitsu = 'M³/H' OR unitsu = 'CUBIC METRE PER HOUR' THEN fl * 3.6
+            ELSE null
+        END AS answer
+        FROM cte1
+       ) 
+SELECT round(answer, 3) FROM cte2
+);
+
+CREATE OR REPLACE MACRO udfx.convert_to_kilowatts(pw, units) AS 
+(WITH 
+    cte1 AS (
+        SELECT upper(units) AS unitsu
+        ),
+    cte2 AS ( 
+        SELECT 
+        CASE 
+            WHEN unitsu = 'KW' OR unitsu = 'KILOWATTS' THEN pw
+            WHEN unitsu = 'W' OR unitsu = 'WATTS' THEN pw / 1000.0
+            ELSE null
+        END AS answer
+        FROM cte1
+       ) 
+SELECT round(answer, 3) FROM cte2
+);
