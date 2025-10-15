@@ -59,7 +59,7 @@ SELECT round(answer, 0) FROM cte2
 );
 
 
-CREATE OR REPLACE MACRO udfx.convert_to_liters_per_second(fl, units) AS 
+CREATE OR REPLACE MACRO udfx.convert_to_litres_per_second(fl, units) AS 
 (WITH 
     cte1 AS (
         SELECT upper(units) AS unitsu
@@ -72,6 +72,27 @@ CREATE OR REPLACE MACRO udfx.convert_to_liters_per_second(fl, units) AS
             WHEN unitsu = 'L/HR'  OR unitsu = 'LITRE PER HOUR' THEN fl / 3600.0
             WHEN unitsu = 'M³/S' OR unitsu = 'CUBIC METRE PER SECOND' THEN fl * 1000
             WHEN unitsu = 'M³/H' OR unitsu = 'CUBIC METRE PER HOUR' THEN fl * 3.6
+            ELSE null
+        END AS answer
+        FROM cte1
+       ) 
+SELECT round(answer, 3) FROM cte2
+);
+
+
+CREATE OR REPLACE MACRO udfx.convert_to_cubic_metres_per_hour(fl, units) AS 
+(WITH 
+    cte1 AS (
+        SELECT upper(units) AS unitsu
+        ),
+    cte2 AS ( 
+        SELECT 
+        CASE 
+            WHEN unitsu = 'L/S' OR unitsu = 'LITRES PER SECOND' THEN fl * 3.6
+            WHEN unitsu = 'L/MIN' OR unitsu = 'LITRE PER MINUTE' THEN fl / 16.667
+            WHEN unitsu = 'L/HR'  OR unitsu = 'LITRE PER HOUR' THEN fl / 1000.0
+            WHEN unitsu = 'M³/S' OR unitsu = 'CUBIC METRE PER SECOND' THEN fl * 3600.0
+            WHEN unitsu = 'M³/H' OR unitsu = 'CUBIC METRE PER HOUR' THEN fl
             ELSE null
         END AS answer
         FROM cte1
@@ -95,3 +116,4 @@ CREATE OR REPLACE MACRO udfx.convert_to_kilowatts(pw, units) AS
        ) 
 SELECT round(answer, 3) FROM cte2
 );
+

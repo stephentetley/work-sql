@@ -4,6 +4,13 @@ CREATE OR REPLACE MACRO ac_induction_motor_to_emtrin() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    t."Insulation Class" AS insulation_class_deg_c,
+    t."IP Rating" AS ip_rating,
+    t."Current In" AS emtr_rated_current_a,
+    udfx_db.udfx.convert_to_kilowatts(t."Power", t."Power Units") AS emtr_rated_power_kw,
+    t."Speed (RPM)" AS emtr_rated_speed_rpm,
+    t."Voltage In" AS emtr_rated_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS emtr_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_ac_induction_motor t
@@ -17,6 +24,14 @@ CREATE OR REPLACE MACRO actuator_to_actuem() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    t."Insulation Class" AS insulation_class_deg_c,
+    t."IP Rating" AS ip_rating,
+    t."Current In" AS actu_rated_current_a,
+    udfx_db.udfx.convert_to_kilowatts(t."Power", t."Power Units") AS actu_rated_power_kw,
+    t."Voltage In" AS actu_rated_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS actu_rated_voltage_units,
+    t."Speed (RPM)" AS actu_speed_rpm,
+    t."Valve Torque (Nm)" AS actu_valve_torque_nm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_actuator t
@@ -29,6 +44,9 @@ CREATE OR REPLACE MACRO air_auto_cleaner_to_blowab() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_kilowatts(t."Power", t."Power Units") AS blow_rated_power_kw,
+    t."Voltage In" AS blow_rated_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS blow_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_air_auto_cleaner t
@@ -41,6 +59,20 @@ CREATE OR REPLACE MACRO air_receiver_to_veprar() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    t."Bar Litres" AS vepr_bar_litres,
+    t."Manufactured Year" AS vepr_manufactured_year,
+    t."P.V.Capacity Ltrs" AS vepr_pv_capacity_ltrs_l,
+    t."PV Verification Status" AS vepr_pv_verification_status,
+    t."PV Verification Status Date" AS vepr_pv_verification_date,
+    IF(t."S.W.P or S.O.L. Units" = 'BAR', t."S.W.P or S.O.L.", null) AS vepr_safe_working_pressure_bar,
+    t."YWRef" AS statutory_reference_number,
+    t."Test Cert No" AS test_cert_no,
+    t."Test Pressure bars" AS vepr_test_pressure_bar,
+    t."Written Scheme No" AS vepr_written_scheme_number,
+    udf_local.swpt_815_to_swp_type(t."Safe Working Procedure Type - Location") AS vepr_swp_type,
+    udf_local.swpt_815_to_swp_location(t."Safe Working Procedure Type - Location") AS vepr_swp_location,
+    t."Safe Working Procedure Name" AS vepr_swp_name,
+    t."Safe Working Procedure Date" AS vepr_swp_date,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_air_receiver t
@@ -53,6 +85,10 @@ CREATE OR REPLACE MACRO ammonia_instrument_to_analam() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    t."Range max" AS anal_range_max,
+    t."Range min" AS anal_range_min,
+    udf_local.rngu_132_to_anal_range_unit(t."Range unit") AS anal_range_units,
+    udf_local.format_signal3(t."Signal min", t."Signal max", t."Signal unit") AS anal_signal_type,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_ammonia_instrument t
@@ -65,6 +101,10 @@ CREATE OR REPLACE MACRO beam_trolley_to_lltttr() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    t."Work Load" AS leea_safe_working_load,
+    udf_local.wlun_337_to_swl_units(t."Work Load Units") AS leea_safe_working_load_units,
+    t."YWRef" AS statutory_reference_number,
+    t."Test Cert No" AS test_cert_no,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_beam_trolley t
@@ -77,6 +117,9 @@ CREATE OR REPLACE MACRO blowers_to_blowcb() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    udfx.convert_to_cubic_metres_per_hour(t."Flow", t."Flow Units") AS blow_flow_cubic_meter_per_hour,
+    udfx_db.udfx.convert_to_kilowatts(t."Rating (Power)", t."Rating Units") AS blow_rated_power_kw,
+    t."Speed (RPM)" AS blow_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_blowers t
@@ -89,6 +132,9 @@ CREATE OR REPLACE MACRO blowers_to_blowsc() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    udfx.convert_to_cubic_metres_per_hour(t."Flow", t."Flow Units") AS blow_flow_cubic_meter_per_hour,
+    udfx_db.udfx.convert_to_kilowatts(t."Rating (Power)", t."Rating Units") AS blow_rated_power_kw,
+    t."Speed (RPM)" AS blow_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_blowers t
@@ -101,6 +147,7 @@ CREATE OR REPLACE MACRO bridge_to_accstbr() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    -- AS acst_weight_limit,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_bridge t
@@ -149,7 +196,7 @@ CREATE OR REPLACE MACRO centrifugal_pump_to_pumpce() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
-    udfx_db.udfx.convert_to_liters_per_second(t."Flow", t."Flow Units") AS pump_flow_litres_per_sec,
+    udfx_db.udfx.convert_to_litres_per_second(t."Flow", t."Flow Units") AS pump_flow_litres_per_sec,
     t."Impeller Type" AS pump_impeller_type,
     udfx_db.udfx.convert_to_metres(t."Duty Head", t."Duty Head Units") AS pump_installed_design_head_m,
     t."No Of Stages" AS pump_number_of_stage,
@@ -289,7 +336,7 @@ CREATE OR REPLACE MACRO diaphragm_pump_to_pumpdi() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
-    udfx_db.udfx.convert_to_liters_per_second(t."Flow", t."Flow Units") AS pump_flow_litres_per_sec,
+    udfx_db.udfx.convert_to_litres_per_second(t."Flow", t."Flow Units") AS pump_flow_litres_per_sec,
     udfx_db.udfx.convert_to_metres(t."Duty Head", t."Duty Head Units") AS pump_installed_design_head_m,
     t2."Insulation Class" AS insulation_class_deg_c,
     t2."IP Rating" AS ip_rating,
@@ -552,8 +599,8 @@ CREATE OR REPLACE MACRO kiosk_to_kiskki() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
-    udf_local.cat_flap_available_to_kisk_cat_flap_available(t."Cat Flap Available") AS kisk_cat_flap_available,
-    udf_local.kiosk_material_to_kisk_material(t."Kiosk Material") AS kisk_material,
+    udf_local.cafl_435_to_kisk_cat_flap_available(t."Cat Flap Available") AS kisk_cat_flap_available,
+    udf_local.kosk_471_to_kisk_material(t."Kiosk Material") AS kisk_material,
     udfx_db.udfx.convert_to_millimetres(t."Kiosk Base Height (m)", 'METRES') AS kisk_base_height_mm,
     udfx_db.udfx.convert_to_millimetres(t."Kiosk Depth (m)", 'METRES') AS kisk_depth_mm,
     udfx_db.udfx.convert_to_millimetres(t."Kiosk Height (m)", 'METRES') AS kisk_height_mm,
@@ -821,8 +868,8 @@ SELECT
     t."Test Cert No" AS test_cert_no,
     t."Test Pressure bars" AS vepr_test_pressure_bar,
     t."Written Scheme No" AS vepr_written_scheme_number,
-    udf_local.swp_type_location_to_vper_swp_type(t."Safe Working Procedure Type - Location") AS vepr_swp_type,
-    udf_local.swp_type_location_to_vper_swp_location(t."Safe Working Procedure Type - Location") AS vepr_swp_location,
+    udf_local.swpt_815_to_vepr_swp_type(t."Safe Working Procedure Type - Location") AS vepr_swp_type,
+    udf_local.swpt_815_to_vepr_swp_location(t."Safe Working Procedure Type - Location") AS vepr_swp_location,
     t."Safe Working Procedure Name" AS vepr_swp_name,
     t."Safe Working Procedure Date" AS vepr_swp_date,
     'TEMP_VALUE' AS uniclass_code,
@@ -950,15 +997,15 @@ SELECT
     t."Location On Site" AS location_on_site,
     t2."Insulation Class" AS insulation_class_deg_c,
     t2."IP Rating" AS ip_rating,
-    udfx_db.udfx.convert_to_liters_per_second(t."Flow", t."Flow Units") AS pums_flow_litres_per_sec,
+    udfx_db.udfx.convert_to_litres_per_second(t."Flow", t."Flow Units") AS pums_flow_litres_per_sec,
     t."Impeller Type" AS pums_impeller_type,
     udfx_db.udfx.convert_to_metres(t."Duty Head", t."Duty Head Units") AS pums_installed_design_head_m,
-    udf_local.lifting_type_to_pums_lifting_type(t."Lifting Type") AS pums_lifting_type,
+    udf_local.lity_388_to_pump_lifting_type(t."Lifting Type") AS pums_lifting_type,
     t2."Current In" AS pums_rated_current_a,
     udfx_db.udfx.convert_to_kilowatts(t2."Rating (Power)", t2."Rating Units") AS pums_rated_power_kw,
     t2."Speed (RPM)" AS pums_rated_speed_rpm,
     t2."Voltage In" AS pums_rated_voltage,
-    udf_local.voltage_oc_or_dc_to_voltage_units(t2."Voltage In (AC Or DC)") AS pums_rated_voltage_units,
+    udf_local.acdc_3_to_voltage_units(t2."Voltage In (AC Or DC)") AS pums_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_submersible_centrifugal_pump t
