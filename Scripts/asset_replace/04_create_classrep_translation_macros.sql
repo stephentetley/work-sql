@@ -97,6 +97,38 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
 WHERE t1.s4_class = 'ANALAM';
 
 
+CREATE OR REPLACE MACRO auto_transformer_starter_to_starat() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    t."IP Rating" AS ip_rating,
+    udfx_db.udfx.convert_to_kilowatts(t."Power", t."Power Units") AS star_rated_power_kw,
+    t."Voltage In" AS star_rated_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS star_rated_voltage_units,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_auto_transformer_starter t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'STARAT';
+
+
+CREATE OR REPLACE MACRO axial_pump_to_pumpax() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_litres_per_second(t."Flow", t."Flow Units") AS pump_flow_litres_per_sec,
+    t."Impeller Type" AS pump_impeller_type,
+    udfx_db.udfx.convert_to_kilowatts(t."Rating (Power)", t."Rating Units") AS pump_rated_power_kw,
+    t."Speed (RPM)" AS pump_rated_speed_rpm,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_axial_pump t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'PUMPAX';
+
+
 CREATE OR REPLACE MACRO beam_trolley_to_lltttr() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
@@ -143,11 +175,41 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
 WHERE t1.s4_class = 'BLOWSC';
 
 
+CREATE OR REPLACE MACRO borehole_pump_to_pumsbh() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_litres_per_second(t."Flow", t."Flow Units") AS pums_flow_litres_per_sec,
+    udfx_db.udfx.convert_to_metres(t."Duty Head", t."Duty Head Units") AS pums_installed_design_head_m,
+    t."No Of Stages" AS pums_number_of_stage,
+    udfx_db.udfx.convert_to_kilowatts(t."Rating (Power)", t."Rating Units") AS pums_rated_power_kw,
+    t."Speed (RPM)" AS pums_rated_speed_rpm,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_borehole_pump t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'PUMSBH';
+
+
 CREATE OR REPLACE MACRO bridge_to_accstbr() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
-    -- AS acst_weight_limit,
+    udf_local.get_weight_limit_tonnes(t."Weight Limit") AS acst_weight_limit,
+    t."Alternative Crossing" AS alternative_crossing,
+    t."Public Access" AS acst_public_access,
+    t."Public Highway" AS acst_public_highway,
+    t."Parapet" AS acst_parapet,
+    t."Primary Access" AS acst_primary_access,
+    t."Secondary Access" AS acst_secondary_access,
+    t."Bridge Use" AS acst_bridge_use,
+    t."Crossing Use" AS acst_crossing_use,
+    t."Deck Surface Material" AS acst_deck_surface_material,
+    udfx_db.udfx.convert_to_millimetres(t."Length (m)", 'M') AS acst_length_mm,
+    udfx_db.udfx.convert_to_millimetres(t."Width (m)", 'M') AS acst_width_mm,
+    t."Average Pedestrian Per Day" AS average_pedestrian_per_day,
+    udf_local.bdfv_757_to_bridge_vehicles_per_day(t."Average Vehicles Per Day") AS average_vehicles_per_day,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_bridge t
@@ -160,6 +222,9 @@ CREATE OR REPLACE MACRO burglar_alarm_to_alamia() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    t."IP Rating" AS ip_rating,
+    t."Voltage In" AS alam_rated_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS alam_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_burglar_alarm t
@@ -168,28 +233,16 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
 WHERE t1.s4_class = 'ALAMIA';
 
 
-CREATE OR REPLACE MACRO chain_beam_hoist_hand_to_llmhch() AS TABLE
+CREATE OR REPLACE MACRO capacitance_level_instrument_to_lstncp() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_chain_beam_hoist_hand t
+FROM ai2_classrep.equiclass_capacitance_level_instrument t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
-WHERE t1.s4_class = 'LLMHCH';
-
-
-CREATE OR REPLACE MACRO chain_slings_to_llcscs() AS TABLE
-SELECT
-    t1.equi_equi_id AS equipment_id,
-    t."Location On Site" AS location_on_site,
-    'TEMP_VALUE' AS uniclass_code,
-    'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_chain_slings t
-JOIN ai2_classrep.ai2_to_s4_mapping t1 
-    ON t1.ai2_reference = t.ai2_reference
-WHERE t1.s4_class = 'LLCSCS';
+WHERE t1.s4_class = 'LSTNCP';
 
 
 CREATE OR REPLACE MACRO centrifugal_pump_to_pumpce() AS TABLE
@@ -208,6 +261,39 @@ FROM ai2_classrep.equiclass_centrifugal_pump t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMPCE';
+
+
+CREATE OR REPLACE MACRO chain_beam_hoist_hand_to_llmhch() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    t."Work Load" AS leea_safe_working_load,
+    udf_local.wlun_337_to_swl_units(t."Work Load Units") AS leea_safe_working_load_units,
+    t."YWRef" AS statutory_reference_number,
+    t."Test Cert No" AS test_cert_no,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_chain_beam_hoist_hand t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'LLMHCH';
+
+
+CREATE OR REPLACE MACRO chain_slings_to_llcscs() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_millimetres(t."Effective Working Length (m)", 'METRES') AS leea_eff_working_length_mm,
+    t."Work Load" AS leea_safe_working_load,
+    udf_local.wlun_337_to_swl_units(t."Work Load Units") AS leea_safe_working_load_units,
+    t."YWRef" AS statutory_reference_number,
+    t."Test Cert No" AS test_cert_no,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_chain_slings t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'LLCSCS';
 
 
 CREATE OR REPLACE MACRO classifier_gricse() AS TABLE
@@ -310,6 +396,10 @@ CREATE OR REPLACE MACRO davit_to_llddda() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    t."Work Load" AS leea_safe_working_load,
+    udf_local.wlun_337_to_swl_units(t."Work Load Units") AS leea_safe_working_load_units,
+    t."YWRef" AS statutory_reference_number,
+    t."Test Cert No" AS test_cert_no,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_davit t
@@ -322,7 +412,10 @@ CREATE OR REPLACE MACRO davit_sockets_to_lldsds() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
-
+    t."Work Load" AS leea_safe_working_load,
+    udf_local.wlun_337_to_swl_units(t."Work Load Units") AS leea_safe_working_load_units,
+    t."YWRef" AS statutory_reference_number,
+    t."Test Cert No" AS test_cert_no,
     t."Test Cert No" AS test_cert_no,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
@@ -340,6 +433,8 @@ SELECT
     udfx_db.udfx.convert_to_metres(t."Duty Head", t."Duty Head Units") AS pump_installed_design_head_m,
     t2."Insulation Class" AS insulation_class_deg_c,
     t2."IP Rating" AS ip_rating,
+    udfx_db.udfx.convert_to_kilowatts(t."Rating (Power)", t."Rating Units") AS pump_rated_power_kw,
+    t."Speed (RPM)" AS pump_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_diaphragm_pump t
@@ -353,6 +448,11 @@ CREATE OR REPLACE MACRO direct_on_line_starter_to_stardo() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    t."IP Rating" AS ip_rating,
+    t."Current In" AS star_rated_current_a,
+    udfx_db.udfx.convert_to_kilowatts(t."Power", t."Power Units") AS star_rated_power_kw,
+    t."Voltage In" AS star_rated_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS star_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_direct_on_line_starter t
@@ -383,6 +483,31 @@ FROM ai2_classrep.equiclass_distributors t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'BIOFRD';
+
+
+CREATE OR REPLACE MACRO doppler_flow_instrument_to_fstnus() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_doppler_flow_instrument t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'FSTNUS';
+
+
+CREATE OR REPLACE MACRO ejector_pump_to_pumpej() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_litres_per_second(t."Flow", t."Flow Units") AS pump_flow_litres_per_sec,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_ejector_pump t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'PUMPEJ';
 
 
 CREATE OR REPLACE MACRO electric_meter_to_metrel() AS TABLE
@@ -434,6 +559,30 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
 WHERE t1.s4_class = 'DECOES';
 
 
+CREATE OR REPLACE MACRO eye_bolts_to_llebbo() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_eye_bolts t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'LLEBBO';
+
+
+CREATE OR REPLACE MACRO fall_arrester_to_llwaab() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_fall_arrester t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'LLWAAB';
+
+
 CREATE OR REPLACE MACRO fan_to_fansce() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
@@ -482,6 +631,31 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LSTNFL';
 
+-- Fixed
+CREATE OR REPLACE MACRO gantries_to_llggfx() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_gantries t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'LLGGFX';
+
+
+-- Portable
+CREATE OR REPLACE MACRO gantries_to_llggpt() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_gantries t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'LLGGPT';
+
 
 CREATE OR REPLACE MACRO gauge_pressure_to_pstndi() AS TABLE
 SELECT
@@ -493,6 +667,21 @@ FROM ai2_classrep.equiclass_gauge_pressure t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PSTNDI';
+
+
+CREATE OR REPLACE MACRO gear_pump_to_pumpge() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_litres_per_second(t."Flow", t."Flow Units") AS pump_flow_litres_per_sec,
+    udfx_db.udfx.convert_to_kilowatts(t."Rating (Power)", t."Rating Units") AS pump_rated_power_kw,
+    t."Speed (RPM)" AS pump_rated_speed_rpm,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_gear_pump t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'PUMPGE';
 
 
 CREATE OR REPLACE MACRO gearbox_to_trutpg() AS TABLE
@@ -595,6 +784,83 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
 WHERE t1.s4_class = 'VALVFT';
 
 
+CREATE OR REPLACE MACRO jack_hydraulic_to_lljjck() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_jack_hydraulic t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'LLJJCK';
+
+
+CREATE OR REPLACE MACRO jack_ratchet_to_lljjck() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_jack_ratchet t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'LLJJCK';
+
+
+-- to jib crane
+CREATE OR REPLACE MACRO jib_crane_to_lljcji() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_jib_crane t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'LLJCJI';
+
+
+-- to pillar jib crane
+CREATE OR REPLACE MACRO jib_crane_to_lljcpj() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_jib_crane t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'LLJCPJ';
+
+
+-- to swing jib crane
+CREATE OR REPLACE MACRO jib_crane_to_lljcsw() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_jib_crane t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'LLJCSW';
+
+
+-- to wall jib crane
+CREATE OR REPLACE MACRO jib_crane_to_lljcwa() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_jib_crane t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'LLJCWA';
+
+
+
 CREATE OR REPLACE MACRO kiosk_to_kiskki() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
@@ -635,6 +901,20 @@ FROM ai2_classrep.equiclass_limit_switch t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'GASWIP';
+
+CREATE OR REPLACE MACRO macipump_to_pumpma() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_litres_per_second(t."Flow", t."Flow Units") AS pump_flow_litres_per_sec,
+    udfx_db.udfx.convert_to_kilowatts(t."Rating (Power)", t."Rating Units") AS pump_rated_power_kw,
+    t."Speed (RPM)" AS pump_rated_speed_rpm,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_macipump t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'PUMPMA';
 
 
 CREATE OR REPLACE MACRO magnetic_flow_instrument_to_fstnem() AS TABLE
@@ -746,6 +1026,54 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
 WHERE t1.s4_class = 'VALVNR';
 
 
+CREATE OR REPLACE MACRO oil_air_receiver_to_veprao() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_oil_air_receiver t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'VEPRAO';
+
+
+-- to peristalic buffer pump
+CREATE OR REPLACE MACRO peristaltic_pump_to_pumppb() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_litres_per_second(t."Flow", t."Flow Units") AS pump_flow_litres_per_sec,
+    udfx_db.udfx.convert_to_metres(t."Duty Head", t."Duty Head Units") AS pump_installed_design_head_m,
+    t."Lubricant Type" AS pump_lubricant_type,
+    udfx_db.udfx.convert_to_kilowatts(t."Rating (Power)", t."Rating Units") AS pump_rated_power_kw,
+    t."Speed (RPM)" AS pump_rated_speed_rpm,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_peristaltic_pump t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'PUMPPB';
+
+
+-- to peristalic pump
+CREATE OR REPLACE MACRO peristaltic_pump_to_pumppe() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_litres_per_second(t."Flow", t."Flow Units") AS pump_flow_litres_per_sec,
+    udfx_db.udfx.convert_to_metres(t."Duty Head", t."Duty Head Units") AS pump_installed_design_head_m,
+    t."Lubricant Type" AS pump_lubricant_type,
+    udfx_db.udfx.convert_to_kilowatts(t."Rating (Power)", t."Rating Units") AS pump_rated_power_kw,
+    t."Speed (RPM)" AS pump_rated_speed_rpm,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_peristaltic_pump t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'PUMPPE';
+
+
 CREATE OR REPLACE MACRO plc_to_contpl() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
@@ -768,6 +1096,22 @@ FROM ai2_classrep.equiclass_pneumatic_actuator t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'ACTUEP';
+
+
+-- to plunger pump
+CREATE OR REPLACE MACRO plunger_pump_to_pumppg() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_litres_per_second(t."Flow", t."Flow Units") AS pump_flow_litres_per_sec,
+    udfx_db.udfx.convert_to_kilowatts(t."Rating (Power)", t."Rating Units") AS pump_rated_power_kw,
+    t."Speed (RPM)" AS pump_rated_speed_rpm,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_plunger_pump t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'PUMPPG';
 
 
 CREATE OR REPLACE MACRO power_supply_to_podedl() AS TABLE
@@ -896,6 +1240,10 @@ CREATE OR REPLACE MACRO ram_pump_to_lstnrd() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_litres_per_second(t."Flow", t."Flow Units") AS pump_flow_litres_per_sec,
+    udfx_db.udfx.convert_to_metres(t."Duty Head", t."Duty Head Units") AS pump_installed_design_head_m,
+    udfx_db.udfx.convert_to_kilowatts(t."Rating (Power)", t."Rating Units") AS pump_rated_power_kw,
+    t."Speed (RPM)" AS pump_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_ram_pump t
@@ -915,6 +1263,80 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VALVSF';
 
+
+CREATE OR REPLACE MACRO resistance_starter_to_starlq() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    t."IP Rating" AS ip_rating,
+    t."Current In" AS star_rated_current_a,
+    udfx_db.udfx.convert_to_kilowatts(t."Power", t."Power Units") AS star_rated_power_kw,
+    t."Voltage In" AS star_rated_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS star_rated_voltage_units,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_resistance_starter t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'STARLQ';
+
+
+CREATE OR REPLACE MACRO resistance_starter_to_starre() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    t."IP Rating" AS ip_rating,
+    t."Current In" AS star_rated_current_a,
+    udfx_db.udfx.convert_to_kilowatts(t."Power", t."Power Units") AS star_rated_power_kw,
+    t."Voltage In" AS star_rated_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS star_rated_voltage_units,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_resistance_starter t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'STARRE';
+
+
+CREATE OR REPLACE MACRO reversing_starter_to_starrv() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    t."IP Rating" AS ip_rating,
+    t."Current In" AS star_rated_current_a,
+    udfx_db.udfx.convert_to_kilowatts(t."Power", t."Power Units") AS star_rated_power_kw,
+    t."Voltage In" AS star_rated_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS star_rated_voltage_units,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_reversing_starter t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'STARRV';
+
+
+CREATE OR REPLACE MACRO ropes_to_llfsrp() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_ropes t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'LLFSRP';
+
+
+CREATE OR REPLACE MACRO ropes_to_llwrwi() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_ropes t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'LLWRWI';
 
 
 CREATE OR REPLACE MACRO runways_to_llrrtb() AS TABLE
@@ -965,6 +1387,70 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
 WHERE t1.s4_class = 'SCRFSC';
 
 
+CREATE OR REPLACE MACRO screw_pump_to_pumpsc() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_litres_per_second(t."Flow", t."Flow Units") AS pump_flow_litres_per_sec,
+    udfx_db.udfx.convert_to_metres(t."Duty Head", t."Duty Head Units") AS pump_installed_design_head_m,
+    udfx_db.udfx.convert_to_kilowatts(t."Rating (Power)", t."Rating Units") AS pump_rated_power_kw,
+    t."Speed (RPM)" AS pump_rated_speed_rpm,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_screw_pump t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'PUMPSC';
+
+
+CREATE OR REPLACE MACRO sludge_blanket_level_inst_to_lstnus() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_sludge_blanket_level_inst t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'LSTNUS';
+
+
+CREATE OR REPLACE MACRO soft_starter_to_starss() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    t."Current In" AS star_input_current_a,
+    t."Voltage In" AS star_input_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS star_input_voltage_units,
+    t."IP Rating" AS ip_rating,
+    udfx_db.udfx.convert_to_kilowatts(t."Power", t."Power Units") AS star_rated_power_kw,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_soft_starter t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'STARSS';
+
+
+
+CREATE OR REPLACE MACRO star_delta_starter_to_stardt() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    t."IP Rating" AS ip_rating,
+    t."Current In" AS star_rated_current_a,
+    udfx_db.udfx.convert_to_kilowatts(t."Power", t."Power Units") AS star_rated_power_kw,
+    t."Voltage In" AS star_rated_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS star_rated_voltage_units,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_star_delta_starter t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'STARDT';
+
+
+
 CREATE OR REPLACE MACRO stirrers_mixers_agitators_to_mixrro() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
@@ -975,6 +1461,17 @@ FROM ai2_classrep.equiclass_stirrers_mixers_agitators t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'MIXRRO';
+
+CREATE OR REPLACE MACRO strainer_to_strnbf() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_strainer t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'STRNBF';
 
 
 CREATE OR REPLACE MACRO strainer_to_strner() AS TABLE
@@ -1016,6 +1513,18 @@ JOIN ai2_classrep.equimixin_integral_motor t2
 WHERE t1.s4_class = 'PUMSMO';
 
 
+CREATE OR REPLACE MACRO submersible_centrifugal_pump_to_pumssu() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_submersible_centrifugal_pump t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'PUMSSU';
+
+
 CREATE OR REPLACE MACRO telemetry_outstation_to_netwtl() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
@@ -1039,6 +1548,7 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'TSTNTT';
 
+
 CREATE OR REPLACE MACRO thermal_flow_instrument_to_fstnth() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
@@ -1049,6 +1559,19 @@ FROM ai2_classrep.equiclass_thermal_flow_instrument t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'FSTNTH';
+
+
+CREATE OR REPLACE MACRO thermal_mass_flow_instrument_to_fstntm() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_thermal_mass_flow_instrument t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'FSTNTM';
+
 
 CREATE OR REPLACE MACRO trace_heaters_to_heattr() AS TABLE
 SELECT
@@ -1074,6 +1597,18 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
 WHERE t1.s4_class = 'HEATTU';
 
 
+CREATE OR REPLACE MACRO tuning_fork_level_instrument_to_lstntf() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_tuning_fork_level_instrument t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'LSTNTF';
+
+
 CREATE OR REPLACE MACRO turbidity_instrument_to_analtb() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
@@ -1084,6 +1619,30 @@ FROM ai2_classrep.equiclass_turbidity_instrument t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'ANALTB';
+
+
+CREATE OR REPLACE MACRO turbine_flow_instrument_to_fstntu() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_turbine_flow_instrument t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'FSTNTU';
+
+
+CREATE OR REPLACE MACRO ultrasonic_flow_instrument_to_fstnoc() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_ultrasonic_flow_instrument t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'FSTNOC';
 
 
 CREATE OR REPLACE MACRO ultrasonic_level_instrument_to_lstnut() AS TABLE
@@ -1153,6 +1712,21 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
 WHERE t1.s4_class = 'UVUNIT';
 
 
+CREATE OR REPLACE MACRO vacuum_pump_to_pumpva() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_litres_per_second(t."Flow", t."Flow Units") AS pump_flow_litres_per_sec,
+    udfx_db.udfx.convert_to_kilowatts(t."Rating (Power)", t."Rating Units") AS pump_rated_power_kw,
+    t."Speed (RPM)" AS pump_rated_speed_rpm,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_vacuum_pump t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'PUMPVA';
+
+
 CREATE OR REPLACE MACRO variable_frequency_starter_to_starvf() AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
@@ -1164,6 +1738,41 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'STARVF';
 
+
+CREATE OR REPLACE MACRO variable_area_flow_instrument_to_fstnva() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_variable_area_flow_instrument t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'FSTNVA';
+
+
+CREATE OR REPLACE MACRO venturi_to_fstnve() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_venturi t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'FSTNVE';
+
+
+CREATE OR REPLACE MACRO vortex_flow_instrument_to_fstnvo() AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM ai2_classrep.equiclass_vortex_flow_instrument t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'FSTNVO';
 
 
 CREATE OR REPLACE MACRO water_air_receiver_to_vepraw() AS TABLE

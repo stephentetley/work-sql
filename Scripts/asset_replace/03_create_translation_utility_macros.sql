@@ -30,6 +30,15 @@ CREATE OR REPLACE MACRO udf_local.get_s4_asset_status(str) AS
 SELECT answer FROM cte2
 );
 
+CREATE OR REPLACE MACRO udf_local.get_weight_limit_tonnes(value) AS 
+    TRY_CAST(regexp_extract(value :: VARCHAR, '([0-9]+\.[0-9]+|[0-9]+)[tT]', 1) AS DECIMAL)
+;
+
+--SELECT 
+--    udf_local.get_weight_limit_tonnes('1.3t') AS a,
+--    udf_local.get_weight_limit_tonnes('10t') AS b
+--    ;
+    
 
 CREATE OR REPLACE MACRO udf_local.format_signal3(smin, smax, units) AS 
 (WITH 
@@ -54,10 +63,14 @@ CASE
     ELSE null
 END;
 
--- to complete... returns number
-CREATE OR REPLACE MACRO udf_local.bdwl_736_to_bridge_weight_limit(value) AS 
+-- Excel may try to turn these into dates...
+CREATE OR REPLACE MACRO udf_local.bdfv_757_to_bridge_vehicles_per_day(value) AS 
 CASE 
-    WHEN value = '1'  OR value = '1.5(tonnes)' THEN 1.5
+    WHEN value = '0'      OR value = '0'      THEN null
+    WHEN value = '1-10'   OR value = '01-Oct' THEN '1 - 10'
+    WHEN value = '11-50'  OR value = '11-Nov' THEN '11 - 50'
+    WHEN value = '51-100' OR value = '51-100' THEN '51 - 100'
+    WHEN value = '101+'   OR value = '101+'   THEN '101 PLUS'
     ELSE null
 END;
 
@@ -152,7 +165,6 @@ CASE
     WHEN value = 'MAN'   OR value = 'MAN'                    THEN 'MAN'
     ELSE null
 END;
-
 
 
 
