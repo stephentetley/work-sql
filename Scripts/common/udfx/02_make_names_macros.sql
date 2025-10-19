@@ -18,5 +18,18 @@
 -- https://duckdb.org/docs/stable/guides/snippets/sharing_macros.html
 
 CREATE OR REPLACE MACRO udfx.make_snake_case_name(name) AS (
-    lower(name).trim().regexp_replace('[^[:word:]]+', '_', 'g').regexp_replace('_$', '')
+    lower(name :: VARCHAR).trim().regexp_replace('[^[:word:]]+', '_', 'g').regexp_replace('_$', '')
+);
+
+
+CREATE OR REPLACE MACRO udfx.get_equipment_path_from_common_name(common_name) AS (
+    replace(common_name :: VARCHAR, '/EQPT:', '/EQUIPMENT:').regexp_extract( '(.*)/EQUIPMENT:', 1)
+);
+
+CREATE OR REPLACE MACRO udfx.get_equipment_name_from_common_name(common_name) AS (
+    replace(common_name :: VARCHAR, '/EQPT:', '/EQUIPMENT:').regexp_extract( '.*/([^[/]+)/EQUIPMENT:', 1)
+);
+
+CREATE OR REPLACE MACRO udfx.get_equipment_type_from_common_name(common_name) AS (
+    replace(common_name :: VARCHAR, '/EQPT:', '/EQUIPMENT:').regexp_extract('.*/(EQUIPMENT: .*)$', 1)
 );
