@@ -31,5 +31,5 @@ CREATE OR REPLACE MACRO udfx.get_equipment_name_from_common_name(common_name) AS
 );
 
 CREATE OR REPLACE MACRO udfx.get_equipment_type_from_common_name(common_name) AS (
-    replace(common_name :: VARCHAR, '/EQPT:', '/EQUIPMENT:').regexp_extract('.*/(EQUIPMENT: .*)$', 1)
+    replace(common_name :: VARCHAR, '/EQPT:', '/EQUIPMENT:').regexp_extract('.*/EQUIPMENT: (.*)$', 1)
 );
