@@ -1,5 +1,5 @@
 
-
+CREATE SCHEMA IF NOT EXISTS equi_compare_facts;
 CREATE SCHEMA IF NOT EXISTS equi_compare_landing;
 CREATE SCHEMA IF NOT EXISTS equi_compare;
 
@@ -70,4 +70,95 @@ FROM
     read_xlsx(xlsx_file :: VARCHAR, all_varchar=TRUE, Sheet='Sheet1') AS t;
 
 
+
+CREATE OR REPLACE VIEW equi_compare_landing.vw_ih08_equi_masterdata AS 
+WITH cte1 AS (
+SELECT 
+    equi_id, 
+    aib_ref AS pli_num 
+FROM equi_compare_landing.ih08_equi_masterdata
+WHERE aib_ref LIKE 'PLI%'
+), cte2 AS (
+SELECT 
+    equi_id, 
+    aib_ref AS sai_num 
+FROM equi_compare_landing.ih08_equi_masterdata
+WHERE aib_ref NOT LIKE 'PLI%'
+)
+SELECT DISTINCT ON (t.equi_id)
+    t.* EXCLUDE(aib_ref), 
+    t1.pli_num as pli_num,
+    t2.sai_num as sai_num,
+FROM equi_compare_landing.ih08_equi_masterdata t
+LEFT JOIN cte1 t1 ON t1.equi_id = t.equi_id
+LEFT JOIN cte2 t2 ON t2.equi_id = t.equi_id;
+
+
+CREATE OR REPLACE TABLE equi_compare_facts.installation_mapping (
+    ai2_installation VARCHAR NOT NULL,
+    s4_site VARCHAR,
+    s4_site_name VARCHAR,
+);
+
+CREATE OR REPLACE TEMPORARY MACRO read_installation_mapping(xlsx_file) AS TABLE
+SELECT 
+    t."AI2_InstallationCommonName" AS ai2_installation,
+    t."S/4 Hana Floc Lvl1_Code" AS s4_site,
+    t."S/4 Hana Floc Description" AS s4_site_name,
+FROM 
+    read_xlsx(xlsx_file :: VARCHAR, all_varchar=TRUE, Sheet='inst to SAP migration') AS t;
+
+
+CREATE OR REPLACE TABLE equi_compare_facts.process_group_names (
+    process_group_name VARCHAR NOT NULL,
+    path_fragment VARCHAR NOT NULL,
+    PRIMARY KEY (process_group_name)
+);
+
+
+CREATE OR REPLACE MACRO read_process_group_names(xlsx_file) AS TABLE
+SELECT 
+    t."ProcessGroupAssetTypeDescription" AS process_group_name,
+    '/' || process_group_name || '/' AS path_fragment,
+FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=TRUE, sheet='process_group') AS t;
+
+
+CREATE OR REPLACE TABLE equi_compare_facts.process_names (
+    process_name VARCHAR NOT NULL,
+    path_fragment VARCHAR NOT NULL,
+    PRIMARY KEY (process_name)
+);
+
+CREATE OR REPLACE MACRO read_process_names(xlsx_file) AS TABLE
+SELECT 
+    t."ProcessAssetTypeDescription" AS process_name,
+    '/' || process_name || '/' AS path_fragment,
+FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=TRUE, sheet='process') AS t;
+
+
+CREATE OR REPLACE VIEW equi_compare.ai2_common_name_decoded AS
+WITH cte1 AS (
+    SELECT
+        floc_common_name AS common_name,
+    FROM equi_compare_landing.ai2_equi_masterdata t
+), cte2 AS (
+    SELECT 
+        t.common_name AS common_name, 
+        t1.process_group_name AS process_group_name,
+        t1.path_fragment AS pg_needle,
+        instr(t.common_name, pg_needle) AS pg_start,
+        t2.process_name AS process_name,
+        t2.path_fragment AS p_needle,
+        instr(t.common_name, p_needle) AS p_start,
+        left(t.common_name, coalesce(pg_start, p_start) - 1) AS inst_name,
+    FROM cte1 t
+    LEFT JOIN equi_compare_facts.process_group_names t1 ON contains(t.common_name, t1.path_fragment)
+    LEFT JOIN equi_compare_facts.process_names t2 ON contains(t.common_name, t2.path_fragment)
+)
+SELECT 
+    common_name, 
+    inst_name, 
+    process_group_name, 
+    process_name 
+FROM cte2;
 
