@@ -136,29 +136,69 @@ SELECT
 FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=TRUE, sheet='process') AS t;
 
 
-CREATE OR REPLACE VIEW equi_compare.ai2_common_name_decoded AS
-WITH cte1 AS (
-    SELECT
-        floc_common_name AS common_name,
-    FROM equi_compare_landing.ai2_equi_masterdata t
-), cte2 AS (
+CREATE OR REPLACE VIEW equi_compare.vw_ai2_common_name_decoded AS
+WITH cte AS (
     SELECT 
-        t.common_name AS common_name, 
+        t.floc_common_name AS common_name, 
         t1.process_group_name AS process_group_name,
         t1.path_fragment AS pg_needle,
-        instr(t.common_name, pg_needle) AS pg_start,
+        instr(t.floc_common_name, pg_needle) AS pg_start,
         t2.process_name AS process_name,
         t2.path_fragment AS p_needle,
-        instr(t.common_name, p_needle) AS p_start,
-        left(t.common_name, coalesce(pg_start, p_start) - 1) AS inst_name,
-    FROM cte1 t
-    LEFT JOIN equi_compare_facts.process_group_names t1 ON contains(t.common_name, t1.path_fragment)
-    LEFT JOIN equi_compare_facts.process_names t2 ON contains(t.common_name, t2.path_fragment)
+        instr(t.floc_common_name, p_needle) AS p_start,
+        left(t.floc_common_name, coalesce(pg_start, p_start) - 1) AS inst_name,
+    FROM equi_compare_landing.ai2_equi_masterdata t
+    LEFT JOIN equi_compare_facts.process_group_names t1 ON contains(t.floc_common_name, t1.path_fragment)
+    LEFT JOIN equi_compare_facts.process_names t2 ON contains(t.floc_common_name, t2.path_fragment)
 )
 SELECT 
-    common_name, 
-    inst_name, 
-    process_group_name, 
-    process_name 
-FROM cte2;
+    t1.s4_site,
+    t.common_name, 
+    t.inst_name, 
+    t.process_group_name, 
+    t.process_name,
+FROM cte t
+LEFT JOIN equi_compare_facts.installation_mapping t1 ON t1.ai2_installation = t.inst_name;
+
+
+CREATE OR REPLACE VIEW equi_compare.vw_equi_compare_status AS
+(
+    SELECT 
+        t.equi_id AS s4_equi_id,
+        NULL AS ai2_pli_num,
+        'no_pli_aib_ref'::compare_status AS equi_compare_status,
+    FROM equi_compare_landing.vw_ih08_equi_masterdata t
+    WHERE t.pli_num NOT LIKE 'PLI%'
+)
+UNION
+(
+    SELECT 
+        NULL AS s4_equi_id,
+        t.pli_num AS ai2_pli_num,
+        'not_in_s4_extract'::compare_status AS equi_compare_status,
+    FROM equi_compare_landing.ai2_equi_masterdata t
+    ANTI JOIN equi_compare_landing.vw_ih08_equi_masterdata USING (pli_num)
+)
+UNION
+(
+    SELECT 
+        t.equi_id AS s4_equi_id,
+        t.pli_num AS ai2_pli_num,
+        'not_in_ai2_extract'::compare_status AS equi_compare_status,
+    FROM equi_compare_landing.vw_ih08_equi_masterdata t
+    ANTI JOIN equi_compare_landing.ai2_equi_masterdata USING (pli_num)
+    WHERE t.pli_num IS NOT NULL
+)
+UNION
+(
+    SELECT 
+        t.equi_id AS s4_equi_id,
+        t.pli_num AS ai2_pli_num,
+        'in_both'::compare_status AS equi_compare_status,
+    FROM equi_compare_landing.vw_ih08_equi_masterdata t
+    SEMI JOIN equi_compare_landing.ai2_equi_masterdata USING (pli_num)
+    WHERE t.pli_num IS NOT NULL
+);
+
+
 
