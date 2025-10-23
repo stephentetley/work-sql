@@ -21,7 +21,7 @@ SELECT
     t2.standard_class AS s4_standard_class,
     replace(t3.equipment_type, 'EQUIPMENT: ', '') AS ai2_equipment_type,
     t2.startup_date AS install_date_s4,
-    t3.install_date AS install_date_qi2,
+    t3.install_date AS install_date_ai2,
     t2.asset_status AS status_s4,
     t3.status AS status_ai2,
     t2.manufacturer AS manufacturer_s4,
