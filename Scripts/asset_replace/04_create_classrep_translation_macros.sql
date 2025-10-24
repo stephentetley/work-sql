@@ -69,8 +69,8 @@ SELECT
     t."Test Cert No" AS test_cert_no,
     t."Test Pressure bars" AS vepr_test_pressure_bar,
     t."Written Scheme No" AS vepr_written_scheme_number,
-    udf_local.swpt_815_to_swp_type(t."Safe Working Procedure Type - Location") AS vepr_swp_type,
-    udf_local.swpt_815_to_swp_location(t."Safe Working Procedure Type - Location") AS vepr_swp_location,
+    udf_local.swpt_815_to_vepr_swp_type(t."Safe Working Procedure Type - Location") AS vepr_swp_type,
+    udf_local.swpt_815_to_vepr_swp_location(t."Safe Working Procedure Type - Location") AS vepr_swp_location,
     t."Safe Working Procedure Name" AS vepr_swp_name,
     t."Safe Working Procedure Date" AS vepr_swp_date,
     'TEMP_VALUE' AS uniclass_code,
@@ -223,8 +223,8 @@ SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     t."IP Rating" AS ip_rating,
-    t."Voltage In" AS alam_rated_voltage,
-    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS alam_rated_voltage_units,
+    t."Voltage In" AS alam_input_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS alam_input_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
 FROM ai2_classrep.equiclass_burglar_alarm t
@@ -470,7 +470,7 @@ SELECT
 FROM ai2_classrep.equiclass_distribution_board t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
-WHERE t1.s4_class = 'DISBD';
+WHERE t1.s4_class = 'DISTBD';
 
 
 CREATE OR REPLACE MACRO distributors_to_biofrd() AS TABLE
