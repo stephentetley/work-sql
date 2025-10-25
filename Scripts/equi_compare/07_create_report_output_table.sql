@@ -37,6 +37,7 @@ CASE
     WHEN s4_manuf IS NULL THEN {'short': 'M', 's4': null, 'ai2': ai2_manuf}
     WHEN ai2_manuf IS NULL THEN {'short': 'M', 's4': s4_manuf, 'ai2': null}
     WHEN s4_manuf = ai2_manuf THEN {'short': '*', 's4': s4_manuf, 'ai2': '**'}
+    WHEN s4_manuf = 'TO BE DETERMINED' AND ai2_manuf = 'UNKNOWN MANUFACTURER' THEN {'short': '*', 's4': s4_manuf, 'ai2': '**'}
     ELSE {'short': 'M', 's4': s4_manuf, 'ai2': ai2_manuf}
 END;
 
@@ -46,6 +47,8 @@ CASE
     WHEN s4_model IS NULL THEN {'short': 'M', 's4': null, 'ai2': ai2_model}
     WHEN ai2_model IS NULL THEN {'short': 'M', 's4': s4_model, 'ai2': null}
     WHEN s4_model = ai2_model THEN {'short': '*', 's4': s4_model, 'ai2': '**'}
+    WHEN s4_model = 'TO BE DETERMINED' AND ai2_model = 'UNSPECIFIED' THEN {'short': '*', 's4': s4_model, 'ai2': '**'}
+    WHEN s4_model = 'NOT APPLICABLE' AND ai2_model = 'UNSPECIFIED' THEN {'short': '*', 's4': s4_model, 'ai2': '**'}
     ELSE {'short': 'M', 's4': s4_model, 'ai2': ai2_model}
 END;
 
@@ -69,6 +72,8 @@ CASE
     WHEN s4_serial_number IS NULL THEN {'short': 'S', 's4': null, 'ai2': ai2_serial_number}
     WHEN ai2_serial_number IS NULL THEN {'short': 'S', 's4': s4_serial_number, 'ai2': null}
     WHEN norm_serial_number(s4_serial_number) = norm_serial_number(ai2_serial_number) THEN {'short': '*', 's4': s4_serial_number, 'ai2': '**'}
+    WHEN s4_serial_number = 'TO BE DETERMINED' AND ai2_serial_number = '' THEN {'short': '*', 's4': s4_serial_number, 'ai2': '**'}
+    WHEN s4_serial_number = 'NOT APPLICABLE' AND ai2_serial_number = '' THEN {'short': '*', 's4': s4_serial_number, 'ai2': '**'}
     ELSE {'short': 'S', 's4': s4_serial_number, 'ai2': ai2_serial_number}
 END;
 
