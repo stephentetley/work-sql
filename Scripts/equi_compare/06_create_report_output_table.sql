@@ -107,7 +107,7 @@ CREATE OR REPLACE TABLE equi_compare.output_report AS
 WITH cte AS (
     SELECT 
         t.site AS site_code,
-        coalesce(t.ai2_inst_name, t.s4_site_name) AS site_name,
+        IF(t.ai2_inst_name IS NULL OR t.ai2_inst_name = '', t.s4_site_name, t.ai2_inst_name) AS site_name,
         coalesce(t.s4_floc, t.ai2_floc) AS floc,
         t.s4_equi_id AS s4_equi_id,
         t.pli_num AS pli_num, 

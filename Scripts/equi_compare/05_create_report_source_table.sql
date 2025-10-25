@@ -8,9 +8,9 @@ END;
 
 CREATE OR REPLACE TABLE equi_compare.output_report_source_all AS
 SELECT 
-    t1.s4_site AS site,
+    coalesce(t1.s4_site, left(t2.funcloc, 5)) AS site,
     t1.inst_name AS ai2_inst_name,
-    t1.s4_site_name AS s4_site_name,
+    t2.s4_site_name AS s4_site_name,
     t2.funcloc AS s4_floc,
     ai2_floc_part(t1.process_group_name, t1.process_name) AS ai2_floc,
     t.s4_equi_id AS s4_equi_id,
