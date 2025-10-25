@@ -51,9 +51,16 @@ SELECT
 FROM 
     read_xlsx(xlsx_file :: VARCHAR, all_varchar=TRUE, Sheet='Sheet1') AS t;
 
-
+CREATE OR REPLACE TEMPORARY MACRO null_string_to_empty(str) AS
+    IF(str='NULL', '', str);
 
 CREATE OR REPLACE TEMPORARY MACRO read_ai2_equi_report(xlsx_file) AS TABLE
+WITH cte AS (
+    SELECT
+        null_string_to_empty(COLUMNS(*)),
+    FROM 
+        read_xlsx(xlsx_file :: VARCHAR, all_varchar=TRUE, Sheet='Sheet1') AS t
+)
 SELECT 
     t."Reference" AS sai_num,
     t."CommonName" AS floc_common_name,
@@ -67,7 +74,7 @@ SELECT
     t."Serial No" AS serial_number,
     t."Specific Model/Frame" AS specific_model,
 FROM 
-    read_xlsx(xlsx_file :: VARCHAR, all_varchar=TRUE, Sheet='Sheet1') AS t;
+   cte t;
 
 
 
