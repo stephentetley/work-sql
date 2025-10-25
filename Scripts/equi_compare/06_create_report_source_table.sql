@@ -17,7 +17,7 @@ SELECT
     t.ai2_pli_num AS pli_num,
     t.equi_compare_status AS compare_status,
     t2.equi_name AS name_s4,
-    'TODO' AS name_ai2,
+    t1.equi_name AS name_ai2,
     t2.standard_class AS s4_standard_class,
     replace(t3.equipment_type, 'EQUIPMENT: ', '') AS ai2_equipment_type,
     t2.startup_date AS install_date_s4,

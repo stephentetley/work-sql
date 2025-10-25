@@ -144,10 +144,13 @@ WITH cte AS (
         t1.process_group_name AS process_group_name,
         t1.path_fragment AS pg_needle,
         instr(t.floc_common_name, pg_needle) AS pg_start,
+        pg_start + len(pg_needle) AS pg_end,
         t2.process_name AS process_name,
         t2.path_fragment AS p_needle,
         instr(t.floc_common_name, p_needle) AS p_start,
+        p_start + len(p_needle) AS p_end,
         left(t.floc_common_name, coalesce(pg_start, p_start) - 1) AS inst_name,
+        t.floc_common_name[coalesce(p_end, pg_end):] AS equi_name,
     FROM equi_compare_landing.ai2_equi_masterdata t
     LEFT JOIN equi_compare_facts.process_group_names t1 ON contains(t.floc_common_name, t1.path_fragment)
     LEFT JOIN equi_compare_facts.process_names t2 ON contains(t.floc_common_name, t2.path_fragment)
@@ -158,6 +161,7 @@ SELECT
     t.pli_num AS pli_num,
     t.common_name, 
     t.inst_name, 
+    t.equi_name, 
     t.process_group_name, 
     t.process_name,
 FROM cte t
