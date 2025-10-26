@@ -2,6 +2,8 @@ CREATE SCHEMA IF NOT EXISTS file_download;
 CREATE SCHEMA IF NOT EXISTS file_download_landing;
 
 
+-- Create landing tables from the respective CSV files
+
 CREATE OR REPLACE MACRO read_funcloc(file_name) AS TABLE
 SELECT 
     * RENAME("*FUNCLOC" AS "FUNCLOC")
@@ -21,10 +23,14 @@ FROM read_csv(
         'SWERK_FL': 'INTEGER',
         'PLNT_FLOC': 'INTEGER',
         'WERGWFLOC': 'INTEGER',
+        'POSNR': 'INTEGER',
         'INBDT': 'DATE',
         'DATBI_FLO': 'DATE',
         'CGWLEN_FL': 'DATE',
         'VGWLEN_FL': 'DATE',
+        'BAUMM': 'INTEGER',
+        'BAUJJ': 'INTEGER',
+        'KOKR_FLOC': 'INTEGER',
         'ADRNR': 'VARCHAR',
         'ALKEY': 'INTEGER',
     },
@@ -81,15 +87,22 @@ FROM read_csv(
         'ANSDT': 'DATE',
         'CGWLDT_EQ': 'DATE',
         'VGWLDT_EQ': 'DATE',
+        'BUKR_EILO': 'INTEGER',
+        'BAUMM_EQI': 'INTEGER',
+        'BAUJJ': 'INTEGER',
+        'KOKR_EILO': 'INTEGER',
         'AULDT_EQI': 'DATE',
         'BRGEW': 'DECIMAL',
+        'SWER_EILO': 'INTEGER',
+        'PPLA_EEQZ': 'INTEGER',
+        'HEQN_EEQZ': 'INTEGER',
         'INBDT': 'DATE',
         'DATA_EEQZ': 'DATE',
         'DATB_EEQZ': 'DATE',
         'DATBI_EIL': 'DATE',
         'CGWLEN_EQ': 'DATE',
         'VGWLEN_EQ': 'DATE',
-        'ADRNR': VARCHAR,
+        'ADRNR': 'VARCHAR',
         'INSTIME': 'TIME',
         'INSDATE': 'DATE',
     },
