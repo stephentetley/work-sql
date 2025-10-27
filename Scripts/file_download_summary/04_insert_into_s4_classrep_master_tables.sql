@@ -8,6 +8,9 @@ DELETE FROM s4_classrep.equi_solution_id;
 DELETE FROM s4_classrep.floc_east_north;
 DELETE FROM s4_classrep.equi_east_north;
 
+DELETE FROM s4_classrep.equishape_cfbm;
+DELETE FROM s4_classrep.equishape_cobm;
+
 
 INSERT OR REPLACE INTO s4_classrep.floc_masterdata BY NAME
 SELECT 
@@ -194,33 +197,78 @@ AND solution_id IS NOT NULL;
 
 
 ---- ## Equi shape classes
---
---INSERT INTO s4_classrep.equishape_cfbm BY NAME
---SELECT DISTINCT ON(t.equipment_id)
---    t.equipment_id AS equipment_id,
---    any_value(CASE WHEN t2.charid = 'CAPACITY_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS capacity_m3,
---    any_value(CASE WHEN t2.charid = 'DAIMETER_MM' THEN t2.atflv ELSE NULL END) AS diameter_mm,
---    any_value(CASE WHEN t2.charid = 'SIDE_DEPTH_MM' THEN t2.atflv ELSE NULL END) AS side_depth_mm,
---    any_value(CASE WHEN t2.charid = 'TOP_SURFACE_AREA_M2' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS top_surface_area_m2,
---    any_value(CASE WHEN t2.charid = 'WORKING_VOLUME_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS working_volume_m3,
---FROM s4_classrep.equi_masterdata t
---SEMI JOIN file_download_landing.classequi t1 ON (t1.equi = t.equipment_id) AND t1.classname = 'SHCFBM'
---JOIN file_download_landing.valuaequi t2 ON t2.equi = t.equipment_id
---GROUP BY equipment_id;
---
---INSERT INTO s4_classrep.equishape_cobm BY NAME
---SELECT DISTINCT ON(t.equipment_id)
---    t.equipment_id AS equipment_id,
---    any_value(CASE WHEN t2.charid = 'CAPACITY_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS capacity_m3,
---    any_value(CASE WHEN t2.charid = 'CENTRE_DEPTH_MM' THEN t2.atflv ELSE NULL END) AS centre_depth_mm,
---    any_value(CASE WHEN t2.charid = 'DAIMETER_MM' THEN t2.atflv ELSE NULL END) AS diameter_mm,
---    any_value(CASE WHEN t2.charid = 'SIDE_DEPTH_MM' THEN t2.atflv ELSE NULL END) AS side_depth_mm,
---    any_value(CASE WHEN t2.charid = 'WORKING_VOLUME_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS working_volume_m3,
---FROM s4_classrep.equi_masterdata t
---SEMI JOIN file_download_landing.classequi t1 ON (t1.equi = t.equipment_id) AND t1.classname = 'SHCOBM'
---JOIN file_download_landing.valuaequi t2 ON t2.equi = t.equipment_id
---GROUP BY equipment_id;
---
+
+INSERT INTO s4_classrep.equishape_cfbm BY NAME
+WITH cte1 AS (
+    PIVOT file_download_landing.valuaequi
+    ON "CHARID" IN (
+        'CAPACITY_M3',
+        'TOP_SURFACE_AREA_M2',
+        'WORKING_VOLUME_M3',
+    )
+    USING any_value("ATWRT")
+    GROUP BY "EQUI"
+), cte2 AS (
+    PIVOT file_download_landing.valuaequi
+    ON "CHARID" IN (
+        'SIDE_DEPTH_MM',
+        'DAIMETER_MM',    
+    )
+    USING any_value("ATFLV")
+    GROUP BY "EQUI"
+), cte3 AS (
+SELECT 
+    t."EQUI" AS equipment_id,
+    t."CAPACITY_M3"::DECIMAL AS capacity_m3,
+    t."TOP_SURFACE_AREA_M2"::DECIMAL AS top_surface_area_m2,
+    t."WORKING_VOLUME_M3"::DECIMAL AS working_volume_m3,
+    t1."SIDE_DEPTH_MM" AS side_depth_mm,
+    t1."DAIMETER_MM" AS diameter_mm,
+FROM cte1 t
+JOIN cte2 t1 ON t1."EQUI" = t."EQUI"
+)
+SELECT 
+    t.* 
+FROM cte3 t
+SEMI JOIN file_download_landing.classequi t1 ON (t1.equi = t.equipment_id) AND t1."CLASS" = 'SHCFBM';
+
+
+INSERT INTO s4_classrep.equishape_cobm BY NAME
+WITH cte1 AS (
+    PIVOT file_download_landing.valuaequi
+    ON "CHARID" IN (
+        'CAPACITY_M3',
+        'WORKING_VOLUME_M3',
+    )
+    USING any_value("ATWRT")
+    GROUP BY "EQUI"
+), cte2 AS (
+    PIVOT file_download_landing.valuaequi
+    ON "CHARID" IN (
+        'CENTRE_DEPTH_MM',
+        'DIAMETER_MM', 
+        'SIDE_DEPTH_MM',
+    )
+    USING any_value("ATFLV")
+    GROUP BY "EQUI"
+), cte3 AS (
+SELECT 
+    t."EQUI" AS equipment_id,
+    t."CAPACITY_M3"::DECIMAL AS capacity_m3,
+    t."WORKING_VOLUME_M3"::DECIMAL AS working_volume_m3,
+    t1."SIDE_DEPTH_MM" AS side_depth_mm,
+    t1."CENTRE_DEPTH_MM" AS centre_depth_mm,
+    t1."DIAMETER_MM" AS diameter_mm,
+FROM cte1 t
+JOIN cte2 t1 ON t1."EQUI" = t."EQUI"
+)
+SELECT 
+    t.* 
+FROM cte3 t
+SEMI JOIN file_download_landing.classequi t1 ON (t1.equi = t.equipment_id) AND t1."CLASS" = 'SHCOBM';
+
+
+
 --INSERT INTO s4_classrep.equishape_ecyl BY NAME
 --SELECT DISTINCT ON(t.equipment_id)
 --    t.equipment_id AS equipment_id,
