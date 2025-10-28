@@ -36,7 +36,7 @@ WITH cte1 AS (
         array_agg(
             concat_ws(E'\n',
                 format(E'INSERT OR REPLACE INTO s4_classrep.equiclass_{} BY NAME', t.s4_class),
-                format(E'SELECT * FROM {}_to_{}();', t.ai2_equi_type, t.s4_class)
+                format(E'SELECT * FROM {}_to_{}(''ai2_classrep'');', t.ai2_equi_type, t.s4_class)
                 )
             ) AS insert_lines,
     FROM cte2 t

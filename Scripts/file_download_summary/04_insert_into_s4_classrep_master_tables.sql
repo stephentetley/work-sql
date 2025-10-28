@@ -106,7 +106,8 @@ AND ai2_aib_reference IS NOT NULL;
 ---- ## ASSET_CONDITION
 
 
----- Don't add empty records so use a cte for filtering
+-- SEMI JOIN to classequi table to assert equi elements are 
+-- tagged with this class
 INSERT OR REPLACE INTO s4_classrep.equi_asset_condition BY NAME
 WITH cte1 AS (
     PIVOT file_download_landing.valuaequi
@@ -133,9 +134,10 @@ FROM cte1 t
 JOIN cte2 t1 ON t1."EQUI" = t."EQUI"
 )
 SELECT 
-    * 
-FROM cte3
-WHERE coalesce(condition_grade, condition_grade_reason, survey_date::VARCHAR) IS NOT NULL;
+    t.* 
+FROM cte3 t
+SEMI JOIN file_download_landing.classequi t1 ON (t1.equi = t.equipment_id) AND t1."CLASS" = 'ASSET_CONDITION';
+
 
 
 ---- ## EAST_NORTH 

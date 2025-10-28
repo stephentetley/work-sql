@@ -27,6 +27,18 @@ SELECT
     t.pandi_tag AS technical_ident_number,
     t1.s4_position AS display_position,
     t1.s4_class catalog_profile,
+    -- Work around for DuckDB 1.4.0 / 1.4.1
+    NULL as valid_from,
+    NULL as company_code,
+    NULL as cost_center,
+    NULL as controlling_area,
+    NULL as maintenance_plant,
+    NULL as maint_work_center,
+    NULL as work_center,
+    NULL as planning_plant,
+    NULL as plant_section,
+    NULL as equi_location,
+    NULL as address_ref,
 FROM ai2_classrep.equi_masterdata t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 ON t1.ai2_reference = t.ai2_reference;
 ;
@@ -50,6 +62,8 @@ SELECT
     upper(t2.condition_grade) AS condition_grade,
     upper(t2.condition_grade_reason) AS condition_grade_reason,
     t2.survey_year AS survey_date,
+    NULL AS survey_comments,
+    NULL AS last_refurbished_date,
 FROM ai2_classrep.equi_masterdata t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 ON t1.ai2_reference = t.ai2_reference
 LEFT JOIN ai2_classrep.equi_agasp t2 ON t2.ai2_reference = t.ai2_reference;
@@ -91,4 +105,4 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1 ON t1.ai2_reference = t.ai2_reference);
 
 
 
-
+--

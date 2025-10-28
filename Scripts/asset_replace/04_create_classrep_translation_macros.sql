@@ -1,6 +1,11 @@
 -- # ai2 to s4 translation macros
 
-CREATE OR REPLACE MACRO ac_induction_motor_to_emtrin() AS TABLE
+-- Schema name should always be 'ai2_classrep'
+-- We have made this a parameter to stop DuckDB "type checking" these macros
+-- ahead of use. We won't necessarily be creating all the `ai2_classrep.equiclass_*`
+-- tables because it creates huge files.
+
+CREATE OR REPLACE MACRO ac_induction_motor_to_emtrin(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -13,14 +18,14 @@ SELECT
     udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS emtr_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ac_induction_motor t
+FROM query_table(schema_name:: VARCHAR || '.equiclass_ac_induction_motor') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'EMTRIN';
 
 
 
-CREATE OR REPLACE MACRO actuator_to_actuem() AS TABLE
+CREATE OR REPLACE MACRO actuator_to_actuem(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -34,13 +39,13 @@ SELECT
     t."Valve Torque (Nm)" AS actu_valve_torque_nm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_actuator t
+FROM query_table(schema_name::VARCHAR || '.equiclass_actuator') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'ACTUEM';
 
 
-CREATE OR REPLACE MACRO air_auto_cleaner_to_blowab() AS TABLE
+CREATE OR REPLACE MACRO air_auto_cleaner_to_blowab(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -49,13 +54,13 @@ SELECT
     udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS blow_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_air_auto_cleaner t
+FROM query_table(schema_name::VARCHAR || '.equiclass_air_auto_cleaner') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'BLOWAB';
 
 
-CREATE OR REPLACE MACRO air_receiver_to_veprar() AS TABLE
+CREATE OR REPLACE MACRO air_receiver_to_veprar(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -75,13 +80,13 @@ SELECT
     t."Safe Working Procedure Date" AS vepr_swp_date,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_air_receiver t
+FROM query_table(schema_name::VARCHAR || '.equiclass_air_receiver') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VEPRAR';
 
 
-CREATE OR REPLACE MACRO ammonia_instrument_to_analam() AS TABLE
+CREATE OR REPLACE MACRO ammonia_instrument_to_analam(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -91,13 +96,13 @@ SELECT
     udf_local.format_signal3(t."Signal min", t."Signal max", t."Signal unit") AS anal_signal_type,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ammonia_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ammonia_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'ANALAM';
 
 
-CREATE OR REPLACE MACRO auto_transformer_starter_to_starat() AS TABLE
+CREATE OR REPLACE MACRO auto_transformer_starter_to_starat(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -107,13 +112,13 @@ SELECT
     udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS star_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_auto_transformer_starter t
+FROM query_table(schema_name::VARCHAR || '.equiclass_auto_transformer_starter') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'STARAT';
 
 
-CREATE OR REPLACE MACRO axial_pump_to_pumpax() AS TABLE
+CREATE OR REPLACE MACRO axial_pump_to_pumpax(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -123,13 +128,13 @@ SELECT
     t."Speed (RPM)" AS pump_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_axial_pump t
+FROM query_table(schema_name::VARCHAR || '.equiclass_axial_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMPAX';
 
 
-CREATE OR REPLACE MACRO beam_trolley_to_lltttr() AS TABLE
+CREATE OR REPLACE MACRO beam_trolley_to_lltttr(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -139,13 +144,13 @@ SELECT
     t."Test Cert No" AS test_cert_no,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_beam_trolley t
+FROM query_table(schema_name::VARCHAR || '.equiclass_beam_trolley') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLTTTR';
 
 
-CREATE OR REPLACE MACRO blowers_to_blowcb() AS TABLE
+CREATE OR REPLACE MACRO blowers_to_blowcb(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -154,13 +159,13 @@ SELECT
     t."Speed (RPM)" AS blow_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_blowers t
+FROM query_table(schema_name::VARCHAR || '.equiclass_blowers') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'BLOWCB';
 
 
-CREATE OR REPLACE MACRO blowers_to_blowsc() AS TABLE
+CREATE OR REPLACE MACRO blowers_to_blowsc(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -169,13 +174,13 @@ SELECT
     t."Speed (RPM)" AS blow_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_blowers t
+FROM query_table(schema_name::VARCHAR || '.equiclass_blowers') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'BLOWSC';
 
 
-CREATE OR REPLACE MACRO borehole_pump_to_pumsbh() AS TABLE
+CREATE OR REPLACE MACRO borehole_pump_to_pumsbh(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -186,13 +191,13 @@ SELECT
     t."Speed (RPM)" AS pums_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_borehole_pump t
+FROM query_table(schema_name::VARCHAR || '.equiclass_borehole_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMSBH';
 
 
-CREATE OR REPLACE MACRO bridge_to_accstbr() AS TABLE
+CREATE OR REPLACE MACRO bridge_to_accstbr(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -212,13 +217,13 @@ SELECT
     udf_local.bdfv_757_to_bridge_vehicles_per_day(t."Average Vehicles Per Day") AS average_vehicles_per_day,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_bridge t
+FROM query_table(schema_name::VARCHAR || '.equiclass_bridge') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'ACSTBR';
 
 
-CREATE OR REPLACE MACRO burglar_alarm_to_alamia() AS TABLE
+CREATE OR REPLACE MACRO burglar_alarm_to_alamia(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -227,25 +232,25 @@ SELECT
     udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS alam_input_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_burglar_alarm t
+FROM query_table(schema_name::VARCHAR || '.equiclass_burglar_alarm') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'ALAMIA';
 
 
-CREATE OR REPLACE MACRO capacitance_level_instrument_to_lstncp() AS TABLE
+CREATE OR REPLACE MACRO capacitance_level_instrument_to_lstncp(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_capacitance_level_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_capacitance_level_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LSTNCP';
 
 
-CREATE OR REPLACE MACRO centrifugal_pump_to_pumpce() AS TABLE
+CREATE OR REPLACE MACRO centrifugal_pump_to_pumpce(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -257,13 +262,13 @@ SELECT
     t."Speed (RPM)" AS pump_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_centrifugal_pump t
+FROM query_table(schema_name::VARCHAR || '.equiclass_centrifugal_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMPCE';
 
 
-CREATE OR REPLACE MACRO chain_beam_hoist_hand_to_llmhch() AS TABLE
+CREATE OR REPLACE MACRO chain_beam_hoist_hand_to_llmhch(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -273,13 +278,13 @@ SELECT
     t."Test Cert No" AS test_cert_no,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_chain_beam_hoist_hand t
+FROM query_table(schema_name::VARCHAR || '.equiclass_chain_beam_hoist_hand') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLMHCH';
 
 
-CREATE OR REPLACE MACRO chain_slings_to_llcscs() AS TABLE
+CREATE OR REPLACE MACRO chain_slings_to_llcscs(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -290,109 +295,109 @@ SELECT
     t."Test Cert No" AS test_cert_no,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_chain_slings t
+FROM query_table(schema_name::VARCHAR || '.equiclass_chain_slings') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLCSCS';
 
 
-CREATE OR REPLACE MACRO classifier_gricse() AS TABLE
+CREATE OR REPLACE MACRO classifier_gricse(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_classifier t
+FROM query_table(schema_name::VARCHAR || '.equiclass_classifier') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'GRICSC';
 
 
-CREATE OR REPLACE MACRO compressed_air_equipment_to_compsc() AS TABLE
+CREATE OR REPLACE MACRO compressed_air_equipment_to_compsc(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_compressed_air_equipment t
+FROM query_table(schema_name::VARCHAR || '.equiclass_compressed_air_equipment') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'COMPSC';
 
 
-CREATE OR REPLACE MACRO compressed_air_equipment_to_compre() AS TABLE
+CREATE OR REPLACE MACRO compressed_air_equipment_to_compre(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_compressed_air_equipment t
+FROM query_table(schema_name::VARCHAR || '.equiclass_compressed_air_equipment') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'COMPRE';
 
 
-CREATE OR REPLACE MACRO conductivity_level_instrument_to_lstnco() AS TABLE
+CREATE OR REPLACE MACRO conductivity_level_instrument_to_lstnco(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_conductivity_level_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_conductivity_level_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LSTNCO';
 
 
-CREATE OR REPLACE MACRO control_panel_to_conpnl() AS TABLE
+CREATE OR REPLACE MACRO control_panel_to_conpnl(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_control_panel t
+FROM query_table(schema_name::VARCHAR || '.equiclass_control_panel') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'CONPNL';
 
 
-CREATE OR REPLACE MACRO controller_to_conttr() AS TABLE
+CREATE OR REPLACE MACRO controller_to_conttr(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_controller t
+FROM query_table(schema_name::VARCHAR || '.equiclass_controller') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'CONTTR';
 
 
-CREATE OR REPLACE MACRO conveyors_to_cvyrbc() AS TABLE
+CREATE OR REPLACE MACRO conveyors_to_cvyrbc(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_conveyor t
+FROM query_table(schema_name::VARCHAR || '.equiclass_conveyor') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'CVYRBC';
 
 
-CREATE OR REPLACE MACRO cw_chemical_storage_tank_to_tankst() AS TABLE
+CREATE OR REPLACE MACRO cw_chemical_storage_tank_to_tankst(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_cw_chemical_storage_tank t
+FROM query_table(schema_name::VARCHAR || '.equiclass_cw_chemical_storage_tank') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'TANKST';
 
 
-CREATE OR REPLACE MACRO davit_to_llddda() AS TABLE
+CREATE OR REPLACE MACRO davit_to_llddda(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -402,13 +407,13 @@ SELECT
     t."Test Cert No" AS test_cert_no,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_davit t
+FROM query_table(schema_name::VARCHAR || '.equiclass_davit') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLDDDA';
 
 
-CREATE OR REPLACE MACRO davit_sockets_to_lldsds() AS TABLE
+CREATE OR REPLACE MACRO davit_sockets_to_lldsds(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -419,13 +424,13 @@ SELECT
     t."Test Cert No" AS test_cert_no,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_davit_sockets t
+FROM query_table(schema_name::VARCHAR || '.equiclass_davit_sockets') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLDSDS';
 
 
-CREATE OR REPLACE MACRO diaphragm_pump_to_pumpdi() AS TABLE
+CREATE OR REPLACE MACRO diaphragm_pump_to_pumpdi(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -437,14 +442,14 @@ SELECT
     t."Speed (RPM)" AS pump_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_diaphragm_pump t
+FROM query_table(schema_name::VARCHAR || '.equiclass_diaphragm_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 JOIN ai2_classrep.equimixin_integral_motor t2 
     ON t2.ai2_reference = t.ai2_reference    
 WHERE t1.s4_class = 'PUMPDI';
 
-CREATE OR REPLACE MACRO direct_on_line_starter_to_stardo() AS TABLE
+CREATE OR REPLACE MACRO direct_on_line_starter_to_stardo(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -455,221 +460,221 @@ SELECT
     udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS star_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_direct_on_line_starter t
+FROM query_table(schema_name::VARCHAR || '.equiclass_direct_on_line_starter') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'STARDO';
 
 
-CREATE OR REPLACE MACRO distribution_board_to_distbd() AS TABLE
+CREATE OR REPLACE MACRO distribution_board_to_distbd(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_distribution_board t
+FROM query_table(schema_name::VARCHAR || '.equiclass_distribution_board') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'DISTBD';
 
 
-CREATE OR REPLACE MACRO distributors_to_biofrd() AS TABLE
+CREATE OR REPLACE MACRO distributors_to_biofrd(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_distributors t
+FROM query_table(schema_name::VARCHAR || '.equiclass_distributors') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'BIOFRD';
 
 
-CREATE OR REPLACE MACRO doppler_flow_instrument_to_fstnus() AS TABLE
+CREATE OR REPLACE MACRO doppler_flow_instrument_to_fstnus(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_doppler_flow_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_doppler_flow_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'FSTNUS';
 
 
-CREATE OR REPLACE MACRO ejector_pump_to_pumpej() AS TABLE
+CREATE OR REPLACE MACRO ejector_pump_to_pumpej(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     udfx_db.udfx.convert_to_litres_per_second(t."Flow", t."Flow Units") AS pump_flow_litres_per_sec,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ejector_pump t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ejector_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMPEJ';
 
 
-CREATE OR REPLACE MACRO electric_meter_to_metrel() AS TABLE
+CREATE OR REPLACE MACRO electric_meter_to_metrel(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_electric_meter t
+FROM query_table(schema_name::VARCHAR || '.equiclass_electric_meter') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'METREL';
 
 
 
-CREATE OR REPLACE MACRO emergency_eye_bath_to_decoeb() AS TABLE
+CREATE OR REPLACE MACRO emergency_eye_bath_to_decoeb(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_emergency_eye_bath t
+FROM query_table(schema_name::VARCHAR || '.equiclass_emergency_eye_bath') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'DECOEB';
 
 
-CREATE OR REPLACE MACRO emergency_lighting_to_lideem() AS TABLE
+CREATE OR REPLACE MACRO emergency_lighting_to_lideem(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_emergency_lighting t
+FROM query_table(schema_name::VARCHAR || '.equiclass_emergency_lighting') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LIDEEM';
 
 
-CREATE OR REPLACE MACRO emergency_shower_eye_bath_to_decoes() AS TABLE
+CREATE OR REPLACE MACRO emergency_shower_eye_bath_to_decoes(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_emergency_shower_eye_bath t
+FROM query_table(schema_name::VARCHAR || '.equiclass_emergency_shower_eye_bath') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'DECOES';
 
 
-CREATE OR REPLACE MACRO eye_bolts_to_llebbo() AS TABLE
+CREATE OR REPLACE MACRO eye_bolts_to_llebbo(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_eye_bolts t
+FROM query_table(schema_name::VARCHAR || '.equiclass_eye_bolts') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLEBBO';
 
 
-CREATE OR REPLACE MACRO fall_arrester_to_llwaab() AS TABLE
+CREATE OR REPLACE MACRO fall_arrester_to_llwaab(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_fall_arrester t
+FROM query_table(schema_name::VARCHAR || '.equiclass_fall_arrester') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLWAAB';
 
 
-CREATE OR REPLACE MACRO fan_to_fansce() AS TABLE
+CREATE OR REPLACE MACRO fan_to_fansce(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_fan t
+FROM query_table(schema_name::VARCHAR || '.equiclass_fan') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'FANSCE';
 
 
-CREATE OR REPLACE MACRO fire_alarm_to_alamfs() AS TABLE
+CREATE OR REPLACE MACRO fire_alarm_to_alamfs(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_fire_alarm t
+FROM query_table(schema_name::VARCHAR || '.equiclass_fire_alarm') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'ALAMFS';
 
 
-CREATE OR REPLACE MACRO flap_valve_to_valvfl() AS TABLE
+CREATE OR REPLACE MACRO flap_valve_to_valvfl(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
     udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_inlet_size_mm,
-FROM ai2_classrep.equiclass_flap_valve t
+FROM query_table(schema_name::VARCHAR || '.equiclass_flap_valve') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VAVLFL';
 
 
-CREATE OR REPLACE MACRO float_level_instrument_to_lstnfl() AS TABLE
+CREATE OR REPLACE MACRO float_level_instrument_to_lstnfl(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_float_level_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_float_level_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LSTNFL';
 
 -- Fixed
-CREATE OR REPLACE MACRO gantries_to_llggfx() AS TABLE
+CREATE OR REPLACE MACRO gantries_to_llggfx(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_gantries t
+FROM query_table(schema_name::VARCHAR || '.equiclass_gantries') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLGGFX';
 
 
 -- Portable
-CREATE OR REPLACE MACRO gantries_to_llggpt() AS TABLE
+CREATE OR REPLACE MACRO gantries_to_llggpt(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_gantries t
+FROM query_table(schema_name::VARCHAR || '.equiclass_gantries') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLGGPT';
 
 
-CREATE OR REPLACE MACRO gauge_pressure_to_pstndi() AS TABLE
+CREATE OR REPLACE MACRO gauge_pressure_to_pstndi(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_gauge_pressure t
+FROM query_table(schema_name::VARCHAR || '.equiclass_gauge_pressure') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PSTNDI';
 
 
-CREATE OR REPLACE MACRO gear_pump_to_pumpge() AS TABLE
+CREATE OR REPLACE MACRO gear_pump_to_pumpge(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -678,190 +683,190 @@ SELECT
     t."Speed (RPM)" AS pump_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_gear_pump t
+FROM query_table(schema_name::VARCHAR || '.equiclass_gear_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMPGE';
 
 
-CREATE OR REPLACE MACRO gearbox_to_trutpg() AS TABLE
+CREATE OR REPLACE MACRO gearbox_to_trutpg(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_gearbox t
+FROM query_table(schema_name::VARCHAR || '.equiclass_gearbox') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'TRUTPG';
 
 
-CREATE OR REPLACE MACRO geared_motor_to_gmtrgm() AS TABLE
+CREATE OR REPLACE MACRO geared_motor_to_gmtrgm(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_geared_motor t
+FROM query_table(schema_name::VARCHAR || '.equiclass_geared_motor') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'GMTRGM';
 
 
-CREATE OR REPLACE MACRO helical_rotor_pump_to_pumphr() AS TABLE
+CREATE OR REPLACE MACRO helical_rotor_pump_to_pumphr(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_helical_rotor_pump t
+FROM query_table(schema_name::VARCHAR || '.equiclass_helical_rotor_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMPHR';
 
 
-CREATE OR REPLACE MACRO insertion_flow_instrument_to_fstnip() AS TABLE
+CREATE OR REPLACE MACRO insertion_flow_instrument_to_fstnip(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_insertion_flow_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_insertion_flow_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'FSTNIP';
 
 
-CREATE OR REPLACE MACRO isolating_valves_to_valvba() AS TABLE
+CREATE OR REPLACE MACRO isolating_valves_to_valvba(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_inlet_size_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_isolating_valves t
+FROM query_table(schema_name::VARCHAR || '.equiclass_isolating_valves') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VALVBA';
 
 
-CREATE OR REPLACE MACRO isolating_valves_to_valvbp() AS TABLE
+CREATE OR REPLACE MACRO isolating_valves_to_valvbp(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_inlet_size_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_isolating_valves t
+FROM query_table(schema_name::VARCHAR || '.equiclass_isolating_valves') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VALVBP';
 
 
-CREATE OR REPLACE MACRO isolating_valves_to_valvga() AS TABLE
+CREATE OR REPLACE MACRO isolating_valves_to_valvga(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_inlet_size_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_isolating_valves t
+FROM query_table(schema_name::VARCHAR || '.equiclass_isolating_valves') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VALVGA';
 
 
-CREATE OR REPLACE MACRO isolating_valves_to_valvft() AS TABLE
+CREATE OR REPLACE MACRO isolating_valves_to_valvft(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_inlet_size_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_isolating_valves t
+FROM query_table(schema_name::VARCHAR || '.equiclass_isolating_valves') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VALVFT';
 
 
-CREATE OR REPLACE MACRO jack_hydraulic_to_lljjck() AS TABLE
+CREATE OR REPLACE MACRO jack_hydraulic_to_lljjck(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_jack_hydraulic t
+FROM query_table(schema_name::VARCHAR || '.equiclass_jack_hydraulic') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLJJCK';
 
 
-CREATE OR REPLACE MACRO jack_ratchet_to_lljjck() AS TABLE
+CREATE OR REPLACE MACRO jack_ratchet_to_lljjck(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_jack_ratchet t
+FROM query_table(schema_name::VARCHAR || '.equiclass_jack_ratchet') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLJJCK';
 
 
 -- to jib crane
-CREATE OR REPLACE MACRO jib_crane_to_lljcji() AS TABLE
+CREATE OR REPLACE MACRO jib_crane_to_lljcji(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_jib_crane t
+FROM query_table(schema_name::VARCHAR || '.equiclass_jib_crane') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLJCJI';
 
 
 -- to pillar jib crane
-CREATE OR REPLACE MACRO jib_crane_to_lljcpj() AS TABLE
+CREATE OR REPLACE MACRO jib_crane_to_lljcpj(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_jib_crane t
+FROM query_table(schema_name::VARCHAR || '.equiclass_jib_crane') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLJCPJ';
 
 
 -- to swing jib crane
-CREATE OR REPLACE MACRO jib_crane_to_lljcsw() AS TABLE
+CREATE OR REPLACE MACRO jib_crane_to_lljcsw(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_jib_crane t
+FROM query_table(schema_name::VARCHAR || '.equiclass_jib_crane') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLJCSW';
 
 
 -- to wall jib crane
-CREATE OR REPLACE MACRO jib_crane_to_lljcwa() AS TABLE
+CREATE OR REPLACE MACRO jib_crane_to_lljcwa(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_jib_crane t
+FROM query_table(schema_name::VARCHAR || '.equiclass_jib_crane') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLJCWA';
 
 
 
-CREATE OR REPLACE MACRO kiosk_to_kiskki() AS TABLE
+CREATE OR REPLACE MACRO kiosk_to_kiskki(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -873,36 +878,36 @@ SELECT
     udfx_db.udfx.convert_to_millimetres(t."Kiosk Width (m)", 'METRES') AS kisk_width_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_kiosk t
+FROM query_table(schema_name::VARCHAR || '.equiclass_kiosk') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'KISKKI';
 
 
-CREATE OR REPLACE MACRO l_o_i_to_intflo() AS TABLE
+CREATE OR REPLACE MACRO l_o_i_to_intflo(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_l_o_i t
+FROM query_table(schema_name::VARCHAR || '.equiclass_l_o_i') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'INTFLO';
 
 
-CREATE OR REPLACE MACRO limit_switch_to_gaswip() AS TABLE
+CREATE OR REPLACE MACRO limit_switch_to_gaswip(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_limit_switch t
+FROM query_table(schema_name::VARCHAR || '.equiclass_limit_switch') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'GASWIP';
 
-CREATE OR REPLACE MACRO macipump_to_pumpma() AS TABLE
+CREATE OR REPLACE MACRO macipump_to_pumpma(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -911,135 +916,135 @@ SELECT
     t."Speed (RPM)" AS pump_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_macipump t
+FROM query_table(schema_name::VARCHAR || '.equiclass_macipump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMPMA';
 
 
-CREATE OR REPLACE MACRO magnetic_flow_instrument_to_fstnem() AS TABLE
+CREATE OR REPLACE MACRO magnetic_flow_instrument_to_fstnem(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_magnetic_flow_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_magnetic_flow_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'FSTNEM';
 
-CREATE OR REPLACE MACRO mcc_unit_to_mccepa() AS TABLE
+CREATE OR REPLACE MACRO mcc_unit_to_mccepa(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_mcc_unit t
+FROM query_table(schema_name::VARCHAR || '.equiclass_mcc_unit') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'MCCEPA';
 
 
 
-CREATE OR REPLACE MACRO mechanical_air_heater_to_heatai() AS TABLE
+CREATE OR REPLACE MACRO mechanical_air_heater_to_heatai(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_mechanical_air_heater t
+FROM query_table(schema_name::VARCHAR || '.equiclass_mechanical_air_heater') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'HEATAI';
 
 
-CREATE OR REPLACE MACRO modem_to_netwmo() AS TABLE
+CREATE OR REPLACE MACRO modem_to_netwmo(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_modem t
+FROM query_table(schema_name::VARCHAR || '.equiclass_modem') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'NETWMO';
 
 
 -- Modbus
-CREATE OR REPLACE MACRO network_to_netwmb() AS TABLE
+CREATE OR REPLACE MACRO network_to_netwmb(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_network t
+FROM query_table(schema_name::VARCHAR || '.equiclass_network') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'NETWMB';
 
 
-CREATE OR REPLACE MACRO network_switch_to_netwco() AS TABLE
+CREATE OR REPLACE MACRO network_switch_to_netwco(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_network_switch t
+FROM query_table(schema_name::VARCHAR || '.equiclass_network_switch') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'NETWCO';
 
 
-CREATE OR REPLACE MACRO network_switch_to_netwen() AS TABLE
+CREATE OR REPLACE MACRO network_switch_to_netwen(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_network_switch t
+FROM query_table(schema_name::VARCHAR || '.equiclass_network_switch') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'NETWEN';
 
-CREATE OR REPLACE MACRO non_immersible_motor_to_emtrin() AS TABLE
+CREATE OR REPLACE MACRO non_immersible_motor_to_emtrin(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_non_immersible_motor t
+FROM query_table(schema_name::VARCHAR || '.equiclass_non_immersible_motor') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'EMTRIN';
 
 
-CREATE OR REPLACE MACRO non_return_valve_to_valvnr() AS TABLE
+CREATE OR REPLACE MACRO non_return_valve_to_valvnr(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
     udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_inlet_size_mm,
-FROM ai2_classrep.equiclass_non_return_valve t
+FROM query_table(schema_name::VARCHAR || '.equiclass_non_return_valve') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VALVNR';
 
 
-CREATE OR REPLACE MACRO oil_air_receiver_to_veprao() AS TABLE
+CREATE OR REPLACE MACRO oil_air_receiver_to_veprao(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_oil_air_receiver t
+FROM query_table(schema_name::VARCHAR || '.equiclass_oil_air_receiver') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VEPRAO';
 
 
 -- to peristalic buffer pump
-CREATE OR REPLACE MACRO peristaltic_pump_to_pumppb() AS TABLE
+CREATE OR REPLACE MACRO peristaltic_pump_to_pumppb(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -1050,14 +1055,14 @@ SELECT
     t."Speed (RPM)" AS pump_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_peristaltic_pump t
+FROM query_table(schema_name::VARCHAR || '.equiclass_peristaltic_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMPPB';
 
 
 -- to peristalic pump
-CREATE OR REPLACE MACRO peristaltic_pump_to_pumppe() AS TABLE
+CREATE OR REPLACE MACRO peristaltic_pump_to_pumppe(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -1068,38 +1073,38 @@ SELECT
     t."Speed (RPM)" AS pump_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_peristaltic_pump t
+FROM query_table(schema_name::VARCHAR || '.equiclass_peristaltic_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMPPE';
 
 
-CREATE OR REPLACE MACRO plc_to_contpl() AS TABLE
+CREATE OR REPLACE MACRO plc_to_contpl(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_plc t
+FROM query_table(schema_name::VARCHAR || '.equiclass_plc') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'CONTPL';
 
 
-CREATE OR REPLACE MACRO plc_to_actuep() AS TABLE
+CREATE OR REPLACE MACRO plc_to_actuep(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_pneumatic_actuator t
+FROM query_table(schema_name::VARCHAR || '.equiclass_pneumatic_actuator') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'ACTUEP';
 
 
 -- to plunger pump
-CREATE OR REPLACE MACRO plunger_pump_to_pumppg() AS TABLE
+CREATE OR REPLACE MACRO plunger_pump_to_pumppg(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -1108,97 +1113,97 @@ SELECT
     t."Speed (RPM)" AS pump_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_plunger_pump t
+FROM query_table(schema_name::VARCHAR || '.equiclass_plunger_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMPPG';
 
 
-CREATE OR REPLACE MACRO power_supply_to_podedl() AS TABLE
+CREATE OR REPLACE MACRO power_supply_to_podedl(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_power_supply t
+FROM query_table(schema_name::VARCHAR || '.equiclass_power_supply') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PODEDL';
 
 
-CREATE OR REPLACE MACRO power_supply_to_podetu() AS TABLE
+CREATE OR REPLACE MACRO power_supply_to_podetu(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_power_supply t
+FROM query_table(schema_name::VARCHAR || '.equiclass_power_supply') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PODETU';
 
 
-CREATE OR REPLACE MACRO power_supply_to_podeup() AS TABLE
+CREATE OR REPLACE MACRO power_supply_to_podeup(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_power_supply t
+FROM query_table(schema_name::VARCHAR || '.equiclass_power_supply') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PODEUP';
 
-CREATE OR REPLACE MACRO pressure_for_level_instrument_to_lstnpr() AS TABLE
+CREATE OR REPLACE MACRO pressure_for_level_instrument_to_lstnpr(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_pressure_for_level_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_pressure_for_level_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LSTNPR';
 
 
-CREATE OR REPLACE MACRO pressure_reducing_valve_to_valvpr() AS TABLE
+CREATE OR REPLACE MACRO pressure_reducing_valve_to_valvpr(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_pressure_reducing_valve t
+FROM query_table(schema_name::VARCHAR || '.equiclass_pressure_reducing_valve') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VALVPR';
 
 
-CREATE OR REPLACE MACRO pressure_regulating_valve_to_valvre() AS TABLE
+CREATE OR REPLACE MACRO pressure_regulating_valve_to_valvre(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_pressure_regulating_valve t
+FROM query_table(schema_name::VARCHAR || '.equiclass_pressure_regulating_valve') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VALVRE';
 
 
-CREATE OR REPLACE MACRO pressure_switches_to_pstndi() AS TABLE
+CREATE OR REPLACE MACRO pressure_switches_to_pstndi(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_pressure_switches t
+FROM query_table(schema_name::VARCHAR || '.equiclass_pressure_switches') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PSTNDI';
 
 
 
-CREATE OR REPLACE MACRO pulsation_damper_to_veprpd() AS TABLE
+CREATE OR REPLACE MACRO pulsation_damper_to_veprpd(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -1218,25 +1223,25 @@ SELECT
     t."Safe Working Procedure Date" AS vepr_swp_date,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_pulsation_damper t
+FROM query_table(schema_name::VARCHAR || '.equiclass_pulsation_damper') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VEPRPD';
 
 
-CREATE OR REPLACE MACRO radar_level_instrument_to_lstnrd() AS TABLE
+CREATE OR REPLACE MACRO radar_level_instrument_to_lstnrd(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_radar_level_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_radar_level_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LSTNRD';
 
 
-CREATE OR REPLACE MACRO ram_pump_to_lstnrd() AS TABLE
+CREATE OR REPLACE MACRO ram_pump_to_lstnrd(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -1246,25 +1251,25 @@ SELECT
     t."Speed (RPM)" AS pump_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ram_pump t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ram_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMPRA';
 
 
-CREATE OR REPLACE MACRO relief_safety_valve_to_valvsf() AS TABLE
+CREATE OR REPLACE MACRO relief_safety_valve_to_valvsf(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_relief_safety_valve t
+FROM query_table(schema_name::VARCHAR || '.equiclass_relief_safety_valve') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VALVSF';
 
 
-CREATE OR REPLACE MACRO resistance_starter_to_starlq() AS TABLE
+CREATE OR REPLACE MACRO resistance_starter_to_starlq(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -1275,13 +1280,13 @@ SELECT
     udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS star_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_resistance_starter t
+FROM query_table(schema_name::VARCHAR || '.equiclass_resistance_starter') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'STARLQ';
 
 
-CREATE OR REPLACE MACRO resistance_starter_to_starre() AS TABLE
+CREATE OR REPLACE MACRO resistance_starter_to_starre(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -1292,13 +1297,13 @@ SELECT
     udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS star_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_resistance_starter t
+FROM query_table(schema_name::VARCHAR || '.equiclass_resistance_starter') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'STARRE';
 
 
-CREATE OR REPLACE MACRO reversing_starter_to_starrv() AS TABLE
+CREATE OR REPLACE MACRO reversing_starter_to_starrv(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -1309,85 +1314,85 @@ SELECT
     udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS star_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_reversing_starter t
+FROM query_table(schema_name::VARCHAR || '.equiclass_reversing_starter') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'STARRV';
 
 
-CREATE OR REPLACE MACRO ropes_to_llfsrp() AS TABLE
+CREATE OR REPLACE MACRO ropes_to_llfsrp(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ropes t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ropes') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLFSRP';
 
 
-CREATE OR REPLACE MACRO ropes_to_llwrwi() AS TABLE
+CREATE OR REPLACE MACRO ropes_to_llwrwi(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ropes t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ropes') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLWRWI';
 
 
-CREATE OR REPLACE MACRO runways_to_llrrtb() AS TABLE
+CREATE OR REPLACE MACRO runways_to_llrrtb(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_runways t
+FROM query_table(schema_name::VARCHAR || '.equiclass_runways') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LLRRTB';
 
 
-CREATE OR REPLACE MACRO safety_switch_to_gaswip() AS TABLE
+CREATE OR REPLACE MACRO safety_switch_to_gaswip(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_safety_switch t
+FROM query_table(schema_name::VARCHAR || '.equiclass_safety_switch') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'GASWIP';
 
 
-CREATE OR REPLACE MACRO screens_to_scrcba() AS TABLE
+CREATE OR REPLACE MACRO screens_to_scrcba(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_screens t
+FROM query_table(schema_name::VARCHAR || '.equiclass_screens') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'SCRCBA';
 
 
-CREATE OR REPLACE MACRO screens_to_scrfsc() AS TABLE
+CREATE OR REPLACE MACRO screens_to_scrfsc(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_screens t
+FROM query_table(schema_name::VARCHAR || '.equiclass_screens') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'SCRFSC';
 
 
-CREATE OR REPLACE MACRO screw_pump_to_pumpsc() AS TABLE
+CREATE OR REPLACE MACRO screw_pump_to_pumpsc(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -1397,25 +1402,25 @@ SELECT
     t."Speed (RPM)" AS pump_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_screw_pump t
+FROM query_table(schema_name::VARCHAR || '.equiclass_screw_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMPSC';
 
 
-CREATE OR REPLACE MACRO sludge_blanket_level_inst_to_lstnus() AS TABLE
+CREATE OR REPLACE MACRO sludge_blanket_level_inst_to_lstnus(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_sludge_blanket_level_inst t
+FROM query_table(schema_name::VARCHAR || '.equiclass_sludge_blanket_level_inst') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LSTNUS';
 
 
-CREATE OR REPLACE MACRO soft_starter_to_starss() AS TABLE
+CREATE OR REPLACE MACRO soft_starter_to_starss(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -1426,14 +1431,14 @@ SELECT
     udfx_db.udfx.convert_to_kilowatts(t."Power", t."Power Units") AS star_rated_power_kw,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_soft_starter t
+FROM query_table(schema_name::VARCHAR || '.equiclass_soft_starter') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'STARSS';
 
 
 
-CREATE OR REPLACE MACRO star_delta_starter_to_stardt() AS TABLE
+CREATE OR REPLACE MACRO star_delta_starter_to_stardt(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -1444,43 +1449,43 @@ SELECT
     udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS star_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_star_delta_starter t
+FROM query_table(schema_name::VARCHAR || '.equiclass_star_delta_starter') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'STARDT';
 
 
 
-CREATE OR REPLACE MACRO stirrers_mixers_agitators_to_mixrro() AS TABLE
+CREATE OR REPLACE MACRO stirrers_mixers_agitators_to_mixrro(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_stirrers_mixers_agitators t
+FROM query_table(schema_name::VARCHAR || '.equiclass_stirrers_mixers_agitators') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'MIXRRO';
 
-CREATE OR REPLACE MACRO strainer_to_strnbf() AS TABLE
+CREATE OR REPLACE MACRO strainer_to_strnbf(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_strainer t
+FROM query_table(schema_name::VARCHAR || '.equiclass_strainer') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'STRNBF';
 
 
-CREATE OR REPLACE MACRO strainer_to_strner() AS TABLE
+CREATE OR REPLACE MACRO strainer_to_strner(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_strainer t
+FROM query_table(schema_name::VARCHAR || '.equiclass_strainer') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'STRNER';
@@ -1488,7 +1493,7 @@ WHERE t1.s4_class = 'STRNER';
 
 -- NOTE submersible_centrifugal_pump does not currently exist in the test data
 -- so this hasn't been run
-CREATE OR REPLACE MACRO submersible_centrifugal_pump_to_pumsmo() AS TABLE
+CREATE OR REPLACE MACRO submersible_centrifugal_pump_to_pumsmo(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -1505,7 +1510,7 @@ SELECT
     udf_local.acdc_3_to_voltage_units(t2."Voltage In (AC Or DC)") AS pums_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_submersible_centrifugal_pump t
+FROM query_table(schema_name::VARCHAR || '.equiclass_submersible_centrifugal_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 JOIN ai2_classrep.equimixin_integral_motor t2 
@@ -1513,139 +1518,144 @@ JOIN ai2_classrep.equimixin_integral_motor t2
 WHERE t1.s4_class = 'PUMSMO';
 
 
-CREATE OR REPLACE MACRO submersible_centrifugal_pump_to_pumssu() AS TABLE
+CREATE OR REPLACE MACRO submersible_centrifugal_pump_to_pumssu(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_submersible_centrifugal_pump t
+FROM query_table(schema_name::VARCHAR || '.equiclass_submersible_centrifugal_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMSSU';
 
 
-CREATE OR REPLACE MACRO telemetry_outstation_to_netwtl() AS TABLE
+CREATE OR REPLACE MACRO telemetry_outstation_to_netwtl(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_telemetry_outstation t
+    NULL AS ip_rating,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS netw_supply_voltage,
+    NULL AS netw_supply_voltage_units,
+FROM query_table(schema_name::VARCHAR || '.equiclass_telemetry_outstation') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'NETWTL';
 
 
-CREATE OR REPLACE MACRO temperature_instrument_to_tstntt() AS TABLE
+CREATE OR REPLACE MACRO temperature_instrument_to_tstntt(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_temperature_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_temperature_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'TSTNTT';
 
 
-CREATE OR REPLACE MACRO thermal_flow_instrument_to_fstnth() AS TABLE
+CREATE OR REPLACE MACRO thermal_flow_instrument_to_fstnth(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_thermal_flow_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_thermal_flow_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'FSTNTH';
 
 
-CREATE OR REPLACE MACRO thermal_mass_flow_instrument_to_fstntm() AS TABLE
+CREATE OR REPLACE MACRO thermal_mass_flow_instrument_to_fstntm(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_thermal_mass_flow_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_thermal_mass_flow_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'FSTNTM';
 
 
-CREATE OR REPLACE MACRO trace_heaters_to_heattr() AS TABLE
+CREATE OR REPLACE MACRO trace_heaters_to_heattr(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_trace_heaters t
+FROM query_table(schema_name::VARCHAR || '.equiclass_trace_heaters') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'HEATR';
 
 
-CREATE OR REPLACE MACRO tubular_heater_to_heattu() AS TABLE
+CREATE OR REPLACE MACRO tubular_heater_to_heattu(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_tubular_heater t
+FROM query_table(schema_name::VARCHAR || '.equiclass_tubular_heater') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'HEATTU';
 
 
-CREATE OR REPLACE MACRO tuning_fork_level_instrument_to_lstntf() AS TABLE
+CREATE OR REPLACE MACRO tuning_fork_level_instrument_to_lstntf(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_tuning_fork_level_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_tuning_fork_level_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LSTNTF';
 
 
-CREATE OR REPLACE MACRO turbidity_instrument_to_analtb() AS TABLE
+CREATE OR REPLACE MACRO turbidity_instrument_to_analtb(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_turbidity_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_turbidity_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'ANALTB';
 
 
-CREATE OR REPLACE MACRO turbine_flow_instrument_to_fstntu() AS TABLE
+CREATE OR REPLACE MACRO turbine_flow_instrument_to_fstntu(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_turbine_flow_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_turbine_flow_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'FSTNTU';
 
 
-CREATE OR REPLACE MACRO ultrasonic_flow_instrument_to_fstnoc() AS TABLE
+CREATE OR REPLACE MACRO ultrasonic_flow_instrument_to_fstnoc(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ultrasonic_flow_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ultrasonic_flow_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'FSTNOC';
 
 
-CREATE OR REPLACE MACRO ultrasonic_level_instrument_to_lstnut() AS TABLE
+CREATE OR REPLACE MACRO ultrasonic_level_instrument_to_lstnut(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
@@ -1657,62 +1667,62 @@ SELECT
     udf_local.format_signal3(t."Signal min", t."Signal max", t."Signal unit") AS lstn_signal_type,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ultrasonic_level_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ultrasonic_level_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'LSTNUT';
 
 
-CREATE OR REPLACE MACRO ups_systems_to_podeup() AS TABLE
+CREATE OR REPLACE MACRO ups_systems_to_podeup(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ups_systems t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ups_systems') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PODEUP';
 
 
 
-CREATE OR REPLACE MACRO urban_wastewater_sampler_to_sampch() AS TABLE
+CREATE OR REPLACE MACRO urban_wastewater_sampler_to_sampch(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_urban_wastewater_sampler t
+FROM query_table(schema_name::VARCHAR || '.equiclass_urban_wastewater_sampler') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'SAMPCH';
 
 
-CREATE OR REPLACE MACRO uv_transmittance_instrument_to_analut() AS TABLE
+CREATE OR REPLACE MACRO uv_transmittance_instrument_to_analut(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_uv_transmittance_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_uv_transmittance_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'ANALUT';
 
 
-CREATE OR REPLACE MACRO ultra_violet_unit_to_uvunit() AS TABLE
+CREATE OR REPLACE MACRO ultra_violet_unit_to_uvunit(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ultra_violet_unit t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ultra_violet_unit') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'UVUNIT';
 
 
-CREATE OR REPLACE MACRO vacuum_pump_to_pumpva() AS TABLE
+CREATE OR REPLACE MACRO vacuum_pump_to_pumpva(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
@@ -1721,99 +1731,99 @@ SELECT
     t."Speed (RPM)" AS pump_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_vacuum_pump t
+FROM query_table(schema_name::VARCHAR || '.equiclass_vacuum_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMPVA';
 
 
-CREATE OR REPLACE MACRO variable_frequency_starter_to_starvf() AS TABLE
+CREATE OR REPLACE MACRO variable_frequency_starter_to_starvf(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_variable_frequency_starter t
+FROM query_table(schema_name::VARCHAR || '.equiclass_variable_frequency_starter') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'STARVF';
 
 
-CREATE OR REPLACE MACRO variable_area_flow_instrument_to_fstnva() AS TABLE
+CREATE OR REPLACE MACRO variable_area_flow_instrument_to_fstnva(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_variable_area_flow_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_variable_area_flow_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'FSTNVA';
 
 
-CREATE OR REPLACE MACRO venturi_to_fstnve() AS TABLE
+CREATE OR REPLACE MACRO venturi_to_fstnve(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_venturi t
+FROM query_table(schema_name::VARCHAR || '.equiclass_venturi') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'FSTNVE';
 
 
-CREATE OR REPLACE MACRO vortex_flow_instrument_to_fstnvo() AS TABLE
+CREATE OR REPLACE MACRO vortex_flow_instrument_to_fstnvo(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_vortex_flow_instrument t
+FROM query_table(schema_name::VARCHAR || '.equiclass_vortex_flow_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'FSTNVO';
 
 
-CREATE OR REPLACE MACRO water_air_receiver_to_vepraw() AS TABLE
+CREATE OR REPLACE MACRO water_air_receiver_to_vepraw(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_water_air_receiver t
+FROM query_table(schema_name::VARCHAR || '.equiclass_water_air_receiver') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VEPRAW';
 
 
-CREATE OR REPLACE MACRO wet_well_to_wellwt() AS TABLE
+CREATE OR REPLACE MACRO wet_well_to_wellwt(schema_name) AS TABLE
 SELECT 
     t1.equi_equi_id AS equipment_id,
     t."Location on Site" AS location_on_site,
     t."Tank Construction" AS well_tank_construction,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ww_chemical_storage_tank t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ww_chemical_storage_tank') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'WELLWT';
 
 
 
-CREATE OR REPLACE MACRO ww_balancing_tank_to_tankpr() AS TABLE
+CREATE OR REPLACE MACRO ww_balancing_tank_to_tankpr(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ww_balancing_tank t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ww_balancing_tank') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'TANKPR';
 
 
-CREATE OR REPLACE MACRO ww_chemical_storage_tank_to_tankst() AS TABLE
+CREATE OR REPLACE MACRO ww_chemical_storage_tank_to_tankst(schema_name) AS TABLE
 SELECT 
     t1.equi_equi_id AS equipment_id,
     t."Location on Site" AS location_on_site,
@@ -1821,117 +1831,117 @@ SELECT
     t."Tank Level" AS tank_tank_level,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ww_chemical_storage_tank t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ww_chemical_storage_tank') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'TANKST';
 
 
-CREATE OR REPLACE MACRO ww_cloth_media_filter_to_profsa() AS TABLE
+CREATE OR REPLACE MACRO ww_cloth_media_filter_to_profsa(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ww_cloth_media_filter t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ww_cloth_media_filter') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PROFSA';
 
 
-CREATE OR REPLACE MACRO ww_flocculation_tank_to_tankpr() AS TABLE
+CREATE OR REPLACE MACRO ww_flocculation_tank_to_tankpr(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ww_flocculation_tank t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ww_flocculation_tank') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'TANKPR';
 
 
-CREATE OR REPLACE MACRO ww_humus_tank_to_tankpr() AS TABLE
+CREATE OR REPLACE MACRO ww_humus_tank_to_tankpr(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ww_humus_tank t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ww_humus_tank') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'TANKPR';
 
 
 
-CREATE OR REPLACE MACRO ww_percolating_filter_to_profpc() AS TABLE
+CREATE OR REPLACE MACRO ww_percolating_filter_to_profpc(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ww_percolating_filter t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ww_percolating_filter') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PROFPC';
 
 
-CREATE OR REPLACE MACRO ww_primary_sedimentation_to_tankpr() AS TABLE
+CREATE OR REPLACE MACRO ww_primary_sedimentation_to_tankpr(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ww_primary_sedimentation_tank t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ww_primary_sedimentation_tank') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'TANKPR';
 
 
-CREATE OR REPLACE MACRO ww_sand_filter_to_profsn() AS TABLE
+CREATE OR REPLACE MACRO ww_sand_filter_to_profsn(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ww_sand_filter t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ww_sand_filter') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PROFSN';
 
 
-CREATE OR REPLACE MACRO ww_service_water_storage_tank_to_tankst() AS TABLE
+CREATE OR REPLACE MACRO ww_service_water_storage_tank_to_tankst(schema_name) AS TABLE
 SELECT 
     t1.equi_equi_id AS equipment_id,
     t."Location on Site" AS location_on_site,
     t."Tank Construction" AS tank_tank_construction,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ww_service_water_storage_tank t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ww_service_water_storage_tank') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'TANKST';
 
 
-CREATE OR REPLACE MACRO ww_sludge_storage_tank_to_tankst() AS TABLE
+CREATE OR REPLACE MACRO ww_sludge_storage_tank_to_tankst(schema_name) AS TABLE
 SELECT 
     t1.equi_equi_id AS equipment_id,
     t."Location on Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ww_sludge_storage_tank t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ww_sludge_storage_tank') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'TANKST';
 
 
-CREATE OR REPLACE MACRO ww_storm_sedimentation_tank_to_tankpr() AS TABLE
+CREATE OR REPLACE MACRO ww_storm_sedimentation_tank_to_tankpr(schema_name) AS TABLE
 SELECT 
     t1.equi_equi_id AS equipment_id,
     t."Location on Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
-FROM ai2_classrep.equiclass_ww_storm_sedimentation_tank t
+FROM query_table(schema_name::VARCHAR || '.equiclass_ww_storm_sedimentation_tank') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'TANKPR';
