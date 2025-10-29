@@ -39,6 +39,10 @@ SELECT
     t."Valve Torque (Nm)" AS actu_valve_torque_nm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS actu_atex_code,
+    NULL AS actu_number_of_phase,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_actuator') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -343,6 +347,16 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS ip_rating,
+    NULL AS lstn_output_type,
+    NULL AS lstn_range_max,
+    NULL AS lstn_range_min,
+    NULL AS lstn_range_units,
+    NULL AS lstn_signal_type,
+    NULL AS lstn_supply_voltage,
+    NULL AS lstn_supply_voltage_units,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_conductivity_level_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -668,6 +682,7 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS ip_rating,
 FROM query_table(schema_name::VARCHAR || '.equiclass_gauge_pressure') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -770,6 +785,8 @@ SELECT
     udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_inlet_size_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_isolating_valves') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -787,6 +804,22 @@ FROM query_table(schema_name::VARCHAR || '.equiclass_isolating_valves') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'VALVFT';
+
+
+CREATE OR REPLACE MACRO isolating_valves_to_valvpg(schema_name) AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_inlet_size_mm,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+FROM query_table(schema_name::VARCHAR || '.equiclass_isolating_valves') t
+JOIN ai2_classrep.ai2_to_s4_mapping t1
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'VALVPG';
+
 
 
 CREATE OR REPLACE MACRO jack_hydraulic_to_lljjck(schema_name) AS TABLE
@@ -964,6 +997,11 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS ip_rating,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS netw_supply_voltage,
+    NULL AS netw_supply_voltage_units,
 FROM query_table(schema_name::VARCHAR || '.equiclass_modem') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -1196,6 +1234,16 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS ip_rating,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS pstn_pressure_instrument_type,
+    NULL AS pstn_range_max,
+    NULL AS pstn_range_min,
+    NULL AS pstn_range_units,
+    NULL AS pstn_signal_type,
+    NULL AS pstn_supply_voltage,
+    NULL AS pstn_supply_voltage_units,
 FROM query_table(schema_name::VARCHAR || '.equiclass_pressure_switches') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -1449,6 +1497,10 @@ SELECT
     udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS star_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS star_number_of_phase,
+    NULL AS star_sld_ref_no,
 FROM query_table(schema_name::VARCHAR || '.equiclass_star_delta_starter') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -1510,6 +1562,11 @@ SELECT
     udf_local.acdc_3_to_voltage_units(t2."Voltage In (AC Or DC)") AS pums_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS pums_inlet_size_mm,
+    NULL AS pums_media_type,
+    NULL AS pums_outlet_size_mm,
 FROM query_table(schema_name::VARCHAR || '.equiclass_submersible_centrifugal_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -1667,6 +1724,32 @@ SELECT
     udf_local.format_signal3(t."Signal min", t."Signal max", t."Signal unit") AS lstn_signal_type,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS ip_rating,
+    NULL AS lstn_relay_1_function,
+    NULL AS lstn_relay_2_function,
+    NULL AS lstn_relay_3_function,
+    NULL AS lstn_relay_4_function,
+    NULL AS lstn_relay_5_function,
+    NULL AS lstn_relay_6_function,
+    NULL AS lstn_relay_1_off_level_m,
+    NULL AS lstn_relay_2_off_level_m,
+    NULL AS lstn_relay_3_off_level_m,
+    NULL AS lstn_relay_4_off_level_m,
+    NULL AS lstn_relay_5_off_level_m,
+    NULL AS lstn_relay_6_off_level_m,
+    NULL AS lstn_relay_1_on_level_m,
+    NULL AS lstn_relay_2_on_level_m,
+    NULL AS lstn_relay_3_on_level_m,
+    NULL AS lstn_relay_4_on_level_m,
+    NULL AS lstn_relay_5_on_level_m,
+    NULL AS lstn_relay_6_on_level_m,
+    NULL AS lstn_set_to_snort,
+    NULL AS lstn_supply_voltage,
+    NULL AS lstn_supply_voltage_units,
+    NULL AS lstn_transmitter_model,
+    NULL AS lstn_transmitter_serial_no,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_ultrasonic_level_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
@@ -1929,6 +2012,13 @@ SELECT
     t."Location on Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS tank_tank_construction,
+    NULL AS tank_tank_covering,
+    NULL AS tank_tank_level,
+    NULL AS tank_tank_use,
+
 FROM query_table(schema_name::VARCHAR || '.equiclass_ww_sludge_storage_tank') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
