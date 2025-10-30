@@ -474,6 +474,11 @@ SELECT
     udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS star_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS star_number_of_phase,
+    NULL AS star_number_of_ways,
+    NULL AS star_sld_ref_no,
 FROM query_table(schema_name::VARCHAR || '.equiclass_direct_on_line_starter') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -645,6 +650,15 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS ip_rating,
+    NULL AS lstn_range_max,
+    NULL AS lstn_range_min,
+    NULL AS lstn_range_units,
+    NULL AS lstn_signal_type,
+    NULL AS lstn_supply_voltage,
+    NULL AS lstn_supply_voltage_units,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_float_level_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -738,6 +752,28 @@ FROM query_table(schema_name::VARCHAR || '.equiclass_helical_rotor_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMPHR';
+
+
+
+CREATE OR REPLACE MACRO inductive_sensor_to_sptnro(schema_name) AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+    NULL AS ip_rating,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS sptn_range_max,
+    NULL AS sptn_range_min,
+    NULL AS sptn_range_units,
+    NULL AS sptn_supply_voltage,
+    NULL AS sptn_supply_voltage_units,
+FROM query_table(schema_name::VARCHAR || '.equiclass_inductive_sensor') t
+JOIN ai2_classrep.ai2_to_s4_mapping t1
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'SPTNRO';
+
 
 
 CREATE OR REPLACE MACRO insertion_flow_instrument_to_fstnip(schema_name) AS TABLE
@@ -911,6 +947,8 @@ SELECT
     udfx_db.udfx.convert_to_millimetres(t."Kiosk Width (m)", 'METRES') AS kisk_width_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_kiosk') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -972,6 +1010,16 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS ip_rating,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS mcce_fault_rating_ka,
+    NULL AS mcce_number_of_phase,
+    NULL AS mcce_number_of_ways,
+    NULL AS mcce_rated_current_a,
+    NULL AS mcce_rated_voltage,
+    NULL AS mcce_rated_voltage_units,
+    NULL AS mcce_sld_ref_no,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_mcc_unit') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -1063,6 +1111,10 @@ SELECT
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
     udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_inlet_size_mm,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS valv_flow_litres_per_sec,
+    NULL AS valv_rated_temperature_deg_c,
 FROM query_table(schema_name::VARCHAR || '.equiclass_non_return_valve') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
