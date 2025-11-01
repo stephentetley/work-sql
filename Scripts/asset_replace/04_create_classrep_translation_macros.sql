@@ -1508,6 +1508,26 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
 WHERE t1.s4_class = 'PUMPSC';
 
 
+CREATE OR REPLACE MACRO slip_ring_assembly_to_slipra(schema_name) AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    t."IP Rating" AS ip_rating,
+    t."Voltage In" AS slip_rated_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS slip_rated_voltage_units,
+    udfx_db.udfx.convert_to_kilowatts(t."Power", t."Power Units") AS slip_rated_power_kw,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS slip_number_of_brushes,
+    NULL AS slip_rated_current_a,
+FROM query_table(schema_name::VARCHAR || '.equiclass_slip_ring_assembly') t
+JOIN ai2_classrep.ai2_to_s4_mapping t1
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'SLIPRA';
+
+
 CREATE OR REPLACE MACRO sludge_blanket_level_inst_to_lstnus(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
