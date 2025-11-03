@@ -5,7 +5,7 @@ WITH cte1 AS (
     SELECT 
         array_agg(format(E'DELETE FROM s4_classrep.equiclass_{};', lower(t.class_name))) AS delete_lines,
     FROM s4_classes_db.s4_classlists.vw_equi_class_defs t
-    WHERE EXISTS (FROM asset_replace_gen.vw_s4_classes_used t1 WHERE t1.s4_class_name = t.class_name)
+    WHERE EXISTS (FROM equi_create_gen.vw_s4_classes_used t1 WHERE t1.s4_class_name = t.class_name)
 )
 SELECT 
     list_sort(t.delete_lines).list_aggregate('string_agg', E'\n') AS sql_text
@@ -26,10 +26,10 @@ WITH cte1 AS (
     SELECT DISTINCT ON (t1.class_table_name, t2.s4_class_name)
         lower(t2.s4_class_name) AS s4_class,
         t1.class_table_name AS ai2_equi_type,
-    FROM asset_replace_gen.ai2_equipment t
+    FROM equi_create_gen.ai2_equipment t
     JOIN cte1 t1
         ON t1.class_description = t.equipment_type_name
-    JOIN asset_replace_gen.s4_equipment t2
+    JOIN equi_create_gen.s4_equipment t2
         ON t2.ai2_plinum = t.ai2_plinum
 ), cte3 AS (
     SELECT 

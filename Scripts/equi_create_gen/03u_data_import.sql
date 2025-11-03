@@ -1,8 +1,8 @@
 
-DELETE FROM asset_replace_gen.s4_equipment;
-DELETE FROM asset_replace_gen.ai2_equipment;
+DELETE FROM equi_create_gen.s4_equipment;
+DELETE FROM equi_create_gen.ai2_equipment;
 
-INSERT INTO asset_replace_gen.s4_equipment BY NAME
+INSERT INTO equi_create_gen.s4_equipment BY NAME
 SELECT 
     *
 FROM read_worklist_for_s4_classes(
@@ -10,7 +10,7 @@ FROM read_worklist_for_s4_classes(
 );
 
 
-INSERT INTO asset_replace_gen.ai2_equipment BY NAME
+INSERT INTO equi_create_gen.ai2_equipment BY NAME
 SELECT 
     *
 FROM read_ai2_masterdata_for_equipment(

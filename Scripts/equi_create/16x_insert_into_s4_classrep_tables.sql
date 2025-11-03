@@ -1,5 +1,5 @@
 
--- TODO generating this is tricky as `asset_replace_gen` doesn't know 
+-- TODO generating this is tricky as `equi_create_gen` doesn't know 
 -- which macros exist...
 -- Probably I need to curate this as a speadsheet table - 
 -- (tanslation_macro, equiclass_ table)

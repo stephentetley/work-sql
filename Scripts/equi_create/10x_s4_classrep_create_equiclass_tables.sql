@@ -40,7 +40,7 @@ CREATE OR REPLACE TABLE s4_classrep.equiclass_lstnut(
     uniclass_desc VARCHAR,
 PRIMARY KEY(equipment_id));
 
--- telem_asset_replace_jun25_db.s4_classrep.equiclass_netwtl definition
+-- telem_equi_create_jun25_db.s4_classrep.equiclass_netwtl definition
 
 CREATE OR REPLACE TABLE s4_classrep.equiclass_netwtl(
     equipment_id VARCHAR,

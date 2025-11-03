@@ -1,4 +1,4 @@
--- Equi tables are copied from `asset_replace`
+-- Equi tables are copied from `equi_create`
 -- TODO how do we manage common scripts?
 
 
