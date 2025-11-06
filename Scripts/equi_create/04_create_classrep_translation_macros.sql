@@ -158,7 +158,7 @@ CREATE OR REPLACE MACRO blowers_to_blowcb(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
-    udfx.convert_to_cubic_metres_per_hour(t."Flow", t."Flow Units") AS blow_flow_cubic_meter_per_hour,
+    udfx_db.udfx.convert_to_cubic_metres_per_hour(t."Flow", t."Flow Units") AS blow_flow_cubic_metre_per_hour,
     udfx_db.udfx.convert_to_kilowatts(t."Rating (Power)", t."Rating Units") AS blow_rated_power_kw,
     t."Speed (RPM)" AS blow_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
@@ -173,11 +173,13 @@ CREATE OR REPLACE MACRO blowers_to_blowsc(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
-    udfx.convert_to_cubic_metres_per_hour(t."Flow", t."Flow Units") AS blow_flow_cubic_meter_per_hour,
+    udfx_db.udfx.convert_to_cubic_metres_per_hour(t."Flow", t."Flow Units") AS blow_flow_cubic_metre_per_hour,
     udfx_db.udfx.convert_to_kilowatts(t."Rating (Power)", t."Rating Units") AS blow_rated_power_kw,
     t."Speed (RPM)" AS blow_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_blowers') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -266,6 +268,11 @@ SELECT
     t."Speed (RPM)" AS pump_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS pump_inlet_size_mm,
+    NULL AS pump_media_type,
+    NULL AS pump_outlet_size_mm,
 FROM query_table(schema_name::VARCHAR || '.equiclass_centrifugal_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -456,6 +463,13 @@ SELECT
     t."Speed (RPM)" AS pump_rated_speed_rpm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS pump_diaphragm_material,
+    NULL AS pump_inlet_size_mm,
+    NULL AS pump_media_type,
+    NULL AS pump_motor_type,
+    NULL AS pump_outlet_size_mm,
 FROM query_table(schema_name::VARCHAR || '.equiclass_diaphragm_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -553,6 +567,8 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_emergency_eye_bath') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -577,6 +593,8 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_emergency_shower_eye_bath') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -697,6 +715,15 @@ SELECT
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
     NULL AS ip_rating,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS pstn_pressure_instrument_type,
+    NULL AS pstn_range_max,
+    NULL AS pstn_range_min,
+    NULL AS pstn_range_units,
+    NULL AS pstn_signal_type,
+    NULL AS pstn_supply_voltage,
+    NULL AS pstn_supply_voltage_units,
 FROM query_table(schema_name::VARCHAR || '.equiclass_gauge_pressure') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -728,6 +755,24 @@ FROM query_table(schema_name::VARCHAR || '.equiclass_gearbox') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'TRUTPG';
+
+
+CREATE OR REPLACE MACRO gearbox_to_truthg(schema_name) AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS trut_rated_power_kw,
+    NULL AS trut_rated_torque_nm,
+    NULL AS trut_speed_in_rpm,
+    NULL AS trut_speed_out_rpm,
+FROM query_table(schema_name::VARCHAR || '.equiclass_gearbox') t
+JOIN ai2_classrep.ai2_to_s4_mapping t1
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'TRUTHG';
 
 
 CREATE OR REPLACE MACRO geared_motor_to_gmtrgm(schema_name) AS TABLE
@@ -795,6 +840,10 @@ SELECT
     udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_inlet_size_mm,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS valv_media_type,
+    NULL AS valv_valve_configuration,
 FROM query_table(schema_name::VARCHAR || '.equiclass_isolating_valves') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -961,6 +1010,12 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS intf_instrument_power_w,
+    NULL AS intf_rated_voltage,
+    NULL AS intf_rated_voltage_units,
+    NULL AS ip_rating,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_l_o_i') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -973,6 +1028,12 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS gasw_rated_voltage,
+    NULL AS gasw_rated_voltage_units,
+    NULL AS gasw_sensing_range_bar,
+    NULL AS ip_rating,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_limit_switch') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -1098,6 +1159,21 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS emtr_anti_condensation_heaters,
+    NULL AS emtr_atex_code,
+    NULL AS emtr_frame_size,
+    NULL AS emtr_mounting_type,
+    NULL AS emtr_number_of_phase,
+    NULL AS emtr_rated_current_a,
+    NULL AS emtr_rated_power_kw,
+    NULL AS emtr_rated_speed_rpm,
+    NULL AS emtr_rated_voltage,
+    NULL AS emtr_rated_voltage_units,
+    NULL AS emtr_thermal_protection,
+    NULL AS insulation_class_deg_c,
+    NULL AS ip_rating,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_non_immersible_motor') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -1175,6 +1251,11 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS cont_instrument_power_w,
+    NULL AS cont_rated_voltage,
+    NULL AS cont_rated_voltage_units,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_plc') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -1274,6 +1355,10 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS valv_bore_diameter_mm,
+    NULL AS valv_flow_litres_per_sec,
 FROM query_table(schema_name::VARCHAR || '.equiclass_pressure_regulating_valve') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -1323,6 +1408,11 @@ SELECT
     t."Safe Working Procedure Date" AS vepr_swp_date,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS pv_inspection_frequency_months,
+    NULL AS vepr_material,
+    NULL AS vepr_rated_temperature_deg_c,
 FROM query_table(schema_name::VARCHAR || '.equiclass_pulsation_damper') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -1335,6 +1425,16 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS ip_rating,
+    NULL AS lstn_range_max,
+    NULL AS lstn_range_min,
+    NULL AS lstn_range_units,
+    NULL AS lstn_signal_guidance,
+    NULL AS lstn_signal_type,
+    NULL AS lstn_supply_voltage,
+    NULL AS lstn_supply_voltage_units,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_radar_level_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -1363,6 +1463,10 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS valv_inlet_size_mm,
+    NULL AS valv_rated_pressure_bar,
 FROM query_table(schema_name::VARCHAR || '.equiclass_relief_safety_valve') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -1694,6 +1798,16 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS fstn_output_type,
+    NULL AS fstn_range_max,
+    NULL AS fstn_range_min,
+    NULL AS fstn_range_units,
+    NULL AS fstn_rated_voltage,
+    NULL AS fstn_rated_voltage_units,
+    NULL AS fstn_signal_type,
+    NULL AS ip_rating,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_thermal_flow_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -1706,6 +1820,15 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS fstn_range_max,
+    NULL AS fstn_range_min,
+    NULL AS fstn_range_units,
+    NULL AS fstn_rated_voltage,
+    NULL AS fstn_rated_voltage_units,
+    NULL AS fstn_signal_type,
+    NULL AS ip_rating,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_thermal_mass_flow_instrument') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -1986,6 +2109,10 @@ SELECT
     t."Tank Level" AS tank_tank_level,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS tank_tank_covering,
+    NULL AS tank_tank_use,
 FROM query_table(schema_name::VARCHAR || '.equiclass_ww_chemical_storage_tank') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
@@ -2072,6 +2199,11 @@ SELECT
     t."Tank Construction" AS tank_tank_construction,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS tank_tank_covering,
+    NULL AS tank_tank_level,
+    NULL AS tank_tank_use,
 FROM query_table(schema_name::VARCHAR || '.equiclass_ww_service_water_storage_tank') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
