@@ -3,10 +3,8 @@
 CREATE OR REPLACE MACRO read_equi_replace_worklist(xlsx_file) AS TABLE
 SELECT 
     t."Operational AI2 record (PLI)" AS operational_AI2_record_pli,
-    t."Deleted AI2 record" AS deleted_ai2_record,
     TRY_CAST(t."Batch" AS INTEGER) AS batch,
     t."Equipment Transit ID" AS equi_equi_id,
-    t."Existing S4 Record" AS existing_s4_record,
     t."AI2 Parent (SAI number)" AS ai2_parent_sai,
     t."S4 Category" AS s4_category,
     t."S4 Object Type" AS s4_object_type,

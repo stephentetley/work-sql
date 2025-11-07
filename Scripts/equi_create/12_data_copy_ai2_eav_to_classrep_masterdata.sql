@@ -52,7 +52,6 @@ SELECT
     t.equi_equi_id AS equi_equi_id,
     t.operational_AI2_record_pli AS ai2_reference,
     t.ai2_parent_sai AS ai2_parent_reference,
-    t.existing_s4_record AS s4_equi_id,
     t.s4_name AS s4_description,
     t.s4_category AS s4_category,
     t.s4_object_type AS s4_object_type,
