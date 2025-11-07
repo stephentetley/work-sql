@@ -79,15 +79,14 @@ CREATE OR REPLACE TABLE excel_uploader_equi_create.classification (
     char_value VARCHAR,
 );
 
+CREATE OR REPLACE TABLE excel_uploader_equi_create.batch_worklist (
+    equi VARCHAR NOT NULL,
+    batch_number INTEGER,
+);
+
 -- Views
 
-CREATE OR REPLACE VIEW excel_uploader_equi_create.vw_batch_worklist AS 
-SELECT 
-    row_number() OVER () AS idx,
-    ((idx - 1) // 75) + 1 AS batch_number,
-    t.equi AS equi, 
-FROM excel_uploader_equi_create.equipment_data t
-ORDER BY equi;
+
 
 CREATE OR REPLACE VIEW excel_uploader_equi_create.vw_equipment_data AS
 SELECT 
@@ -167,7 +166,7 @@ SELECT
     null AS "Operator", 
     null AS "Delivery date",
 FROM excel_uploader_equi_create.equipment_data t
-JOIN excel_uploader_equi_create.vw_batch_worklist t1 ON t1.equi = t.equi
+JOIN excel_uploader_equi_create.batch_worklist t1 ON t1.equi = t.equi
 ORDER BY t.equi;
 
 
@@ -179,7 +178,7 @@ SELECT
     t.characteristics AS "Characteristics",
     t.char_value AS "Char Value",
 FROM excel_uploader_equi_create.classification t
-JOIN excel_uploader_equi_create.vw_batch_worklist t1 ON t1.equi = t.equi
+JOIN excel_uploader_equi_create.batch_worklist t1 ON t1.equi = t.equi
 ORDER BY t.equi, t.class_name, t.characteristics;
 
 

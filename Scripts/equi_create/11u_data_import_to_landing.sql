@@ -7,7 +7,7 @@
 CREATE OR REPLACE TABLE ai2_landing.worklist AS
 SELECT 
     *
-FROM read_equi_replace_worklist(
+FROM read_equi_create_worklist(
     '/home/stephen/_working/work/2025/telemetry_october/netwtl_assetrep_worklist.xlsx'
 );
 

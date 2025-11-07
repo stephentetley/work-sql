@@ -1,6 +1,6 @@
 
 -- Worklist
-CREATE OR REPLACE MACRO read_equi_replace_worklist(xlsx_file) AS TABLE
+CREATE OR REPLACE MACRO read_equi_create_worklist(xlsx_file) AS TABLE
 SELECT 
     t."Operational AI2 record (PLI)" AS operational_AI2_record_pli,
     TRY_CAST(t."Batch" AS INTEGER) AS batch,

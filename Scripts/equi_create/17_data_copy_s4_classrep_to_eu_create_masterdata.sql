@@ -98,3 +98,10 @@ SELECT * FROM get_excel_loader_characteristics_for('ASSET_CONDITION', s4_classre
 UNION BY NAME
 SELECT * FROM get_excel_loader_characteristics_for('EAST_NORTH', s4_classrep.equi_east_north )
 );
+
+DELETE FROM excel_uploader_equi_create.batch_worklist;
+INSERT INTO excel_uploader_equi_create.batch_worklist BY NAME
+SELECT 
+    t.equi_equi_id AS equi,
+    t.batch AS batch_number,
+FROM ai2_landing.worklist t;
