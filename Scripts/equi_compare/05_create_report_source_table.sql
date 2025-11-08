@@ -19,7 +19,7 @@ SELECT
     t2.equi_name AS name_s4,
     t1.equi_name AS name_ai2,
     t2.standard_class AS s4_standard_class,
-    replace(t3.equipment_type, 'EQUIPMENT: ', '') AS ai2_equipment_type,
+    replace(t3.equipment_type, '/EQ(UI)?P(MEN)?T: ', '') AS ai2_equipment_type,
     t2.startup_date AS install_date_s4,
     t3.install_date AS install_date_ai2,
     t2.asset_status AS status_s4,

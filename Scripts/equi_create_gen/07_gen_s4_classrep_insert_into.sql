@@ -18,8 +18,8 @@ FROM cte1 t;
 
 CREATE OR REPLACE TEMPORARY TABLE insert_into_s4_classrep_tables AS
 WITH cte1 AS (
-    SELECT DISTINCT ON (t.class_description)
-        t.class_description,
+    SELECT DISTINCT ON (t.class_description2)
+        t.class_description2,
         t.class_table_name,
     FROM ai2_classes_db.ai2_classlists.vw_equiclass_characteristics t
 ), cte2 AS (
@@ -28,7 +28,7 @@ WITH cte1 AS (
         t1.class_table_name AS ai2_equi_type,
     FROM equi_create_gen.ai2_equipment t
     JOIN cte1 t1
-        ON t1.class_description = t.equipment_type_name
+        ON t1.class_description2 = t.equipment_type_name
     JOIN equi_create_gen.s4_equipment t2
         ON t2.ai2_plinum = t.ai2_plinum
 ), cte3 AS (

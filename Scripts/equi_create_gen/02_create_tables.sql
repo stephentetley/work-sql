@@ -27,7 +27,7 @@ CREATE OR REPLACE TABLE equi_create_gen.ai2_equipment (
 
 CREATE OR REPLACE VIEW equi_create_gen.vw_ai2_equipment_types_used AS
 SELECT DISTINCT ON (equipment_type_name)
-    equipment_type_name
+    equipment_type_name,
 FROM equi_create_gen.ai2_equipment;
 
 -- Worklist
@@ -44,7 +44,7 @@ CREATE OR REPLACE TEMPORARY MACRO read_ai2_masterdata_for_equipment(src) AS TABL
 SELECT 
     t."Reference" AS ai2_plinum,
     t."Common Name" AS common_name,
-    regexp_extract(t."Common Name", '(EQUIPMENT:.*)', 1) AS equipment_type_name,
+    udfx_db.udfx.get_equipment_type_from_common_name(t."Common Name") AS equipment_type_name,
 FROM read_xlsx(src :: VARCHAR, sheet='Sheet1', all_varchar=true) t;
 
 CREATE OR REPLACE TEMPORARY MACRO table_prefix(str) AS 

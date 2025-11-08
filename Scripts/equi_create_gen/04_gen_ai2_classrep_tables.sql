@@ -8,7 +8,7 @@ WITH cte1 AS (
         t.attribute_description, 
         t.ddl_data_type,
     FROM ai2_classes_db.ai2_classlists.vw_equiclass_characteristics t
-    WHERE EXISTS (FROM equi_create_gen.vw_ai2_equipment_types_used t1 WHERE t1.equipment_type_name = t.class_description) 
+    WHERE EXISTS (FROM equi_create_gen.vw_ai2_equipment_types_used t1 WHERE t1.equipment_type_name = t.class_description2) 
     GROUP BY ALL
 ), cte2 AS (
     SELECT 

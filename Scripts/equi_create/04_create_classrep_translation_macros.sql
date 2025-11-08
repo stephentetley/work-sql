@@ -1349,6 +1349,22 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
 WHERE t1.s4_class = 'VALVPR';
 
 
+CREATE OR REPLACE MACRO pressure_reducing_valve_water_to_valvpr(schema_name) AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS valv_inlet_size_mm,
+    NULL AS valv_rated_pressure_bar,
+FROM query_table(schema_name::VARCHAR || '.equiclass_pressure_reducing_valve_water') t
+JOIN ai2_classrep.ai2_to_s4_mapping t1 
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'VALVPR';
+
+
 CREATE OR REPLACE MACRO pressure_regulating_valve_to_valvre(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,

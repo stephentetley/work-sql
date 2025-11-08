@@ -24,9 +24,9 @@ DELETE FROM ai2_classrep.equi_masterdata;
 INSERT OR IGNORE INTO ai2_classrep.equi_masterdata BY NAME
 SELECT 
     t.ai2_reference AS ai2_reference,
-    t.common_name AS common_name,
-    regexp_extract(t.common_name, '.*/([^[/]+)/EQUIPMENT:', 1) AS item_name,
-    regexp_extract(t.common_name, '.*/(EQUIPMENT: .*)$', 1) AS equipment_type,
+    replace(t.common_name, '/EQPT:', '/EQUIPMENT:') AS common_name,
+    udfx_db.udfx.get_equipment_name_from_common_name(t.common_name) AS item_name,
+    udfx_db.udfx.get_equipment_type_from_common_name(t.common_name) AS equipment_type,
     (t.installed_from:: DATE) AS installed_from,
     TRY_CAST(eav4.attr_value AS DECIMAL) AS weight_kg,
     t.manufacturer AS manufacturer,

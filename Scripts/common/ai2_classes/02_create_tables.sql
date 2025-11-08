@@ -24,6 +24,7 @@ CREATE OR REPLACE MACRO read_asset_types_attributes(xlsx_file) AS TABLE
 SELECT 
     t."Code" AS class_name,
     t."Description" AS class_description,
+    replace(t."Description", 'EQUIPMENT: ', '') AS class_description2,
     t."AttributeSet" AS attribute_set_name,
     t."Attribute Name" AS attribute_name,
     t."Attribute Description" AS attribute_description,
@@ -49,6 +50,7 @@ FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true, sheet='Sheet1') t;
 CREATE OR REPLACE TABLE ai2_classlists.equi_characteristics (
     class_name VARCHAR NOT NULL,
     class_description VARCHAR NOT NULL,
+    class_description2 VARCHAR NOT NULL,
     class_derivation VARCHAR NOT NULL,
     attribute_set_name VARCHAR,
     class_table_name VARCHAR,
