@@ -1746,7 +1746,7 @@ SELECT
 FROM query_table(schema_name::VARCHAR || '.equiclass_submersible_centrifugal_pump') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
-JOIN ai2_classrep.equimixin_integral_motor t2 
+JOIN ai2_classrep.equimixin_integral_motor t2
     ON t2.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'PUMSMO';
 
