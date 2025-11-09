@@ -1355,9 +1355,9 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_inlet_size_mm,
     NULL AS manufacturers_asset_life_yr,
     NULL AS memo_line,
-    NULL AS valv_inlet_size_mm,
     NULL AS valv_rated_pressure_bar,
 FROM query_table(schema_name::VARCHAR || '.equiclass_pressure_reducing_valve_water') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
@@ -1371,9 +1371,9 @@ SELECT
     t."Location On Site" AS location_on_site,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    udfx_db.udfx.convert_to_millimetres(t."Size", t."Size Units") AS valv_bore_diameter_mm,
     NULL AS manufacturers_asset_life_yr,
     NULL AS memo_line,
-    NULL AS valv_bore_diameter_mm,
     NULL AS valv_flow_litres_per_sec,
 FROM query_table(schema_name::VARCHAR || '.equiclass_pressure_regulating_valve') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
