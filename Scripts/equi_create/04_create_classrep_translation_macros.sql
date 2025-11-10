@@ -1457,6 +1457,24 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
 WHERE t1.s4_class = 'LSTNRD';
 
 
+
+CREATE OR REPLACE MACRO radio_tx_rx_control_equipment_to_netwra(schema_name) AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+    NULL AS ip_rating,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS netw_supply_voltage,
+    NULL AS netw_supply_voltage_units,
+FROM query_table(schema_name::VARCHAR || '.equiclass_radio_tx_rx_control_equipment') t
+JOIN ai2_classrep.ai2_to_s4_mapping t1
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'NETWRA';
+
+
 CREATE OR REPLACE MACRO ram_pump_to_lstnrd(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
