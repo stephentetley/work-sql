@@ -26,7 +26,7 @@ CREATE SCHEMA IF NOT EXISTS excel_uploader_equi_change;
 
 CREATE OR REPLACE TABLE excel_uploader_equi_change.change_request_header (
     usmd_crequest VARCHAR,
-    change_request_decription VARCHAR NOT NULL,
+    change_request_decription VARCHAR,
 );
 
 CREATE OR REPLACE VIEW excel_uploader_equi_change.vw_change_request_header AS
