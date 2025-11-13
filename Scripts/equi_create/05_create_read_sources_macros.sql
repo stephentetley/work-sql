@@ -20,7 +20,7 @@ FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true, sheet='Worklist') AS t;
 CREATE OR REPLACE MACRO read_ai2_export_masterdata(xlsx_file) AS TABLE
 SELECT 
     t."Reference" AS 'ai2_reference',
-    t."Common Name" AS 'common_name',
+    udfx_db.udfx.expand_common_name(t."Common Name") AS 'common_name',
     excel_text(t."Installed From" :: DOUBLE, 'dd.MM.yyyy').strptime('%d.%m.%Y') AS 'installed_from',
     t."Manufacturer" AS 'manufacturer',
     t."Model" AS 'model',

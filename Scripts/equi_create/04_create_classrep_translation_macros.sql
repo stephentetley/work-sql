@@ -477,6 +477,30 @@ JOIN ai2_classrep.equimixin_integral_motor t2
     ON t2.ai2_reference = t.ai2_reference    
 WHERE t1.s4_class = 'PUMPDI';
 
+
+CREATE OR REPLACE MACRO differential_pressure_flow_instrument_to_pstndi(schema_name) AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    t."Range min" AS pstn_range_min,
+    t."Range max" AS pstn_range_max,
+    upper(t."Range unit") AS pstn_range_units,
+    udf_local.format_signal3(t."Signal min", t."Signal max", t."Signal unit") AS pstn_signal_type,
+
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+    NULL AS ip_rating,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS pstn_pressure_instrument_type,
+    NULL AS pstn_supply_voltage,
+    NULL AS pstn_supply_voltage_units,
+FROM query_table(schema_name::VARCHAR || '.equiclass_differential_pressure_flow_instrument') t
+JOIN ai2_classrep.ai2_to_s4_mapping t1
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'PSTNDI';
+
+
 CREATE OR REPLACE MACRO direct_on_line_starter_to_stardo(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
@@ -712,18 +736,18 @@ CREATE OR REPLACE MACRO gauge_pressure_to_pstndi(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    t."Range min" AS pstn_range_min,
+    t."Range max" AS pstn_range_max,
+    upper(t."Range unit") AS pstn_range_units,
+    udf_local.format_signal3(t."Signal min", t."Signal max", t."Signal unit") AS pstn_signal_type,
+    t."Voltage In" AS pstn_supply_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS pstn_supply_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
     NULL AS ip_rating,
     NULL AS manufacturers_asset_life_yr,
     NULL AS memo_line,
     NULL AS pstn_pressure_instrument_type,
-    NULL AS pstn_range_max,
-    NULL AS pstn_range_min,
-    NULL AS pstn_range_units,
-    NULL AS pstn_signal_type,
-    NULL AS pstn_supply_voltage,
-    NULL AS pstn_supply_voltage_units,
 FROM query_table(schema_name::VARCHAR || '.equiclass_gauge_pressure') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -1153,6 +1177,29 @@ JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
 WHERE t1.s4_class = 'NETWEN';
 
+
+CREATE OR REPLACE MACRO nitrate_instrument_to_analno(schema_name) AS TABLE
+SELECT
+    t1.equi_equi_id AS equipment_id,
+    t."Location On Site" AS location_on_site,
+    t."Range min" AS anal_range_min,
+    t."Range max" AS anal_range_max,
+    upper(t."Range unit") AS anal_range_units,
+    udf_local.format_signal3(t."Signal min", t."Signal max", t."Signal unit") AS anal_signal_type,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+    NULL AS anal_instrument_power_w,
+    NULL AS anal_rated_voltage,
+    NULL AS anal_rated_voltage_units,
+    NULL AS ip_rating,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+FROM query_table(schema_name::VARCHAR || '.equiclass_nitrate_instrument') t
+JOIN ai2_classrep.ai2_to_s4_mapping t1
+    ON t1.ai2_reference = t.ai2_reference
+WHERE t1.s4_class = 'ANALNO';
+
+
 CREATE OR REPLACE MACRO non_immersible_motor_to_emtrin(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
@@ -1385,18 +1432,18 @@ CREATE OR REPLACE MACRO pressure_switches_to_pstndi(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    t."Range min" AS pstn_range_min,
+    t."Range max" AS pstn_range_max,
+    upper(t."Range unit") AS pstn_range_units,
+    udf_local.format_signal3(t."Signal min", t."Signal max", t."Signal unit") AS pstn_signal_type,
+    t."Voltage In" AS pstn_supply_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS pstn_supply_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
     NULL AS ip_rating,
     NULL AS manufacturers_asset_life_yr,
     NULL AS memo_line,
     NULL AS pstn_pressure_instrument_type,
-    NULL AS pstn_range_max,
-    NULL AS pstn_range_min,
-    NULL AS pstn_range_units,
-    NULL AS pstn_signal_type,
-    NULL AS pstn_supply_voltage,
-    NULL AS pstn_supply_voltage_units,
 FROM query_table(schema_name::VARCHAR || '.equiclass_pressure_switches') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference

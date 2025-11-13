@@ -43,8 +43,8 @@ FROM read_xlsx(src :: VARCHAR, sheet='Worklist', all_varchar=true) t;
 CREATE OR REPLACE TEMPORARY MACRO read_ai2_masterdata_for_equipment(src) AS TABLE
 SELECT 
     t."Reference" AS ai2_plinum,
-    t."Common Name" AS common_name,
-    udfx_db.udfx.get_equipment_type_from_common_name(t."Common Name") AS equipment_type_name,
+    udfx_db.udfx.expand_common_name(t."Common Name") AS common_name,
+    udfx_db.udfx.get_equipment_type_from_common_name(common_name) AS equipment_type_name,
 FROM read_xlsx(src :: VARCHAR, sheet='Sheet1', all_varchar=true) t;
 
 CREATE OR REPLACE TEMPORARY MACRO table_prefix(str) AS 
