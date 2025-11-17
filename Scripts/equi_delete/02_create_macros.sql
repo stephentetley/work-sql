@@ -5,6 +5,7 @@ SELECT
     t."S4 Equi Id" AS s4_equi_id,
     t."S4 Deleted Name" AS s4_deleted_name,
     t."Batch" AS batch,
+    t."Solution ID" AS solution_id,
 FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=TRUE, sheet='Sheet1') AS t;
 
 
