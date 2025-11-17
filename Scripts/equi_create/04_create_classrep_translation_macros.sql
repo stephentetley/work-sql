@@ -374,8 +374,16 @@ CREATE OR REPLACE MACRO control_panel_to_conpnl(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    t."Current In" AS conp_rated_current_a,
+    t."Voltage In" AS conp_rated_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS conp_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS conp_number_of_phase,
+    NULL AS conp_number_of_ways,
+    NULL AS conp_sld_ref_no,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_control_panel') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1 
     ON t1.ai2_reference = t.ai2_reference
@@ -482,17 +490,16 @@ CREATE OR REPLACE MACRO differential_pressure_flow_instrument_to_pstndi(schema_n
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    'DIFFERENTIAL' AS pstn_pressure_instrument_type,
     t."Range min" AS pstn_range_min,
     t."Range max" AS pstn_range_max,
     upper(t."Range unit") AS pstn_range_units,
     udf_local.format_signal3(t."Signal min", t."Signal max", t."Signal unit") AS pstn_signal_type,
-
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
     NULL AS ip_rating,
     NULL AS manufacturers_asset_life_yr,
     NULL AS memo_line,
-    NULL AS pstn_pressure_instrument_type,
     NULL AS pstn_supply_voltage,
     NULL AS pstn_supply_voltage_units,
 FROM query_table(schema_name::VARCHAR || '.equiclass_differential_pressure_flow_instrument') t
@@ -1093,6 +1100,8 @@ CREATE OR REPLACE MACRO mcc_unit_to_mccepa(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,
     t."Location On Site" AS location_on_site,
+    t."Voltage In" AS mcce_rated_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS mcce_rated_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
     NULL AS ip_rating,
@@ -1101,8 +1110,6 @@ SELECT
     NULL AS mcce_number_of_phase,
     NULL AS mcce_number_of_ways,
     NULL AS mcce_rated_current_a,
-    NULL AS mcce_rated_voltage,
-    NULL AS mcce_rated_voltage_units,
     NULL AS mcce_sld_ref_no,
     NULL AS memo_line,
 FROM query_table(schema_name::VARCHAR || '.equiclass_mcc_unit') t
@@ -2036,8 +2043,23 @@ CREATE OR REPLACE MACRO ups_systems_to_podeup(schema_name) AS TABLE
 SELECT
     t1.equi_equi_id AS equipment_id,  
     t."Location On Site" AS location_on_site,
+    t."IP Rating" AS ip_rating,
+    t."Current In" AS pode_input_current_a,
+    t."Voltage In" AS pode_input_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage In (AC Or DC)") AS pode_input_voltage_units,
+    t."No of Phases" AS pode_number_of_phase,
+    t."Voltage Out" AS pode_output_voltage,
+    udf_local.acdc_3_to_voltage_units(t."Voltage Out (AC Or DC)") AS pode_output_voltage_units,
     'TEMP_VALUE' AS uniclass_code,
     'TEMP_VALUE' AS uniclass_desc,
+    NULL AS manufacturers_asset_life_yr,
+    NULL AS memo_line,
+    NULL AS pode_battery_backup_time_min,
+    NULL AS pode_battery_recharge_time_h,
+    NULL AS pode_output_current_a,
+    NULL AS pode_rated_temperature_deg_c,
+    NULL AS pode_sld_ref_no,
+    NULL AS rated_power_kva, -- TODO
 FROM query_table(schema_name::VARCHAR || '.equiclass_ups_systems') t
 JOIN ai2_classrep.ai2_to_s4_mapping t1
     ON t1.ai2_reference = t.ai2_reference
