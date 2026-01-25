@@ -1,7 +1,7 @@
 
 
 DELETE FROM masterdata.s4_equipment;
-INSERT INTO masterdata.s4_equipment BY NAME
+INSERT OR REPLACE INTO masterdata.s4_equipment BY NAME
 SELECT 
     CAST(t."EQUIPMENT_NUMBER(EQUNR)" AS BIGINT) AS equipment_id,
     t."EQUIPMENT_DESC(EQKTX)" AS equipment_name,
@@ -51,6 +51,8 @@ SELECT
     t."status" AS user_status,
     t."common_name" AS common_name,
     t."gen_installation_name" AS site_or_installation_name,
-FROM masterdata_landing.vw_equipment_all t;
+    t."sai_num" AS sai_number,
+    t."equi_sort" AS equi_sort,
+FROM masterdata_landing.vw_ai2_equipment_all t;
     
 

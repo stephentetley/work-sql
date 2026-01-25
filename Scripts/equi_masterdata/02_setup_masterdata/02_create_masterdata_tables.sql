@@ -68,6 +68,8 @@ CREATE OR REPLACE TABLE masterdata.ai2_equipment (
     user_status VARCHAR,
     common_name VARCHAR,
     site_or_installation_name VARCHAR,
+    sai_number VARCHAR,
+    equi_sort VARCHAR,
     PRIMARY KEY (pli_number)
 );    
     

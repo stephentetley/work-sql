@@ -1,78 +1,82 @@
 
 CREATE OR REPLACE VIEW masterdata_landing.vw_plant_equipment AS
 SELECT 
-    coalesce("SubInstallationCommonName", "InstallationCommonName") AS gen_installation_name,
-    "PlantEquipReference" AS pli_num,
-    "PlantReference" AS sai_num,
-    "PlantCommonName" AS common_name,
+    t."PlantEquipReference" AS pli_num,
+    t."PlantReference" AS sai_num,
+    t."PlantCommonName" AS common_name,
     NULL AS installed_from_date,
-    regexp_extract("PlantCommonName", '/([^/]*)$', 1) AS equi_name,
-    "PlantEquipManufacturer" AS manufacturer,
-    "PlantEquipModel" AS model,
-    "PlantEquipStatus" AS status,
-    "PlantEquipAssetTypeCode" AS equi_type_code,
-    "PlantEquipAssetTypeDescription" as equipment_type,
-FROM masterdata_landing.ai2_export_all
+    regexp_extract(t."PlantCommonName", '/([^/]*)$', 1) AS equi_name,
+    t."PlantEquipManufacturer" AS manufacturer,
+    t."PlantEquipModel" AS model,
+    t."PlantEquipStatus" AS status,
+    t."PlantEquipAssetTypeCode" AS equi_type_code,
+    t."PlantEquipAssetTypeDescription" as equipment_type,
+    coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS gen_installation_name,
+    'Plant' as equi_sort,
+FROM masterdata_landing.ai2_export_all t
 WHERE 
-    "PlantEquipRuleDeleted" = '0'
-AND "PlantEquipReference" IS NOT NULL
+    t."PlantEquipRuleDeleted" = '0'
+AND t."PlantEquipReference" IS NOT NULL
 GROUP BY ALL;
 
 CREATE OR REPLACE VIEW masterdata_landing.vw_sub_plant_equipment AS
 SELECT 
-    coalesce("SubInstallationCommonName", "InstallationCommonName") AS gen_installation_name,
-    "SubPlantEquipReference" AS pli_num,
-    "SubPlantReference" AS sai_num,
-    "SubPlantCommonName" AS common_name,
+    t."SubPlantEquipReference" AS pli_num,
+    t."SubPlantReference" AS sai_num,
+    t."SubPlantCommonName" AS common_name,
     NULL AS installed_from_date,
-    regexp_extract("SubPlantCommonName", '/([^/]*)$', 1) AS equi_name, 
-    "SubPlantEquipManufacturer" AS manufacturer,
-    "SubPlantEquipModel" AS model,
-    "SubPlantEquipStatus" AS status,
-    "SubPlantEquipAssetTypeCode" AS equi_type_code,
-    "SubPlantEquipAssetTypeDescription" as equipment_type,
-    FROM masterdata_landing.ai2_export_all
+    regexp_extract(t."SubPlantCommonName", '/([^/]*)$', 1) AS equi_name, 
+    t."SubPlantEquipManufacturer" AS manufacturer,
+    t."SubPlantEquipModel" AS model,
+    t."SubPlantEquipStatus" AS status,
+    t."SubPlantEquipAssetTypeCode" AS equi_type_code,
+    t."SubPlantEquipAssetTypeDescription" as equipment_type,
+    coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS gen_installation_name,
+    'SubPlant' as equi_sort,
+    FROM masterdata_landing.ai2_export_all t
 WHERE 
-    "SubPlantEquipRuleDeleted" = '0'
-AND "SubPlantEquipReference" IS NOT NULL
+    t."SubPlantEquipRuleDeleted" = '0'
+AND t."SubPlantEquipReference" IS NOT NULL
 GROUP BY ALL;
 
 CREATE OR REPLACE VIEW masterdata_landing.vw_plant_item_equipment AS
 SELECT 
-    coalesce("SubInstallationCommonName", "InstallationCommonName") AS gen_installation_name,
-    "PlantItemEquipReference" AS pli_num,
-    "PlantItemReference" AS sai_num,
+    t."PlantItemEquipReference" AS pli_num,
+    t."PlantItemReference" AS sai_num,
     "PlantItemCommonName" AS common_name,
     NULL AS installed_from_date,
-    regexp_extract("PlantItemCommonName", '/([^/]*)$', 1) AS equi_name, 
-    "PlantItemEquipManufacturer" AS manufacturer,
-    "PlantItemEquipModel" AS model,
-    "PlantItemEquipStatus" AS status,
-    "PlantItemEquipAssetTypeCode" AS equi_type_code,
-    "PlantItemEquipAssetTypeDescription" as equipment_type,
-    FROM masterdata_landing.ai2_export_all
+    regexp_extract(t."PlantItemCommonName", '/([^/]*)$', 1) AS equi_name, 
+    t."PlantItemEquipManufacturer" AS manufacturer,
+    t."PlantItemEquipModel" AS model,
+    t."PlantItemEquipStatus" AS status,
+    t."PlantItemEquipAssetTypeCode" AS equi_type_code,
+    t."PlantItemEquipAssetTypeDescription" as equipment_type,
+    coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS gen_installation_name,
+    'PlantItem' as equi_sort,
+    FROM masterdata_landing.ai2_export_all t 
 WHERE 
-    "PlantItemEquipRuleDeleted" = '0'
-AND "PlantItemEquipReference" IS NOT NULL
+    t."PlantItemEquipRuleDeleted" = '0'
+AND t."PlantItemEquipReference" IS NOT NULL
 GROUP BY ALL;
 
 CREATE OR REPLACE VIEW masterdata_landing.vw_sub_plant_item_equipment AS
 SELECT 
-    coalesce("SubInstallationCommonName", "InstallationCommonName") AS gen_installation_name,
-    "SubPlantItemEquipReference" AS pli_num,
-    "SubPlantItemReference" AS sai_num,
-    "SubPlantItemCommonName" AS common_name,
+    t."SubPlantItemEquipReference" AS pli_num,
+    t."SubPlantItemReference" AS sai_num,
+    t."SubPlantItemCommonName" AS common_name,
     NULL AS installed_from_date,
-    regexp_extract("SubPlantItemCommonName", '/([^/]*)$', 1) AS equi_name, 
-    "SubPlantItemEquipManufacturer" AS manufacturer,
-    "SubPlantItemEquipModel" AS model,
-    "SubPlantItemEquipStatus" AS status,
-    "SubPlantItemEquipAssetTypeCode" AS equi_type_code,
-    "SubPlantItemEquipAssetTypeDescription" as equipment_type,
-FROM masterdata_landing.ai2_export_all
+    regexp_extract(t."SubPlantItemCommonName", '/([^/]*)$', 1) AS equi_name, 
+    t."SubPlantItemEquipManufacturer" AS manufacturer,
+    t."SubPlantItemEquipModel" AS model,
+    t."SubPlantItemEquipStatus" AS status,
+    t."SubPlantItemEquipAssetTypeCode" AS equi_type_code,
+    t."SubPlantItemEquipAssetTypeDescription" as equipment_type,
+    coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS gen_installation_name,
+    'SubPlantItem' as equi_sort,
+FROM masterdata_landing.ai2_export_all t
 WHERE 
-    "SubPlantItemEquipRuleDeleted" = '0'
-AND "SubPlantItemEquipReference" IS NOT NULL
+    t."SubPlantItemEquipRuleDeleted" = '0'
+AND t."SubPlantItemEquipReference" IS NOT NULL
 GROUP BY ALL;
 
 
