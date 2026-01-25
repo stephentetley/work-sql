@@ -4,7 +4,7 @@ LOAD rusty_sheet;
 -- Needs variable `ai2_masterdata_path` setting
 
 
--- Source data has pre 1900-01-01 dates which cause errors
+-- Looks like the source data has malformed pre-1900 dates...
 CREATE OR REPLACE TABLE masterdata_landing.ai2_export_all AS
 SELECT *
 FROM read_sheet(
@@ -13,7 +13,6 @@ FROM read_sheet(
     nulls = ['NULL'],
     error_as_null=true,
     columns={'*FromDate': 'VARCHAR'}
-
 );
 
 
