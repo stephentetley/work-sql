@@ -89,14 +89,79 @@ SELECT * FROM masterdata_landing.vw_plant_item_equipment
 UNION BY NAME
 SELECT * FROM masterdata_landing.vw_sub_plant_item_equipment;
 
---
---
---SELECT COUNT(pli_num) FROM masterdata_landing.vw_equipment_all;
+
+-- B->A
+CREATE OR REPLACE VIEW masterdata_landing.vw_ai2_sub_plant_to_plant AS 
+SELECT 
+    t.pli_num AS pli_child,
+    t.sai_num AS sai_child,
+    t1."PlantEquipReference" AS pli_parent,
+    t1."PlantReference" AS sai_parent, 
+    'SubPlant_to_Plant' as reference_sort,
+FROM masterdata_landing.vw_sub_plant_equipment t
+JOIN masterdata_landing.ai2_export_all t1 ON t1."SubPlantEquipReference" = t.pli_num
+WHERE t1."PlantEquipReference" IS NOT NULL;
+
+-- D->C
+CREATE OR REPLACE VIEW masterdata_landing.vw_ai2_sub_plant_item_to_plant_item AS 
+SELECT 
+    t.pli_num AS pli_child,
+    t.sai_num AS sai_child,
+    t1."PlantItemEquipReference" AS pli_parent,
+    t1."PlantItemReference" AS sai_parent, 
+    'SubPlantItem_to_PlantItem' as reference_sort,    
+FROM masterdata_landing.vw_sub_plant_item_equipment t
+JOIN masterdata_landing.ai2_export_all t1 ON t1."SubPlantItemEquipReference" = t.pli_num
+WHERE t1."PlantItemEquipReference" IS NOT NULL;
+
+-- C->A
+CREATE OR REPLACE VIEW masterdata_landing.vw_ai2_plant_item_to_plant AS 
+SELECT 
+    t.pli_num AS pli_child,
+    t.sai_num AS sai_child,
+    t1."PlantEquipReference" AS pli_parent,
+    t1."PlantReference" AS sai_parent, 
+    'PlantItem_to_Plant' as reference_sort,
+FROM masterdata_landing.vw_plant_item_equipment t
+JOIN masterdata_landing.ai2_export_all t1 ON t1."PlantItemEquipReference" = t.pli_num
+WHERE t1."PlantEquipReference" IS NOT NULL AND t1."SubPlantEquipReference" IS NULL;
+
+-- C->B
+CREATE OR REPLACE VIEW masterdata_landing.vw_ai2_plant_item_to_sub_plant AS 
+SELECT 
+    t.pli_num AS pli_child,
+    t.sai_num AS sai_child,
+    t1."SubPlantEquipReference" AS pli_parent,
+    t1."SubPlantReference" AS sai_parent, 
+    'PlantItem_to_SubPlant' as reference_sort,
+FROM masterdata_landing.vw_plant_item_equipment t
+JOIN masterdata_landing.ai2_export_all t1 ON t1."PlantItemEquipReference" = t.pli_num
+WHERE t1."SubPlantEquipReference" IS NOT NULL;
+
+-- D->A
+CREATE OR REPLACE VIEW masterdata_landing.vw_ai2_sub_plant_item_to_plant AS 
+SELECT 
+    t.pli_num AS pli_child,
+    t.sai_num AS sai_child,
+    t1."PlantEquipReference" AS pli_parent,
+    t1."PlantReference" AS sai_parent, 
+    'SubPlantItem_to_Plant' as reference_sort,
+FROM masterdata_landing.vw_sub_plant_item_equipment t
+JOIN masterdata_landing.ai2_export_all t1 ON t1."SubPlantItemEquipReference" = t.pli_num
+WHERE t1."PlantEquipReference" IS NOT NULL;
 
 
---DESCRIBE SELECT * FROM masterdata_landing.ai2_export_all;
 
-
+CREATE OR REPLACE VIEW masterdata_landing.vw_ai2_parent_references AS
+SELECT * FROM masterdata_landing.vw_ai2_sub_plant_to_plant
+UNION BY NAME
+SELECT * FROM masterdata_landing.vw_ai2_sub_plant_item_to_plant_item
+UNION BY NAME
+SELECT * FROM masterdata_landing.vw_ai2_plant_item_to_plant
+UNION BY NAME
+SELECT * FROM masterdata_landing.vw_ai2_plant_item_to_sub_plant
+UNION BY NAME
+SELECT * FROM masterdata_landing.vw_ai2_sub_plant_item_to_plant;
 
 
 

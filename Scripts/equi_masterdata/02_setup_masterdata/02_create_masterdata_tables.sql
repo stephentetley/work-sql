@@ -73,5 +73,11 @@ CREATE OR REPLACE TABLE masterdata.ai2_equipment (
     PRIMARY KEY (pli_number)
 );    
     
-
-
+CREATE OR REPLACE TABLE masterdata.ai2_parent_references (
+    child_pli_number VARCHAR NOT NULL,
+    child_sai_number VARCHAR NOT NULL,
+    parent_pli_number VARCHAR NOT NULL,
+    parent_sai_number VARCHAR NOT NULL,
+    reference_sort VARCHAR,
+    PRIMARY KEY (child_pli_number)
+); 

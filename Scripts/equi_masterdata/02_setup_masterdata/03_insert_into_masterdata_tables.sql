@@ -56,3 +56,12 @@ SELECT
 FROM masterdata_landing.vw_ai2_equipment_all t;
     
 
+DELETE FROM masterdata.ai2_parent_references;
+INSERT OR REPLACE INTO masterdata.ai2_parent_references BY NAME
+SELECT 
+    t."pli_child" AS child_pli_number,
+    t."sai_child" AS child_sai_number,
+    t."pli_parent" AS parent_pli_number,
+    t."sai_parent" AS parent_sai_number,
+    t."reference_sort" AS reference_sort,
+FROM masterdata_landing.vw_ai2_parent_references t;
