@@ -1,8 +1,8 @@
 # make ztables
 
-Make a script like this and invoke DuckDB with a command to read it.
+Make a script like the one below and invoke DuckDB with a command to read it.
 
-> duckdb my_database_class_db.duckdb -c ".read cli_make_ztables.sql"
+> duckdb my_database_db.duckdb -c ".read FILENAME"
 
 ``` {.sql} 
 

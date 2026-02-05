@@ -17,15 +17,14 @@ SELECT
     t."Remarks" AS 'remarks',
 FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true) AS t;
 
+-- Setup the variables `zt_eqobjl_path` before running this file
+-- SET VARIABLE zt_eqobjl_path = 'path/to/zt_eqobj_20260205.XLSX';
 
 INSERT INTO s4_ztables.eqobjl
 FROM read_ztable_eqobjl(
     getvariable('zt_eqobjl_path')
 );
 
--- To use at a SQL prompt, eval the file then:
-
--- EXECUTE load_ztable_eqobjl('/home/stephen/_working/work/2025/asset_data_facts/s4_ztables/eqobjl_2025.03.17.XLSX');
 
 
 
