@@ -1,14 +1,12 @@
 CREATE SCHEMA IF NOT EXISTS s4_ztables;
 
 
-
 CREATE OR REPLACE TABLE s4_ztables.eqobjl (
     structure_indicator VARCHAR NOT NULL,
     object_type VARCHAR NOT NULL,
     object_type_1 VARCHAR NOT NULL,
     remarks VARCHAR
 );
-
 
 --  eqobjl
 CREATE OR REPLACE MACRO read_ztable_eqobjl(xlsx_file) AS TABLE
@@ -20,9 +18,10 @@ SELECT
 FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true) AS t;
 
 
-PREPARE load_ztable_eqobjl AS 
-    INSERT INTO s4_ztables.eqobjl
-    FROM read_ztable_eqobjl($1);
+INSERT INTO s4_ztables.eqobjl
+FROM read_ztable_eqobjl(
+    getvariable('zt_eqobjl_path')
+);
 
 -- To use at a SQL prompt, eval the file then:
 

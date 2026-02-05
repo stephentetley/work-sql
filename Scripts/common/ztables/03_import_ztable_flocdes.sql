@@ -17,13 +17,10 @@ SELECT
 FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true) AS t;
 
 
-PREPARE load_ztable_flocdes AS 
-    INSERT INTO s4_ztables.flocdes
-    FROM read_ztable_flocdes($1);
+-- Setup the variables `zt_flocdes_path` before running this file
+-- SET VARIABLE zt_flocdes_path = 'path/to/zt_flocdes_20260205.XLSX';
 
--- To use at a SQL prompt, eval the file then:
-
--- EXECUTE load_ztable_flocdes('/home/stephen/_working/work/2025/asset_data_facts/s4_ztables/flocdes_2025.03.17.XLSX');
-
-
-
+INSERT INTO s4_ztables.flocdes
+FROM read_ztable_flocdes(
+    getvariable('zt_flocdes_path')
+);

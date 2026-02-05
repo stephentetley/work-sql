@@ -19,13 +19,13 @@ SELECT
     t."Remarks" AS 'remarks',
 FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true) AS t;
 
-PREPARE load_ztable_flobjl AS 
-    INSERT INTO s4_ztables.flobjl
-    FROM read_ztable_flobjl($1);
+-- Setup the variables `zt_flobjl_path` before running this file
+-- SET VARIABLE zt_eqobjl_path = 'path/to/zt_flobjl_20260205.XLSX';
 
--- To use at a SQL prompt, eval the file then:
-
--- EXECUTE load_ztable_flobjl('/home/stephen/_working/work/2025/asset_data_facts/s4_ztables/flobjl_2025.03.17.XLSX');
+INSERT INTO s4_ztables.flobjl
+FROM read_ztable_flobjl(
+    getvariable('zt_flobjl_path')
+);
 
 
 

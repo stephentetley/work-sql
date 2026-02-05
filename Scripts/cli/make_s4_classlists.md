@@ -1,4 +1,4 @@
-# make s34 classlists
+# make s4 classlists
 
 Make a script like this and invoke DuckDB with a command to read it.
 

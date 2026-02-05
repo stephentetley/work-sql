@@ -17,12 +17,14 @@ SELECT
     t."Remarks" AS 'remarks',
 FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true) AS t;
 
-PREPARE load_ztable_obj AS 
-    INSERT INTO s4_ztables.obj
-    FROM read_ztable_obj($1);
 
--- To use at a SQL prompt, eval the file then:
+-- Setup the variables `zt_obj_path` before running this file
+-- SET VARIABLE zt_obj_path = 'path/to/zt_objtype_manuf_20260205.XLSX';
 
--- EXECUTE load_ztable_obj('/home/stephen/_working/work/2025/asset_data_facts/s4_ztables/obj_2025.03.17.XLSX');
+INSERT INTO s4_ztables.obj
+FROM read_ztable_obj(
+    getvariable('zt_obj_path')
+);
+
 
 

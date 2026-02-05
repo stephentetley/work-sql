@@ -15,14 +15,14 @@ SELECT
     t."Model Number" AS 'model',
 FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true) AS t;
 
-PREPARE load_ztable_manuf_model AS 
-    INSERT INTO s4_ztables.manuf_model
-    FROM read_ztable_manuf_model($1);
 
--- To use at a SQL prompt, eval the file then:
+-- Setup the variables `zt_manuf_model_path` before running this file
+-- SET VARIABLE zt_manuf_model_path = 'path/to/zt_manuf_20260205.XLSX';
 
--- EXECUTE load_ztable_manuf_model('/home/stephen/_working/work/2025/asset_data_facts/s4_ztables/manuf_model_2025.03.17.XLSX');
-
+INSERT INTO s4_ztables.manuf_model
+FROM read_ztable_manuf_model(
+    getvariable('zt_manuf_model_path')
+);
 
 
 
