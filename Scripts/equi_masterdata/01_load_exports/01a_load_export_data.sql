@@ -12,7 +12,7 @@ SELECT * FROM read_sheet(
     getvariable('s4_masterdata_path'),
     sheet='Equipment_Report',
     error_as_null=TRUE,
-    columns = {'EQUIPMENT_NUMBER(EQUNR)', 'BIGINT'}
+    columns = {'EQUIPMENT_NUMBER(EQUNR)': 'BIGINT'}
 );
 
 
