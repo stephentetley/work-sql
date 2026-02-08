@@ -1,20 +1,20 @@
+.print 'Running 01_load_export_data.sql...'
+
 INSTALL rusty_sheet FROM community;
 LOAD rusty_sheet;
 
 CREATE SCHEMA IF NOT EXISTS masterdata_landing;
 
-SET VARIABLE aib_master_globpath = '/home/stephen/_working/work/2026/masterdata/02_06/ai2/*.xlsb';
+-- ai2 export:
+-- Read fixed set of columns and do multiple passes to keep 
+-- memory usage low. Do no processing until the data is stored 
+-- on disk otherwise we are getting out-of-memory memory issues
 
 
--- SELECT * FROM analyze_sheets([getvariable('aib_master_globpath')], sheets=['Sheet1'], analyze_rows=20);
+SELECT getvariable('aib_master_globpath') AS aib_master_globpath;
+.print 'Loading masterdata_landing.ai2_plant...'
 
--- TODO read fixed set of columns and do multiple passes
--- to keep memory usage low
--- *InstalledFromDate string format is `hours:mins:secs` where 
--- hours = number of positive hours from 1899-12-20.
--- Dates before this are stored as '1898-01-01 00:00:00.000' 
--- '%Y-%m-%d %H:%M:%S'
-CREATE OR REPLACE TABLE masterdata_landing.ai2_plant_equi AS
+CREATE OR REPLACE TABLE masterdata_landing.ai2_plant AS
 SELECT
     t."InstallationCommonName",
     t."SubInstallationCommonName",
@@ -33,7 +33,70 @@ WHERE
 AND t."PlantEquipReference" IS NOT NULL;
 
 
-SET VARIABLE floc_master_globpath = '/home/stephen/_working/work/2026/masterdata/02_06/ih06_masterdata/*.xlsx';
+.print 'Loading masterdata_landing.ai2_sub_plant...'
+
+CREATE OR REPLACE TABLE masterdata_landing.ai2_sub_plant AS
+SELECT
+    t."InstallationCommonName",
+    t."SubInstallationCommonName",
+    t."SubPlantEquipReference",
+    t."SubPlantEquipInstalledFromDate",
+    t."SubPlantReference",
+    t."SubPlantCommonName",
+    t."SubPlantEquipManufacturer",
+    t."SubPlantEquipModel",
+    t."SubPlantEquipStatus",
+    t."SubPlantEquipAssetTypeCode",
+    t."SubPlantEquipAssetTypeDescription",
+FROM read_sheets([getvariable('aib_master_globpath')], sheets=['Sheet1'], error_as_null=true, nulls=['NULL'], columns={'*FromDate': 'varchar'}) t
+WHERE
+    t."SubPlantEquipRuleDeleted" = '0'
+AND t."SubPlantEquipReference" IS NOT NULL;
+
+.print 'Loading masterdata_landing.ai2_plant_item...'
+
+CREATE OR REPLACE TABLE masterdata_landing.ai2_plant_item AS
+SELECT
+    t."InstallationCommonName",
+    t."SubInstallationCommonName",
+    t."PlantItemEquipReference",
+    t."PlantItemEquipInstalledFromDate",
+    t."PlantItemReference",
+    t."PlantItemCommonName",
+    t."PlantItemEquipManufacturer",
+    t."PlantItemEquipModel",
+    t."PlantItemEquipStatus",
+    t."PlantItemEquipAssetTypeCode",
+    t."PlantItemEquipAssetTypeDescription",
+FROM read_sheets([getvariable('aib_master_globpath')], sheets=['Sheet1'], error_as_null=true, nulls=['NULL'], columns={'*FromDate': 'varchar'}) t
+WHERE
+    t."PlantItemEquipRuleDeleted" = '0'
+AND t."PlantItemEquipReference" IS NOT NULL;
+
+
+.print 'Loading masterdata_landing.ai2_sub_plant_item...'
+
+CREATE OR REPLACE TABLE masterdata_landing.ai2_sub_plant_item AS
+SELECT
+    t."InstallationCommonName",
+    t."SubInstallationCommonName",
+    t."SubPlantItemEquipReference",
+    t."SubPlantItemEquipInstalledFromDate",
+    t."SubPlantItemReference",
+    t."SubPlantItemCommonName",
+    t."SubPlantItemEquipManufacturer",
+    t."SubPlantItemEquipModel",
+    t."SubPlantItemEquipStatus",
+    t."SubPlantItemEquipAssetTypeCode",
+    t."SubPlantItemEquipAssetTypeDescription",
+FROM read_sheets([getvariable('aib_master_globpath')], sheets=['Sheet1'], error_as_null=true, nulls=['NULL'], columns={'*FromDate': 'varchar'}) t
+WHERE
+    t."SubPlantItemEquipRuleDeleted" = '0'
+AND t."SubPlantItemEquipReference" IS NOT NULL;
+
+
+SELECT getvariable('floc_master_globpath') AS floc_master_globpath;
+.print 'Loading masterdata_landing.s4_floc_data...'
 
 CREATE OR REPLACE TABLE masterdata_landing.s4_floc_data AS
 SELECT 
@@ -45,7 +108,9 @@ FROM read_sheets(
 );
 
 
-SET VARIABLE equi_master_globpath = '/home/stephen/_working/work/2026/masterdata/02_06/ih08_masterdata/*.xlsx';
+
+SELECT getvariable('equi_master_globpath') AS equi_master_globpath;
+.print 'Loading masterdata_landing.s4_equi_data...'
 
 CREATE OR REPLACE TABLE masterdata_landing.s4_equi_data AS
 SELECT 
@@ -56,7 +121,10 @@ FROM read_sheets(
     columns={'Start-up date': 'varchar'}
 );
 
-SET VARIABLE equi_aib_globpath = '/home/stephen/_working/work/2026/masterdata/02_06/ih08_aib/*.xlsx';
+
+
+SELECT getvariable('equi_aib_globpath') AS equi_aib_globpath;
+.print 'Loading masterdata_landing.s4_equi_aib_refs_data...'
 
 CREATE OR REPLACE TABLE masterdata_landing.s4_equi_aib_refs_data AS
 SELECT 
@@ -67,22 +135,4 @@ FROM read_sheets(
 );
 
 
-CREATE OR REPLACE MACRO sqlserver_date(str) AS (
-    coalesce(
-        try(strptime(str::VARCHAR, '%Y-%m-%d %H:%M:%S.%g')::DATETIME),
-        try(date_add(DATE '1899-12-30', INTERVAL (try_cast(regexp_extract(str::VARCHAR, '^(\d+):\d{2}:\d{2}', 1) AS BIGINT)) HOUR))
-    )
-);
-
--- Run date conversion after we have stored data from the ai2 export on disk
--- otherwise we are getting out-of-memory memory issues
-WITH cte AS (
-    SELECT
-        t.PlantEquipReference as uid,
-        t.PlantEquipInstalledFromDate AS dstring,
-        sqlserver_date(t.PlantEquipInstalledFromDate) AS d1,
-    FROM masterdata_landing.ai2_plant_equi t
-)
-SELECT * FROM cte
-WHERE d1 IS NULL;
 
