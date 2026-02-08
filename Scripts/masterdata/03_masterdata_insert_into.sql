@@ -64,6 +64,7 @@ SELECT
     t."PlantCommonName" AS common_name,
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
     t."PlantReference" AS sai_number,
+    NULL AS superequi_id,
     'Plant' as equi_sort,
 FROM masterdata_landing.ai2_plant t;
 
@@ -83,6 +84,7 @@ SELECT
     t."SubPlantCommonName" AS common_name,
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
     t."SubPlantReference" AS sai_number,
+    t."PlantEquipReference" AS superequi_id,
     'SubPlant' as equi_sort,
 FROM masterdata_landing.ai2_sub_plant t;
 
@@ -103,6 +105,7 @@ SELECT
     t."PlantItemCommonName" AS common_name,
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
     t."PlantItemReference" AS sai_number,
+    t."PlantEquipReference" AS superequi_id,
     'PlantItem' as equi_sort,
 FROM masterdata_landing.ai2_plant_item t;
 
@@ -122,16 +125,7 @@ SELECT
     t."SubPlantItemCommonName" AS common_name,
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
     t."SubPlantItemReference" AS sai_number,
+    t."PlantItemEquipReference" AS superequi_id,
     'SubPlantItem' as equi_sort,
 FROM masterdata_landing.ai2_sub_plant_item t;
 
-
--- DELETE FROM masterdata.ai2_parent_references;
--- INSERT OR REPLACE INTO masterdata.ai2_parent_references BY NAME
--- SELECT 
---     t."pli_child" AS child_pli_number,
---     t."sai_child" AS child_sai_number,
---     t."pli_parent" AS parent_pli_number,
---     t."sai_parent" AS parent_sai_number,
---     t."reference_sort" AS reference_sort,
--- FROM masterdata_landing.vw_ai2_parent_references t;

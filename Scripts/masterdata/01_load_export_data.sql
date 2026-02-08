@@ -48,6 +48,7 @@ SELECT
     t."SubPlantEquipStatus",
     t."SubPlantEquipAssetTypeCode",
     t."SubPlantEquipAssetTypeDescription",
+    t."PlantEquipReference",
 FROM read_sheets([getvariable('aib_master_globpath')], sheets=['Sheet1'], error_as_null=true, nulls=['NULL'], columns={'*FromDate': 'varchar'}) t
 WHERE
     t."SubPlantEquipRuleDeleted" = '0'
@@ -68,6 +69,8 @@ SELECT
     t."PlantItemEquipStatus",
     t."PlantItemEquipAssetTypeCode",
     t."PlantItemEquipAssetTypeDescription",
+    t."PlantEquipReference",
+    t."SubPlantEquipReference",
 FROM read_sheets([getvariable('aib_master_globpath')], sheets=['Sheet1'], error_as_null=true, nulls=['NULL'], columns={'*FromDate': 'varchar'}) t
 WHERE
     t."PlantItemEquipRuleDeleted" = '0'
@@ -89,6 +92,9 @@ SELECT
     t."SubPlantItemEquipStatus",
     t."SubPlantItemEquipAssetTypeCode",
     t."SubPlantItemEquipAssetTypeDescription",
+    t."PlantEquipReference",
+    t."SubPlantEquipReference",
+    t."PlantItemEquipReference",
 FROM read_sheets([getvariable('aib_master_globpath')], sheets=['Sheet1'], error_as_null=true, nulls=['NULL'], columns={'*FromDate': 'varchar'}) t
 WHERE
     t."SubPlantItemEquipRuleDeleted" = '0'

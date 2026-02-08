@@ -58,19 +58,11 @@ CREATE OR REPLACE TABLE masterdata.ai2_equipment (
     common_name VARCHAR,
     site_or_installation_name VARCHAR,
     sai_number VARCHAR,
+    superequi_id VARCHAR,
     equi_sort VARCHAR,
     PRIMARY KEY (pli_number)
 );    
     
-CREATE OR REPLACE TABLE masterdata.ai2_parent_references (
-    child_pli_number VARCHAR NOT NULL,
-    child_sai_number VARCHAR NOT NULL,
-    parent_pli_number VARCHAR NOT NULL,
-    parent_sai_number VARCHAR NOT NULL,
-    reference_sort VARCHAR,
-    PRIMARY KEY (child_pli_number)
-); 
-
 
 -- For dates on or after 1899-12-30, Sqlserver's date string format is 
 -- `hours:mins:secs.millis` where hours is always positive (or zero).
