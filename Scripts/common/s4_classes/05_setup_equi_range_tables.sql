@@ -109,11 +109,3 @@ SELECT cte3.class_name, cte3.char_name, cte3.char_descrip, cte1.start_index, cte
 
 
 
---SELECT 
---    t1.class_name AS class_name,
---    t1.descrip AS class_desciption,
---    t.* EXCLUDE (class_name)
---FROM s4_classlists_landing.equi_classlist_file t
---JOIN s4_classlists_landing.equi_class_ranges t1 ON t.row_ix >= t1.start_index AND t.row_ix <= t1.end_index
---WHERE char_name IS NOT NULL 
---ORDER BY t.row_ix;

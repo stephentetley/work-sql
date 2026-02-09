@@ -108,6 +108,10 @@ SELECT
         ELSE t.char_type
     END AS ddl_data_type,
     t1.is_enum AS is_enum,
+    CASE 
+        WHEN t.char_type = 'NUM' THEN 'ATFLV'
+        ELSE 'ATWRT'
+    END AS fd_value_field,
 FROM s4_classlists.equi_characteristics t
 JOIN cte1 t1 ON t1.class_name = t.class_name AND t1.char_name = t.char_name;
 
@@ -148,6 +152,10 @@ SELECT
         ELSE t.char_type
     END AS ddl_data_type,
     t1.is_enum AS is_enum,
+    CASE 
+        WHEN t.char_type = 'NUM' THEN 'ATFLV'
+        ELSE 'ATWRT'
+    END AS fd_value_field,
 FROM s4_classlists.floc_characteristics t
 JOIN cte1 t1 ON t1.class_name = t.class_name AND t1.char_name = t.char_name;
 
