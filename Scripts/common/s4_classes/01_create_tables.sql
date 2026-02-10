@@ -112,6 +112,10 @@ SELECT
         WHEN t.char_type = 'NUM' THEN 'ATFLV'
         ELSE 'ATWRT'
     END AS fd_value_field,
+    CASE 
+        WHEN t.char_type = 'NUM' THEN '%.' || coalesce(t.char_precision, 0) || 'f'
+        ELSE '%s'
+    END AS fd_printf_specifier,
 FROM s4_classlists.equi_characteristics t
 JOIN cte1 t1 ON t1.class_name = t.class_name AND t1.char_name = t.char_name;
 
@@ -156,6 +160,10 @@ SELECT
         WHEN t.char_type = 'NUM' THEN 'ATFLV'
         ELSE 'ATWRT'
     END AS fd_value_field,
+    CASE 
+        WHEN t.char_type = 'NUM' THEN '%.' || coalesce(t.char_precision, 0) || 'f'
+        ELSE '%s'
+    END AS fd_printf_specifier,
 FROM s4_classlists.floc_characteristics t
 JOIN cte1 t1 ON t1.class_name = t.class_name AND t1.char_name = t.char_name;
 
