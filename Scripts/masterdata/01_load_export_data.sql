@@ -11,8 +11,8 @@ CREATE SCHEMA IF NOT EXISTS masterdata_landing;
 -- on disk otherwise we are getting out-of-memory memory issues
 
 
-SELECT getvariable('aib_master_globpath') AS aib_master_globpath;
 .print 'Loading masterdata_landing.ai2_plant...'
+SELECT getvariable('aib_master_globpath') AS aib_master_globpath;
 
 CREATE OR REPLACE TABLE masterdata_landing.ai2_plant AS
 SELECT
@@ -100,9 +100,9 @@ WHERE
     t."SubPlantItemEquipRuleDeleted" = '0'
 AND t."SubPlantItemEquipReference" IS NOT NULL;
 
-
-SELECT getvariable('floc_master_globpath') AS floc_master_globpath;
 .print 'Loading masterdata_landing.s4_floc_data...'
+SELECT getvariable('floc_master_globpath') AS floc_master_globpath;
+
 
 CREATE OR REPLACE TABLE masterdata_landing.s4_floc_data AS
 SELECT 
@@ -114,9 +114,9 @@ FROM read_sheets(
 );
 
 
-
-SELECT getvariable('equi_master_globpath') AS equi_master_globpath;
 .print 'Loading masterdata_landing.s4_equi_data...'
+SELECT getvariable('equi_master_globpath') AS equi_master_globpath;
+
 
 CREATE OR REPLACE TABLE masterdata_landing.s4_equi_data AS
 SELECT 
@@ -129,8 +129,8 @@ FROM read_sheets(
 
 
 
-SELECT getvariable('equi_aib_globpath') AS equi_aib_globpath;
 .print 'Loading masterdata_landing.s4_equi_aib_refs_data...'
+SELECT getvariable('equi_aib_globpath') AS equi_aib_globpath;
 
 CREATE OR REPLACE TABLE masterdata_landing.s4_equi_aib_refs_data AS
 SELECT 

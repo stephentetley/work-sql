@@ -46,6 +46,20 @@ AND t."AI2 AIB Reference" NOT LIKE 'PLI%';
 
 
 
+.print 'Inserting s4_floc_data easting northing data into masterdata.s4_floc_east_north...'
+
+DELETE FROM masterdata.s4_floc_east_north;
+INSERT OR REPLACE INTO masterdata.s4_floc_east_north BY NAME
+SELECT 
+    t."Functional Location" AS s4_floc,
+    t."Easting" AS easting,
+    t."Northing" AS northing,
+FROM masterdata_landing.s4_floc_data t
+WHERE t."Easting" IS NOT NULL
+AND t."Northing" IS NOT NULL;
+
+-- ai2
+
 DELETE FROM masterdata.ai2_equipment;
 
 -- insert part 1

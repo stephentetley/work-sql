@@ -34,17 +34,12 @@ CREATE OR REPLACE TABLE masterdata.s4_to_sainum (
     ai2_sainum VARCHAR,
 );
 
--- gen_installation_name   VARCHAR
--- pli_num VARCHAR
--- sai_num VARCHAR
--- common_name VARCHAR
--- installed_from_date INTEGER
--- equi_name   VARCHAR
--- manufacturer    VARCHAR
--- model   VARCHAR
--- status  VARCHAR
--- equi_type_code  VARCHAR
--- equipment_type  VARCHAR
+CREATE OR REPLACE TABLE masterdata.s4_floc_east_north (
+    s4_floc VARCHAR,
+    easting INTEGER,
+    northing INTEGER,
+    PRIMARY KEY (s4_floc)
+);
 
 CREATE OR REPLACE TABLE masterdata.ai2_equipment (
     pli_number VARCHAR NOT NULL,
