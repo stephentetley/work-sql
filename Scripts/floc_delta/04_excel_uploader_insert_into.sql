@@ -14,6 +14,9 @@
 -- limitations under the License.
 -- 
 
+.print 'Running 04_excel_uploader_insert_into.sql...'
+
+
 DELETE FROM excel_uploader_floc_create.functional_location;
 DELETE FROM excel_uploader_floc_create.classification;
 

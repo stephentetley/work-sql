@@ -1,4 +1,4 @@
-.print 'Running 04_import_worklist.sql...'
+.print 'Running 02_import_worklist.sql...'
 
 .print 'Loading floc_delta_worklist...'
 SELECT getvariable('floc_delta_worklist') AS equi_master_globpath;

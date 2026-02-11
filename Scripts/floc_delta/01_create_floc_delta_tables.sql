@@ -14,7 +14,7 @@
 -- limitations under the License.
 -- 
 
-.print 'Running 03_create_floc_delta_tables.sql...'
+.print 'Running 01_create_floc_delta_tables.sql...'
 
 CREATE SCHEMA IF NOT EXISTS floc_delta;
 CREATE SCHEMA IF NOT EXISTS floc_delta_landing;

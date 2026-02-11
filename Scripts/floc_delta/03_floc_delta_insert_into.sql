@@ -14,7 +14,7 @@
 -- limitations under the License.
 -- 
 
-.print 'Running 05_floc_delta_insert_into.sql...'
+.print 'Running 03_floc_delta_insert_into.sql...'
 
 CREATE SCHEMA IF NOT EXISTS floc_delta;
 
