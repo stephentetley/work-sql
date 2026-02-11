@@ -106,5 +106,24 @@ SELECT
     t.aib_reference AS char_value,
 FROM floc_delta.vw_new_flocs t;
 
-
+-- Batch worklist
+INSERT INTO excel_uploader_floc_create.batch_worklist BY NAME
+WITH cte_worklist_items AS (
+    SELECT 
+        t.requested_floc AS functional_location,
+        t.batch AS batch_number,
+    FROM floc_delta.worklist t
+), cte_new_items AS (
+    SELECT 
+        t.funcloc AS functional_location,
+        t1.batch_number AS batch_number,
+    FROM floc_delta.new_generated_flocs t
+    JOIN cte_worklist_items t1 ON instr(t1.functional_location, t.funcloc) > 0
+), cte_combined AS (
+    SELECT * FROM cte_new_items
+    UNION BY NAME
+    SELECT * FROM cte_worklist_items
+)
+SELECT functional_location, batch_number FROM cte_combined
+GROUP BY ALL;
 

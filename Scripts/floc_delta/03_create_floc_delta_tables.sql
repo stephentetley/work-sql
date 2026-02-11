@@ -23,6 +23,7 @@ CREATE OR REPLACE MACRO read_floc_delta_worklist(xlsx_file) AS TABLE
 SELECT 
     t."Requested Floc" AS requested_floc,
     t."Name" AS floc_name,
+    ifnull(TRY_CAST(t."Batch" AS INTEGER), 1) AS batch,
     t."Object Type" AS object_type,
     t."Level 5 Class Type" AS class_type,
     t."Asset Status" AS asset_status,
@@ -50,6 +51,7 @@ FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true, sheet='Sheet1') AS t;
 CREATE OR REPLACE TABLE floc_delta.worklist(
     requested_floc VARCHAR NOT NULL,
     floc_description VARCHAR,
+    batch INTEGER,
     object_type VARCHAR,
     class_type VARCHAR,
     user_status VARCHAR,

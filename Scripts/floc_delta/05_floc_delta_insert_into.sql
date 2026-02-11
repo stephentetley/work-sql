@@ -27,6 +27,7 @@ INSERT OR REPLACE INTO floc_delta.worklist BY NAME (
 SELECT 
     t.requested_floc AS requested_floc,
     t.floc_name AS floc_description,
+    t.batch AS batch,
     t.object_type AS object_type,
     t.class_type AS class_type,
     t.asset_status AS user_status,

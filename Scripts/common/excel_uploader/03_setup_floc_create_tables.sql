@@ -63,8 +63,26 @@ CREATE OR REPLACE TABLE excel_uploader_floc_create.functional_location (
 
 
 
+-- No Primary Key - multiples allowed
+CREATE OR REPLACE TABLE excel_uploader_floc_create.classification (
+    functional_location VARCHAR NOT NULL,
+    class_name VARCHAR NOT NULL,
+    characteristics VARCHAR NOT NULL,
+    char_value VARCHAR,
+);
+
+
+CREATE OR REPLACE TABLE excel_uploader_floc_create.batch_worklist (
+    functional_location VARCHAR NOT NULL,
+    batch_number INTEGER,
+);
+
+-- Views
+
+
 CREATE OR REPLACE VIEW excel_uploader_floc_create.vw_functional_location AS
 SELECT 
+    t1.batch_number AS batch_number,
     t.functional_location AS "Functional Location",
     t.floc_description AS "Description",
     t.category AS "FunctLocCat",
@@ -131,23 +149,18 @@ SELECT
     null AS "Sales Office",
     null AS "Sales Group",
 FROM excel_uploader_floc_create.functional_location t
+JOIN excel_uploader_floc_create.batch_worklist t1 ON t1.functional_location = t.functional_location
 ORDER BY t.category, t.functional_location;
-
--- No Primary Key - multiples allowed
-CREATE OR REPLACE TABLE excel_uploader_floc_create.classification (
-    functional_location VARCHAR NOT NULL,
-    class_name VARCHAR NOT NULL,
-    characteristics VARCHAR NOT NULL,
-    char_value VARCHAR,
-);
 
 CREATE OR REPLACE VIEW excel_uploader_floc_create.vw_classification AS
 SELECT 
+    t1.batch_number AS batch_number,
     t.functional_location AS "Functional Location",
     t.class_name AS "Class",
     t.characteristics AS "Characteristics",
     t.char_value AS "Char Value",
 FROM excel_uploader_floc_create.classification t
+JOIN excel_uploader_floc_create.batch_worklist t1 ON t1.functional_location = t.functional_location
 ORDER BY t.functional_location, t.class_name, t.characteristics;
 
 
