@@ -77,7 +77,28 @@ SELECT
 FROM floc_delta.vw_new_flocs t
 WHERE t.level5_system_name IS NOT NULL;
 
--- UNICLASS_CODE
+
+-- Level 5 systems with UNICLASS_CODE (UNICLASS_CODE)
+INSERT INTO excel_uploader_floc_create.classification BY NAME
+SELECT
+    t.funcloc AS functional_location,
+    'UNICLASS_CODE' AS class_name,
+    'UNICLASS_CODE' AS characteristics,
+FROM floc_delta.vw_new_flocs t
+WHERE t.floc_category = 5 AND t.floc_class = 'UNICLASS_CODE';
+
+-- Level 5 systems with UNICLASS_CODE (UNICLASS_DESC)
+INSERT INTO excel_uploader_floc_create.classification BY NAME
+SELECT
+    t.funcloc AS functional_location,
+    'UNICLASS_DESC' AS class_name,
+    'UNICLASS_DESC' AS characteristics,
+FROM floc_delta.vw_new_flocs t
+WHERE t.floc_category = 5 AND t.floc_class = 'UNICLASS_CODE';
+
+
+
+-- UNICLASS_CODE (not Level 5)
 INSERT INTO excel_uploader_floc_create.classification BY NAME
 SELECT
     t.funcloc AS functional_location,
@@ -87,7 +108,7 @@ SELECT
 FROM floc_delta.vw_new_flocs t
 WHERE t.floc_category != 5;
 
--- UNICLASS_DESC
+-- UNICLASS_DESC (not Level 5)
 INSERT INTO excel_uploader_floc_create.classification BY NAME
 SELECT
     t.funcloc AS functional_location,
