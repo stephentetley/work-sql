@@ -19,33 +19,6 @@
 CREATE SCHEMA IF NOT EXISTS floc_delta;
 CREATE SCHEMA IF NOT EXISTS floc_delta_landing;
 
-CREATE OR REPLACE MACRO read_floc_delta_worklist(xlsx_file) AS TABLE
-SELECT 
-    t."Requested Floc" AS requested_floc,
-    t."Name" AS floc_name,
-    ifnull(TRY_CAST(t."Batch" AS INTEGER), 1) AS batch,
-    t."Object Type" AS object_type,
-    t."Level 5 Class Type" AS class_type,
-    t."Asset Status" AS asset_status,
-    t."Level 5 System Type Name" AS level5_system_type,
-    t."AIB Reference" AS aib_reference,
-    t."Solution ID" AS solution_id,
-    t."Grid Ref" AS grid_ref
-FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true, sheet='Flocs') AS t;
-
-CREATE OR REPLACE MACRO read_ih06_export(xlsx_file) AS TABLE
-SELECT 
-    t."Functional Location" AS functional_location,
-    t."Description of functional location" AS description_of_functional_location,
-    t."User Status" AS user_status,
-    excel_text(t."Start-up date" :: DOUBLE, 'dd.MM.yyyy') AS start_up_date,
-    TRY_CAST(t."Cost Center" AS INTEGER) AS cost_center,
-    t."Main Work Center" AS main_work_center,
-    t."Maintenance Plant" AS maintenance_plant,
-    TRY_CAST(t.easting AS INTEGER) AS easting,
-    TRY_CAST(t.northing AS INTEGER) AS northing,
-FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true, sheet='Sheet1') AS t;
-
 
 --        
 CREATE OR REPLACE TABLE floc_delta.worklist(
