@@ -7,7 +7,7 @@
 -- Attached (not) copied databases are detached when DBeaver is closed,
 -- eval the bottom half of the file to reattach them
 
-
+-- DO NOT RUN - TO BE REMOVED
 
 -- excel_uploader - needs write access, import copies...
 

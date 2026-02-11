@@ -14,12 +14,16 @@
 -- limitations under the License.
 -- 
 
+.print 'Running 05_floc_delta_insert_into.sql...'
+
 CREATE SCHEMA IF NOT EXISTS floc_delta;
 
 -- Use explicit DDL and INSERT INTO statements...
 
+.print 'Inserting into floc_delta.worklist'
+
 DELETE FROM floc_delta.worklist;
-INSERT INTO floc_delta.worklist BY NAME (
+INSERT OR REPLACE INTO floc_delta.worklist BY NAME (
 SELECT 
     t.requested_floc AS requested_floc,
     t.floc_name AS floc_description,
@@ -32,25 +36,29 @@ SELECT
     t.solution_id AS solution_id,
     t.aib_reference AS aib_reference,
 FROM floc_delta_landing.worklist t
-CROSS JOIN udfx_db.udfx.get_east_north(t.grid_ref) t1
+CROSS JOIN udf_db.udfx.get_east_north(t.grid_ref) t1
 );
 
+.print 'Inserting into floc_delta.existing_flocs'
+
 DELETE FROM floc_delta.existing_flocs;
-INSERT INTO floc_delta.existing_flocs BY NAME (
+INSERT INTO floc_delta.existing_flocs BY NAME
 SELECT 
     t.functional_location AS funcloc,
-    t.description_of_functional_location AS floc_name,
-    regexp_split_to_array(funcloc, '-').len() AS floc_category,
+    t.funcloc_name AS floc_name,
+    t.category AS floc_category,
     t.user_status AS user_status,
-    try_strptime(t.start_up_date, '%d.%m.%Y') AS startup_date,
-    TRY_CAST(t.cost_center AS INTEGER) AS cost_center,
-    t.main_work_center AS maint_work_center,
+    t.startup_date AS startup_date,
+    t.cost_center AS cost_center,
+    t.maint_work_center AS maint_work_center,
     t.maintenance_plant AS maintenance_plant,
-    TRY_CAST(t.easting AS INTEGER) AS easting,
-    TRY_CAST(t.northing AS INTEGER) AS northing,
-FROM floc_delta_landing.ih06_floc_exports t
-);
+    t1.easting AS easting,
+    t1.northing AS northing,
+FROM masterdata_db.masterdata.s4_funcloc t
+LEFT JOIN masterdata_db.masterdata.s4_floc_east_north t1 ON t1.s4_floc = t.functional_location;
     
+
+.print 'Inserting into floc_delta.existing_and_new_flocs'
 
 DELETE FROM floc_delta.existing_and_new_flocs;
 INSERT INTO floc_delta.existing_and_new_flocs BY NAME (
@@ -182,6 +190,7 @@ FROM cte2 WHERE cte2.floc_category = 6)
 ORDER BY funcloc
 );
 
+.print 'Inserting into floc_delta.new_generated_flocs'
 
 DELETE FROM floc_delta.new_generated_flocs;
 INSERT INTO floc_delta.new_generated_flocs BY NAME (
