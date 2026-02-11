@@ -22,6 +22,25 @@ CREATE OR REPLACE TABLE masterdata.s4_equipment (
     PRIMARY KEY (equipment_id)
 );
 
+CREATE OR REPLACE TABLE masterdata.s4_funcloc (
+    functional_location VARCHAR NOT NULL,
+    funcloc_name VARCHAR,
+    category INTEGER,
+    installation_allowed BOOLEAN,
+    object_type VARCHAR,
+    cost_center INTEGER,
+    planning_plant INTEGER,
+    maintenance_plant INTEGER,
+    maint_work_center VARCHAR,
+    plant_section VARCHAR,
+    startup_date DATE,
+    structure_indicator VARCHAR,
+    superior_funcloc VARCHAR,
+    user_status VARCHAR,
+    company_code VARCHAR,
+    address_number INTEGER,
+    PRIMARY KEY (functional_location)
+);
 
 
 CREATE OR REPLACE TABLE masterdata.s4_to_plinum (
