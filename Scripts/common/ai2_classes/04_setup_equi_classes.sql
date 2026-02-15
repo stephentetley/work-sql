@@ -1,6 +1,9 @@
 
 CREATE OR REPLACE TEMPORARY MACRO get_table_name(name) AS (
-    udfx_db.udfx.make_snake_case_name(replace(name :: VARCHAR, 'EQUIPMENT: ', ''))
+    replace(name :: VARCHAR, 'EQUIPMENT: ', '').
+        trim().
+        regexp_replace('[^[:word:]]+', '_', 'g').
+        regexp_replace('_$', '')
 );
 
 INSERT OR REPLACE INTO ai2_classlists.equi_characteristics BY NAME
