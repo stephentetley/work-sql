@@ -10,14 +10,14 @@ CREATE OR REPLACE TEMPORARY VIEW vw_ai2_equi_classes_json AS
 WITH cte1 AS (
     SELECT
         lower(t.class_derivation || '_' || t.class_table_name) AS table_name,
-        t.attribute_description,
+        t.attribute_description.replace('/', '_') AS attribute_name,
         t.ddl_data_type,
     FROM ai2_classes_db.ai2_classlists.vw_equiclass_characteristics t
     GROUP BY ALL
 ), cte2 AS (
 SELECT
     t.table_name AS class_name,
-    json_group_array(json_object('name', lower(t.attribute_description), 'ddl_type', t.ddl_data_type)) AS equi_characteristcs,
+    json_group_array(json_object('name', t.attribute_name, 'ddl_type', t.ddl_data_type)) AS equi_characteristcs,
 FROM cte1 t
 GROUP BY t.table_name
 )

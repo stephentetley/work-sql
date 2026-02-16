@@ -5,6 +5,11 @@ LOAD rusty_sheet;
 
 CREATE SCHEMA IF NOT EXISTS ai2_eav;
 
+CREATE OR REPLACE TABLE ai2_eav.worklist (
+    ai2_reference VARCHAR NOT NULL,
+    equipment_type VARCHAR,
+    PRIMARY KEY(ai2_reference)
+);
 
 CREATE OR REPLACE TABLE ai2_eav.equipment_eav (
     ai2_reference VARCHAR,
@@ -12,13 +17,33 @@ CREATE OR REPLACE TABLE ai2_eav.equipment_eav (
     attr_value VARCHAR
 );
 
-SELECT getvariable('ai2_attributes_glob') AS ai2_attributes_glob;
 
+
+
+-- Worklist
+SELECT getvariable('classrep_worklist_glob') AS classrep_worklist_glob;
+
+INSERT OR REPLACE INTO ai2_eav.worklist
+WITH cte1 AS (
+    SELECT
+        t."Reference" AS ai2_reference,
+    FROM read_sheets([getvariable('classrep_worklist_glob')], columns={'Reference': 'VARCHAR'}) t
+), cte2 AS (
+    SELECT
+        t.ai2_reference AS ai2_reference,
+        t1.equi_type_name AS equipment_type,
+    FROM cte1 t
+    LEFT JOIN masterdata_db.masterdata.ai2_equipment t1 ON t1.pli_number = t.ai2_reference
+)
+SELECT * FROM cte2;
+
+-- attributes
+SELECT getvariable('ai2_attributes_glob') AS ai2_attributes_glob;
 
 INSERT INTO ai2_eav.equipment_eav
 WITH cte1 AS (
     SELECT
-        t."Reference" AS 'ai2_reference',
+        t."Reference" AS ai2_reference,
         t.* EXCLUDE("AssetId", "Reference", "Common Name", "Installed From", "Manufacturer", "Model", "Hierarchy Key", "AssetStatus", "Asset in AIDE ?"),
     FROM read_sheets([getvariable('ai2_attributes_glob')], columns={'*': 'VARCHAR'}) t
 ), cte2 AS (
@@ -30,7 +55,7 @@ SELECT * FROM cte2 ORDER BY attr_name;
 
 
 
-INSERT OR IGNORE INTO ai2_classrep.equi_extra_masterdata BY NAME
+INSERT OR REPLACE INTO ai2_classrep.equi_extra_masterdata BY NAME
 WITH cte AS (
     PIVOT ai2_eav.equipment_eav
     ON attr_name IN (
