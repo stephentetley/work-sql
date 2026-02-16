@@ -1,4 +1,4 @@
-
+.print 'Running 01_create_tables.sql...'
 
 CREATE SCHEMA IF NOT EXISTS ai2_classlists;
 CREATE SCHEMA IF NOT EXISTS ai2_classlists_landing;

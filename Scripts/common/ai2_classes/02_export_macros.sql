@@ -1,3 +1,5 @@
+.print 'Running 02_export_macros.sql...'
+
 
 CREATE OR REPLACE MACRO decode_data_type(dtype) AS 
 CASE 

@@ -18,19 +18,15 @@ CREATE OR REPLACE TABLE ai2_classrep.equi_extra_masterdata (
 
 CREATE OR REPLACE TABLE ai2_classrep.equi_agasp (
     ai2_reference VARCHAR NOT NULL,
-    comments VARCHAR,
+    agasp_comments VARCHAR,
+    agasp_survey_year INTEGER,
     condition_grade VARCHAR,
     condition_grade_reason VARCHAR,
     exclude_from_survey VARCHAR,
     loading_factor VARCHAR,
     loading_factor_reason VARCHAR,
-    other_details VARCHAR,
     performance_grade VARCHAR,
     performance_grade_reason VARCHAR,
-    reason_for_change VARCHAR,
-    survey_date VARCHAR,
-    survey_year VARCHAR,
-    updated_using VARCHAR,
     PRIMARY KEY (ai2_reference)
 );
 

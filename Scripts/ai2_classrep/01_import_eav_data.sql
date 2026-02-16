@@ -1,5 +1,8 @@
 .print 'Running 01_import_eav_data.sql...'
 
+INSTALL rusty_sheet FROM community;
+LOAD rusty_sheet;
+
 CREATE SCHEMA IF NOT EXISTS ai2_eav;
 
 
@@ -28,18 +31,77 @@ SELECT * FROM cte2 ORDER BY attr_name;
 
 
 INSERT OR IGNORE INTO ai2_classrep.equi_extra_masterdata BY NAME
+WITH cte AS (
+    PIVOT ai2_eav.equipment_eav
+    ON attr_name IN (
+        'Weight kg',
+	    'Specific Model/Frame',
+	    'Serial No',
+	    'Loc.Ref.',
+	    'P AND I Tag No'
+    )
+    USING any_value(attr_value)
+    GROUP BY ai2_reference
+) 
 SELECT 
     t.ai2_reference AS ai2_reference,
-    TRY_CAST(eav1.attr_value AS DECIMAL) AS weight_kg,
-    eav2.attr_value AS specific_model_frame,
-    eav3.attr_value AS serial_number,
-    eav4.attr_value AS grid_ref,
-    eav5.attr_value AS pandi_tag,
-FROM ai2_eav.equipment_eav AS t
-LEFT JOIN ai2_eav.equipment_eav eav1 ON eav1.ai2_reference = t.ai2_reference AND eav1.attr_name = 'Weight kg'
-LEFT JOIN ai2_eav.equipment_eav eav2 ON eav2.ai2_reference = t.ai2_reference AND eav2.attr_name = 'Specific Model/Frame'
-LEFT JOIN ai2_eav.equipment_eav eav3 ON eav3.ai2_reference = t.ai2_reference AND eav3.attr_name = 'Serial No'
-LEFT JOIN ai2_eav.equipment_eav eav4 ON eav4.ai2_reference = t.ai2_reference AND eav4.attr_name = 'Loc.Ref.'
-LEFT JOIN ai2_eav.equipment_eav eav5 ON eav5.ai2_reference = t.ai2_reference AND eav5.attr_name = 'P AND I Tag No';
+    t."Weight kg" AS weight_kg,
+    t."Specific Model/Frame" AS specific_model_frame,
+    t."Serial No" AS serial_number,
+    t."Loc.Ref." AS grid_ref,
+    t."P AND I Tag No" AS pandi_tag,
+FROM cte t;
 
-SELECT * FROM ai2_eav.equipment_eav WHERE attr_name = 'Loc.Ref.';
+
+INSERT OR IGNORE INTO ai2_classrep.equi_agasp BY NAME
+WITH cte AS (
+    PIVOT ai2_eav.equipment_eav
+    ON attr_name IN (
+        'AGASP Comments',
+        'AGASP Survey Year',
+        'Condition Grade',
+        'Condition Grade Reason',
+        'Loading Factor',
+        'Loading Factor Reason',
+        'Performance Grade',
+        'Performance Grade Reason',
+    )
+    USING any_value(attr_value)
+    GROUP BY ai2_reference
+) 
+SELECT 
+    t.ai2_reference AS ai2_reference,
+    t."AGASP Comments" AS agasp_comments,
+    t."AGASP Survey Year" AS agasp_survey_year,
+    t."Condition Grade" AS condition_grade,
+    t."Condition Grade Reason" AS condition_grade_reason,
+    t."Loading Factor" AS loading_factor,
+    t."Loading Factor Reason" AS loading_factor_reason,
+    t."Performance Grade" AS performance_grade,
+    t."Performance Grade Reason" AS performance_grade_reason,
+FROM cte t;
+
+INSERT OR IGNORE INTO ai2_classrep.equi_memo_line BY NAME
+WITH cte AS (
+    PIVOT ai2_eav.equipment_eav
+    ON attr_name IN (
+        'Memo Line 1',
+        'Memo Line 2',
+        'Memo Line 3',
+        'Memo Line 4',
+        'Memo Line 5',
+    )
+    USING any_value(attr_value)
+    GROUP BY ai2_reference
+) 
+SELECT 
+    t.ai2_reference AS ai2_reference,
+    t."Memo Line 1" AS memo_line_1,
+    t."Memo Line 2" AS memo_line_2,
+    t."Memo Line 3" AS memo_line_3,
+    t."Memo Line 4" AS memo_line_4,
+    t."Memo Line 5" AS memo_line_5,
+FROM cte t;
+
+
+

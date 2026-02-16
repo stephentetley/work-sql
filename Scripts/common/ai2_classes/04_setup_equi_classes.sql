@@ -1,3 +1,4 @@
+.print 'Running 04_setup_equi_classes.sql...'
 
 CREATE OR REPLACE TEMPORARY MACRO get_table_name(name) AS (
     replace(name :: VARCHAR, 'EQUIPMENT: ', '').
