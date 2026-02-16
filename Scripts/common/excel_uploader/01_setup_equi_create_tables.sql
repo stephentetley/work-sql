@@ -82,6 +82,7 @@ CREATE OR REPLACE TABLE excel_uploader_equi_create.classification (
 CREATE OR REPLACE TABLE excel_uploader_equi_create.batch_worklist (
     equi VARCHAR NOT NULL,
     batch_number INTEGER,
+    PRIMARY KEY (equi)
 );
 
 -- Views

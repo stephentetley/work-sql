@@ -1,5 +1,12 @@
 .print 'Running 03_s4_equiclass_to_excel_uploader.sql...'
 
+DELETE FROM excel_uploader_equi_create.batch_worklist;
+INSERT OR REPLACE INTO excel_uploader_equi_create.batch_worklist BY NAME
+SELECT
+    t.equipment_transit_id AS equi,
+    t.batch AS batch_number,
+FROM equi_translate.worklist t;
+
 DELETE FROM excel_uploader_equi_create.equipment_data;
 INSERT OR REPLACE INTO excel_uploader_equi_create.equipment_data BY NAME 
 SELECT 
