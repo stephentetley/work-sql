@@ -1,7 +1,6 @@
 .print 'Running 04_generate_s4_equiclass_tables.sql...'
 
-INSTALL tera FROM community;
-LOAD tera;
+-- tera installed by `02_generate_ai2_equiclass_tables.sql`
 
 -- This doesn't work in DBeaver, it has to be run from the CLI...
 

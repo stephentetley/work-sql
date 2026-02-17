@@ -1,4 +1,4 @@
-.print 'Running 08_generate_ai2_eav_to_classrep_statments.sql...'
+.print 'Running 08_generate_ai2_eav_to_ai2_classrep_statments.sql...'
 
 -- SAMPLE OF WHAT'S TO BE GENERATED:
 
@@ -24,7 +24,7 @@ WITH cte1 AS (
     USING any_value(attr_value)
     GROUP BY ai2_reference
 ), cte3 AS (
-    SELECT * RENAME ("HH/non hh site" AS "hh_non HH site")  FROM cte2
+    SELECT * RENAME ("HH/non hh site" AS "HH_non HH site")  FROM cte2
 ), cte4 AS (    
     SELECT * REPLACE (try_cast("MPAN number" AS DECIMAL(18,3)) AS "MPAN number") FROM cte3
 )
