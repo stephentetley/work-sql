@@ -14,7 +14,7 @@
 -- limitations under the License.
 -- 
 
-
+.print "Running 03_setup_floc_create_tables.sql..."
 
 CREATE SCHEMA IF NOT EXISTS excel_uploader_floc_create;
 

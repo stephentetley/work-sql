@@ -14,7 +14,7 @@
 -- limitations under the License.
 -- 
 
-
+.print "Running 02_setup_equi_change_tables.sql..."
 
 CREATE SCHEMA IF NOT EXISTS excel_uploader_equi_change;
 
