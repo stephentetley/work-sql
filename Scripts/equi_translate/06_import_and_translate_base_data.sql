@@ -1,4 +1,4 @@
-.print 'Running 02_translate_base_data.sql...'
+.print 'Running 06_import_and_translate_base_data.sql...'
 
 INSTALL rusty_sheet FROM community;
 LOAD rusty_sheet;

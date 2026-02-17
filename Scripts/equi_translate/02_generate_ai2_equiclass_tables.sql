@@ -1,4 +1,4 @@
-.print 'Running 02_generate_equiclass_tables.sql...'
+.print 'Running 02_generate_ai2_equiclass_tables.sql...'
 
 INSTALL tera FROM community;
 LOAD tera;
@@ -12,7 +12,7 @@ WITH cte1 AS (
         lower(t.class_derivation || '_' || t.class_table_name) AS table_name,
         t.attribute_description.replace('/', '_') AS attribute_name,
         t.ddl_data_type,
-    FROM ai2_classes_db.ai2_classlists.vw_equiclass_characteristics t
+    FROM ai2_classlists_db.ai2_classlists.vw_equiclass_characteristics t
     GROUP BY ALL
 ), cte2 AS (
 SELECT

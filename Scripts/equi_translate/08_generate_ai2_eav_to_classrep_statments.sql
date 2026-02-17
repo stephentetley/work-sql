@@ -1,4 +1,4 @@
-.print 'Running 02_generate_eav_to_classrep.sql...'
+.print 'Running 08_generate_ai2_eav_to_classrep_statments.sql...'
 
 -- SAMPLE OF WHAT'S TO BE GENERATED:
 
@@ -9,7 +9,7 @@ WITH cte1 AS (
     SELECT
         t1.*
     FROM
-        ai2_eav.worklist t
+        vw_ai2_eav_worklist t
     JOIN ai2_eav.equipment_eav t1 ON t1.ai2_reference = t.ai2_reference
     WHERE t.equipment_type = 'EQUIPMENT: ELECTRIC METER'
 ), cte2 AS (

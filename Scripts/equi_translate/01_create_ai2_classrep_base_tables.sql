@@ -1,4 +1,4 @@
-.print 'Running 01_create_base_tables.sql...'
+.print 'Running 01_create_ai2_classrep_base_tables.sql...'
 
 
 CREATE SCHEMA IF NOT EXISTS ai2_classrep;

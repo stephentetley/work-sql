@@ -1,15 +1,10 @@
-.print 'Running 01_import_eav_data.sql...'
+.print 'Running 07_import_ai2_eav_data.sql...'
 
 INSTALL rusty_sheet FROM community;
 LOAD rusty_sheet;
 
 CREATE SCHEMA IF NOT EXISTS ai2_eav;
 
-CREATE OR REPLACE TABLE ai2_eav.worklist (
-    ai2_reference VARCHAR NOT NULL,
-    equipment_type VARCHAR,
-    PRIMARY KEY(ai2_reference)
-);
 
 CREATE OR REPLACE TABLE ai2_eav.equipment_eav (
     ai2_reference VARCHAR,
@@ -17,25 +12,13 @@ CREATE OR REPLACE TABLE ai2_eav.equipment_eav (
     attr_value VARCHAR
 );
 
+CREATE OR REPLACE TEMPORARY VIEW vw_ai2_eav_worklist AS
+SELECT
+    t.ai2_reference,
+    t1.equi_type_name AS equipment_type,
+FROM equi_translate.worklist t
+JOIN masterdata_db.masterdata.ai2_equipment t1 ON t1.pli_number = t.ai2_reference;
 
-
-
--- Worklist
-SELECT getvariable('classrep_worklist_glob') AS classrep_worklist_glob;
-
-INSERT OR REPLACE INTO ai2_eav.worklist
-WITH cte1 AS (
-    SELECT
-        t."Reference" AS ai2_reference,
-    FROM read_sheets([getvariable('classrep_worklist_glob')], columns={'Reference': 'VARCHAR'}) t
-), cte2 AS (
-    SELECT
-        t.ai2_reference AS ai2_reference,
-        t1.equi_type_name AS equipment_type,
-    FROM cte1 t
-    LEFT JOIN masterdata_db.masterdata.ai2_equipment t1 ON t1.pli_number = t.ai2_reference
-)
-SELECT * FROM cte2;
 
 -- attributes
 SELECT getvariable('ai2_attributes_glob') AS ai2_attributes_glob;
@@ -60,10 +43,10 @@ WITH cte AS (
     PIVOT ai2_eav.equipment_eav
     ON attr_name IN (
         'Weight kg',
-	    'Specific Model/Frame',
-	    'Serial No',
-	    'Loc.Ref.',
-	    'P AND I Tag No'
+        'Specific Model/Frame',
+        'Serial No',
+        'Loc.Ref.',
+        'P AND I Tag No'
     )
     USING any_value(attr_value)
     GROUP BY ai2_reference

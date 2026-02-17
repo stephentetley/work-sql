@@ -14,7 +14,7 @@
 -- limitations under the License.
 -- 
 
-.print 'Running 01_create_udfs.sql...'
+.print 'Running 05_create_udfs.sql...'
 
 
 CREATE SCHEMA IF NOT EXISTS udf;
