@@ -1,4 +1,4 @@
-.print 'Running 10_s4_equiclass_to_excel_uploader.sql...'
+.print 'Running 11_s4_equiclass_to_excel_uploader.sql...'
 
 DELETE FROM excel_uploader_equi_create.batch_worklist;
 INSERT OR REPLACE INTO excel_uploader_equi_create.batch_worklist BY NAME

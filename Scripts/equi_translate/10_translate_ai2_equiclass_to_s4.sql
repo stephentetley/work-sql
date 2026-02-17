@@ -1,4 +1,4 @@
-.print 'Running 09_translate_ai2_equiclass_to_s4.sql...'
+.print 'Running 10_translate_ai2_equiclass_to_s4.sql...'
 
 -- We need to use a worklist as the destination type for a 
 -- particular source type is the user's choice and not known
