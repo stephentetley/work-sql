@@ -12,7 +12,7 @@ CREATE OR REPLACE TABLE ai2_eav.equipment_eav (
     attr_value VARCHAR
 );
 
-CREATE OR REPLACE TEMPORARY VIEW vw_ai2_eav_worklist AS
+CREATE OR REPLACE VIEW ai2_eav.vw_ai2_eav_worklist AS
 SELECT
     t.ai2_reference,
     t1.equi_type_name AS equipment_type,

@@ -5,6 +5,7 @@ LOAD tera;
 
 -- This doesn't work in DBeaver, it has to be run from the CLI...
 
+-- TODO move this into a separate gen_equi_translate sub project
 
 CREATE OR REPLACE TEMPORARY VIEW vw_ai2_equi_classes_json AS
 WITH cte1 AS (
@@ -34,7 +35,8 @@ SELECT
             "{{ field.name }}" {{ field.ddl_type }},
             {% endfor %}
             PRIMARY KEY(ai2_reference)
-        );', json_object(
+        );', 
+        json_object(
             'table_name', t.class_name,
             'fields', t.equi_characteristcs
         )
