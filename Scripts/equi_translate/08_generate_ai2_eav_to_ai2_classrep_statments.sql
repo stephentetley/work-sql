@@ -15,84 +15,46 @@ WITH cte1 AS (
     SELECT
         lower(t.class_derivation || '_' || t.class_table_name) AS table_name,
         t.class_description AS equipment_type,
-        t.attribute_description AS attribute_name,
-        t.attribute_description.replace('/', '_') AS safe_attribute_name,
-        t.ddl_data_type AS ddl_data_type,
+        row_number() OVER (PARTITION BY t.class_table_name ORDER BY t.attribute_description) AS idx,
+        t.attribute_description AS raw_name,
+        t.attribute_description.replace('/', '_') AS safe_name,
+        t.ddl_data_type AS ddl_datatype,
     FROM ai2_classlists_db.ai2_classlists.vw_equiclass_characteristics t
-    GROUP BY ALL
 ), cte2 AS (
     SELECT
-        table_name,
-        json_group_array(attribute_name) AS fields,
-    FROM cte1
-    GROUP BY ALL
-), cte3 AS (
-    SELECT
-        table_name,
-        json_group_array(json_object('namefrom', attribute_name, 'nameto', safe_attribute_name)) AS renamings,
-    FROM cte1
-    GROUP BY ALL
-), cte4 AS (
-    SELECT
-        table_name,
-        json_group_array(json_object('field', safe_attribute_name, 'ddl_datatype', ddl_data_type)) AS casts,
-    FROM cte1
-    GROUP BY ALL
-)
-SELECT
-    t.table_name,
-    t.equipment_type,
-    t1.fields AS fields,
-    t2.renamings AS renamings,
-    t3.casts AS casts,
-FROM cte1 t
-JOIN cte2 t1 ON t1.table_name = t.table_name
-LEFT JOIN cte3 t2 ON t2.table_name = t.table_name
-LEFT JOIN cte4 t3 ON t3.table_name = t.table_name;
-
+        t.table_name,
+        t.equipment_type, 
+        json_group_array(json_object('idx', t.idx, 
+                                    'raw_name', t.raw_name, 
+                                    'safe_name', t.safe_name, 
+                                    'ddl_datatype', t.ddl_datatype)) AS fields,
+    FROM cte1 t
+    GROUP BY ALL     
+) 
+SELECT * FROM cte2;
 
 
 CREATE OR REPLACE TEMPORARY VIEW vw_ai2_equi_to_classrep_ddl AS
 SELECT
-    tera_render(
-        'INSERT INTO ai2_classrep.{{ table_name }} BY NAME
-            WITH cte1 AS (
-                SELECT
-                    t1.*
-                FROM
-                    ai2_eav.vw_ai2_eav_worklist t
-                JOIN ai2_eav.equipment_eav t1 ON t1.ai2_reference = t.ai2_reference
-                WHERE t.equipment_type = ''{{ equipment_name }}''
-            ), cte2 AS (
-                PIVOT cte1
-                ON attr_name IN (
-                    {% for field in fields %}
-                    ''{{ field }}'',
-                    {% endfor %}
-                )
-                USING any_value(attr_value)
-                GROUP BY ai2_reference
-            ), cte3 AS (
-                SELECT * RENAME (
-                    {% for renaming in renamings %}
-                    "{{ renaming.namefrom }}" AS "{{ renaming.nameto }}",
-                    {% endfor %}
-                )  FROM cte2
-            ), cte4 AS (
-                SELECT * REPLACE (
-                    {% for cast in casts %}
-                    try_cast("{{ cast.field }}" AS {{ cast.ddl_datatype }}) AS "{{ cast.field }}",
-                    {% endfor %}
-                ) FROM cte3
-            )
-            SELECT * FROM cte4;',
-    json_object(
+    table_name, 
+    tera_render('
+        INSERT INTO ai2_classrep.{{ table_name }} BY NAME
+        SELECT
+            t.ai2_reference AS ai2_reference,
+            {% for field in fields %}
+            TRY_CAST(t{{ field.idx }}.attr_value AS {{ field.ddl_datatype }}) AS ''{{ field.safe_name }}'',
+            {% endfor %}
+        FROM
+            ai2_eav.vw_ai2_eav_worklist t
+        {% for field in fields %}
+        LEFT JOIN ai2_eav.equipment_eav t{{ field.idx }} ON t{{ field.idx }}.ai2_reference = t.ai2_reference AND t{{ field.idx }}.attr_name = ''{{ field.raw_name }}''
+        {% endfor %}
+        WHERE t.equipment_type = ''{{ equipment_name }}'';        
+        ', json_object(
             'table_name', t.table_name,
             'equipment_name', t.equipment_type,
-            'fields', t.fields,
-            'renamings', t.renamings,
-            'casts', t.casts
-        )
+            'fields', t.fields
+            )
         ) AS sql_text
 FROM vw_ai2_equi_to_classrep_json t
 ORDER BY table_name;
