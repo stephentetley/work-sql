@@ -1,8 +1,5 @@
 .print 'Running 08_generate_ai2_eav_to_ai2_classrep_statments.sql...'
 
-INSTALL tera FROM community;
-LOAD tera;
-
 -- This doesn't work in DBeaver, it has to be run from the CLI...
 
 -- TODO move this into a separate gen_equi_translate sub project
