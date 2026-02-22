@@ -1,5 +1,0 @@
-
-
-
-DETACH DATABASE IF EXISTS udfx_db;
-

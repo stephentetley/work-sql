@@ -97,5 +97,3 @@ INSERT INTO excel_uploader_equi_create.classification BY NAME
     SELECT * FROM get_excel_loader_characteristics_for('EAST_NORTH', s4_classrep.equi_east_north )
 );
 
-INSERT INTO excel_uploader_equi_create.classification BY NAME
-SELECT * FROM get_excel_loader_characteristics_for('METREL', s4_classrep.equiclass_metrel)
