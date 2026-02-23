@@ -1,4 +1,4 @@
-.print 'Running 02_generate_ai2_equiclass_tables.sql...'
+.print 'Running 01_generate_ai2_equiclass_tables.sql...'
 
 INSTALL tera FROM community;
 LOAD tera;

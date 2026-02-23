@@ -1,4 +1,4 @@
-.print 'Running 08_generate_ai2_eav_to_ai2_classrep_statments.sql...'
+.print 'Running 03_generate_ai2_eav_to_ai2_classrep_statments.sql...'
 
 -- This doesn't work in DBeaver, it has to be run from the CLI...
 

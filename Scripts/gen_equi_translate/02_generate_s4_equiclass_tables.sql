@@ -1,4 +1,4 @@
-.print 'Running 04_generate_s4_equiclass_tables.sql...'
+.print 'Running 02_generate_s4_equiclass_tables.sql...'
 
 -- tera installed by `02_generate_ai2_equiclass_tables.sql`
 
