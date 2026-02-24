@@ -111,5 +111,12 @@ SELECT
     t."Memo Line 5" AS memo_line_5,
 FROM cte t;
 
+INSERT OR IGNORE INTO ai2_classrep.equi_solution_id BY NAME
+SELECT
+    t.ai2_reference,
+    t.solution_id AS solution_id,
+FROM equi_translate.worklist t
+WHERE
+    t.solution_id IS NOT NULL;
 
 

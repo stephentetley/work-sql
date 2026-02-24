@@ -40,4 +40,9 @@ CREATE OR REPLACE TABLE ai2_classrep.equi_memo_line (
     PRIMARY KEY (ai2_reference)
 );
 
+CREATE OR REPLACE TABLE ai2_classrep.equi_solution_id (
+    ai2_reference VARCHAR NOT NULL,
+    solution_id VARCHAR,
+    PRIMARY KEY (ai2_reference)
+);
 

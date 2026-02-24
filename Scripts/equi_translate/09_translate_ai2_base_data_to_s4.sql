@@ -75,3 +75,12 @@ SELECT
     cte._grid_ref['northing'] AS northing,
 FROM cte;
 
+-- SOLUTION_ID
+DELETE FROM s4_classrep.equi_solution_id;
+INSERT INTO s4_classrep.equi_solution_id BY NAME
+SELECT
+    t.equipment_transit_id AS equipment_id,
+    1 AS value_index,
+    t1.solution_id AS solution_id,
+FROM equi_translate.worklist t
+JOIN ai2_classrep.equi_solution_id t1 ON t1.ai2_reference = t.ai2_reference;

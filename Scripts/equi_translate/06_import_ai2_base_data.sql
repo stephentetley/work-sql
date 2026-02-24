@@ -16,6 +16,7 @@ CREATE OR REPLACE TABLE equi_translate.worklist (
     s4_floc	VARCHAR,
     s4_superord_equipment VARCHAR,
     s4_position INTEGER,
+    solution_id VARCHAR,
     PRIMARY KEY(ai2_reference)
 );
 
@@ -36,6 +37,7 @@ SELECT
     t."S4 Floc" AS s4_floc,
     t."S4 Superord Equipment" AS s4_superord_equipment,
     try_cast(t."S4 Position" AS INTEGER) AS s4_position,
+    t."Solution ID" AS solution_id,
 FROM read_sheet(
     getvariable('equi_translate_worklist'), 
     columns={
