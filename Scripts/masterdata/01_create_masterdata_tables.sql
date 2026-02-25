@@ -1,6 +1,7 @@
-.print 'Running 02_create_masterdata_tables.sql...'
+.print 'Running 01_create_masterdata_tables.sql...'
 
 CREATE SCHEMA IF NOT EXISTS masterdata;
+CREATE SCHEMA IF NOT EXISTS masterdata_landing;
 
 CREATE OR REPLACE TABLE masterdata.s4_equipment (
     equipment_id BIGINT NOT NULL,

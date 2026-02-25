@@ -9,6 +9,6 @@
 
 
 
-.read '../masterdata/01_load_export_data.sql'
-.read '../masterdata/02_create_masterdata_tables.sql'
+.read '../masterdata/01_create_masterdata_tables.sql'
+.read '../masterdata/02_load_export_data.sql'
 .read '../masterdata/03_masterdata_insert_into.sql'

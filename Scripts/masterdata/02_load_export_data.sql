@@ -1,9 +1,9 @@
-.print 'Running 01_load_export_data.sql...'
+.print 'Running 02_load_export_data.sql...'
 
 INSTALL rusty_sheet FROM community;
 LOAD rusty_sheet;
 
-CREATE SCHEMA IF NOT EXISTS masterdata_landing;
+
 
 -- ai2 export:
 -- Read fixed set of columns and do multiple passes to keep 
