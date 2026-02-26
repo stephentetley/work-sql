@@ -19,7 +19,7 @@ SELECT
     t."Manufacturer's Serial Number" AS serial_number,
     t."Technical identification no." AS tech_ident_number,
     t."User Status" AS user_status,
-    t."Planning Plant" AS planning_plant,
+    try_cast(t."Planning Plant" AS INTEGER) AS planning_plant,
     try_cast(t."Address number" AS INTEGER) AS address_number,
 FROM masterdata_landing.s4_equi_data t;
 
@@ -42,7 +42,7 @@ SELECT
     t."Structure indicator" AS structure_indicator,
     t."Superior functional location" AS superior_funcloc,
     t."User Status" AS user_status,
-    t."Company Code" AS company_code,
+    try_cast(t."Company Code" AS INTEGER) AS company_code,
     try_cast(t."Address number" AS INTEGER) AS address_number,
 FROM masterdata_landing.s4_floc_data t;
 
