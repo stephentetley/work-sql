@@ -102,7 +102,6 @@ SELECT
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
     t."PlantReference" AS sai_number,
     NULL AS superequi_id,
-    'Plant' as equi_sort,
 FROM masterdata_landing.ai2_plant t;
 
 -- insert part 2    
@@ -122,7 +121,6 @@ SELECT
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
     t."SubPlantReference" AS sai_number,
     t."PlantEquipReference" AS superequi_id,
-    'SubPlant' as equi_sort,
 FROM masterdata_landing.ai2_sub_plant t;
 
 
@@ -143,7 +141,6 @@ SELECT
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
     t."PlantItemReference" AS sai_number,
     t."PlantEquipReference" AS superequi_id,
-    'PlantItem' as equi_sort,
 FROM masterdata_landing.ai2_plant_item t;
 
 -- insert part 4 
@@ -163,6 +160,5 @@ SELECT
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
     t."SubPlantItemReference" AS sai_number,
     t."PlantItemEquipReference" AS superequi_id,
-    'SubPlantItem' as equi_sort,
 FROM masterdata_landing.ai2_sub_plant_item t;
 
