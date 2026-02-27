@@ -249,6 +249,18 @@ LEFT JOIN ai2_classrep.equiclass_control_panel t1 ON t1.ai2_reference = t.ai2_re
 WHERE t.s4_class = 'CONPNL';
 
 
+-- ai2_classrep.equiclass_controller ==> s4_classrep.equiclass_contfl
+INSERT OR REPLACE INTO s4_classrep.equiclass_contfl BY NAME
+SELECT
+    t.equipment_transit_id AS equipment_id,  
+    t1."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM equi_translate.worklist t
+LEFT JOIN ai2_classrep.equiclass_controller t1 ON t1.ai2_reference = t.ai2_reference
+WHERE t.s4_class = 'CONTFL';
+
+
 -- ai2_classrep.equiclass_plc ==> s4_classrep.equiclass_contpl
 INSERT OR REPLACE INTO s4_classrep.equiclass_contpl BY NAME
 SELECT
@@ -381,7 +393,20 @@ FROM equi_translate.worklist t
 LEFT JOIN ai2_classrep.equiclass_fan t1 ON t1.ai2_reference = t.ai2_reference
 WHERE t.s4_class = 'FANSCE';
 
--- ai2_classrep.equiclass_magnetic_flow_instrument ==> s4_classrep.equiclass__fstnem
+
+-- ai2_classrep.equiclass_vortex_fcd ==> s4_classrep.equiclass_fcdevx
+INSERT OR REPLACE INTO s4_classrep.equiclass_fcdevx BY NAME
+SELECT
+    t.equipment_transit_id AS equipment_id,  
+    t1."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM equi_translate.worklist t
+LEFT JOIN ai2_classrep.equiclass_vortex_fcd t1 ON t1.ai2_reference = t.ai2_reference
+WHERE t.s4_class = 'FCDEVX';
+
+
+-- ai2_classrep.equiclass_magnetic_flow_instrument ==> s4_classrep.equiclass_fstnem
 INSERT OR REPLACE INTO s4_classrep.equiclass_fansce BY NAME
 SELECT
     t.equipment_transit_id AS equipment_id, 
@@ -551,6 +576,29 @@ LEFT JOIN ai2_classrep.equiclass_safety_switch t1 ON t1.ai2_reference = t.ai2_re
 WHERE t.s4_class = 'GASWIP';
 
 
+-- ai2_classrep.equiclass_limit_switch ==> s4_classrep.equiclass_gaswme
+INSERT OR REPLACE INTO s4_classrep.equiclass_gaswme BY NAME
+SELECT
+    t.equipment_transit_id AS equipment_id,  
+    t1."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM equi_translate.worklist t
+LEFT JOIN ai2_classrep.equiclass_limit_switch t1 ON t1.ai2_reference = t.ai2_reference
+WHERE t.s4_class = 'GASWME';
+
+
+-- ai2_classrep.equiclass_limit_switch ==> s4_classrep.equiclass_gaswmg
+INSERT OR REPLACE INTO s4_classrep.equiclass_gaswmg BY NAME
+SELECT
+    t.equipment_transit_id AS equipment_id,  
+    t1."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM equi_translate.worklist t
+LEFT JOIN ai2_classrep.equiclass_limit_switch t1 ON t1.ai2_reference = t.ai2_reference
+WHERE t.s4_class = 'GASWMG';
+
 -- ai2_classrep.equiclass_geared_motor ==> s4_classrep.equiclass_gmtrgm
 INSERT OR REPLACE INTO s4_classrep.equiclass_gmtrgm BY NAME
 SELECT
@@ -583,6 +631,18 @@ SELECT
 FROM equi_translate.worklist t
 LEFT JOIN ai2_classrep.equiclass_mechanical_air_heater t1 ON t1.ai2_reference = t.ai2_reference
 WHERE t.s4_class = 'HEATAI';
+
+
+-- ai2_classrep.equiclass_immersion_heater ==> s4_classrep.equiclass_heatim
+INSERT OR REPLACE INTO s4_classrep.equiclass_heatim BY NAME
+SELECT
+    t.equipment_transit_id AS equipment_id,  
+    t1."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM equi_translate.worklist t
+LEFT JOIN ai2_classrep.equiclass_immersion_heater t1 ON t1.ai2_reference = t.ai2_reference
+WHERE t.s4_class = 'HEATIM';
 
 
 -- ai2_classrep.equiclass_trace_heaters ==> s4_classrep.equiclass_heattr
@@ -1934,6 +1994,18 @@ SELECT
 FROM equi_translate.worklist t
 LEFT JOIN ai2_classrep.equiclass_ww_sludge_storage_tank t1 ON t1.ai2_reference = t.ai2_reference
 WHERE t.s4_class = 'TANKST';
+
+
+-- ai2_classrep.equiclass_lv_air_cooled_transformer ==> s4_classrep.equiclass_trfmac
+INSERT OR REPLACE INTO s4_classrep.equiclass_trfmac BY NAME
+SELECT
+    t.equipment_transit_id AS equipment_id,  
+    t1."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM equi_translate.worklist t
+LEFT JOIN ai2_classrep.equiclass_lv_air_cooled_transformer t1 ON t1.ai2_reference = t.ai2_reference
+WHERE t.s4_class = 'TRFMAC';
 
 
 -- ai2_classrep.equiclass_gearbox ==> s4_classrep.equiclass_truthg
