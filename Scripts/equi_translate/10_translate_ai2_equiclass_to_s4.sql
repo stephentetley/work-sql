@@ -888,6 +888,18 @@ FROM equi_translate.worklist t
 LEFT JOIN ai2_classrep.equiclass_jack_ratchet t1 ON t1.ai2_reference = t.ai2_reference
 WHERE t.s4_class = 'LLJJCK';
 
+
+-- ai2_classrep.equiclass_lifting_hooks ==> s4_classrep.equiclass_lllhho
+INSERT OR REPLACE INTO s4_classrep.equiclass_lllhho BY NAME
+SELECT
+    t.equipment_transit_id AS equipment_id,
+    t1."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM equi_translate.worklist t
+LEFT JOIN ai2_classrep.equiclass_lifting_hooks t1 ON t1.ai2_reference = t.ai2_reference
+WHERE t.s4_class = 'LLLHHO';
+
 -- ai2_classrep.equiclass_chain_beam_hoist_hand ==> s4_classrep.equiclass_llmhch
 INSERT OR REPLACE INTO s4_classrep.equiclass_llmhch BY NAME
 SELECT
@@ -904,6 +916,18 @@ LEFT JOIN ai2_classrep.equiclass_chain_beam_hoist_hand t1 ON t1.ai2_reference = 
 WHERE t.s4_class = 'LLMHCH';
 
 
+-- ai2_classrep.equiclass_chain_beam_hoist_power ==> s4_classrep.equiclass_llphel
+INSERT OR REPLACE INTO s4_classrep.equiclass_llphel BY NAME
+SELECT
+    t.equipment_transit_id AS equipment_id,
+    t1."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM equi_translate.worklist t
+LEFT JOIN ai2_classrep.equiclass_chain_beam_hoist_power t1 ON t1.ai2_reference = t.ai2_reference
+WHERE t.s4_class = 'LLPHEL';
+
+
 -- ai2_classrep.equiclass_runways ==> s4_classrep.equiclass_llrrtb
 INSERT OR REPLACE INTO s4_classrep.equiclass_llrrtb BY NAME
 SELECT
@@ -915,6 +939,30 @@ FROM equi_translate.worklist t
 LEFT JOIN ai2_classrep.equiclass_runways t1 ON t1.ai2_reference = t.ai2_reference
 WHERE t.s4_class = 'LLRRTB';
 
+
+
+-- ai2_classrep.equiclass_bow_shackles ==> s4_classrep.equiclass_llsscb
+INSERT OR REPLACE INTO s4_classrep.equiclass_llsscb BY NAME
+SELECT
+    t.equipment_transit_id AS equipment_id,
+    t1."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM equi_translate.worklist t
+LEFT JOIN ai2_classrep.equiclass_bow_shackles t1 ON t1.ai2_reference = t.ai2_reference
+WHERE t.s4_class = 'LLSSCB';
+
+
+-- ai2_classrep.equiclass_dee_shackles ==> s4_classrep.equiclass_llsscd
+INSERT OR REPLACE INTO s4_classrep.equiclass_llsscd BY NAME
+SELECT
+    t.equipment_transit_id AS equipment_id,
+    t1."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM equi_translate.worklist t
+LEFT JOIN ai2_classrep.equiclass_dee_shackles t1 ON t1.ai2_reference = t.ai2_reference
+WHERE t.s4_class = 'LLSSCD';
 
 -- ai2_classrep.equiclass_beam_trolley ==> s4_classrep.equiclass_lltttr
 INSERT OR REPLACE INTO s4_classrep.equiclass_lltttr BY NAME
@@ -931,6 +979,7 @@ FROM equi_translate.worklist t
 LEFT JOIN ai2_classrep.equiclass_beam_trolley t1 ON t1.ai2_reference = t.ai2_reference
 WHERE t.s4_class = 'LLTTTR';
 
+
 -- ai2_classrep.equiclass_fall_arrester ==> s4_classrep.equiclass_llwaab
 INSERT OR REPLACE INTO s4_classrep.equiclass_llwaab BY NAME
 SELECT
@@ -941,6 +990,18 @@ SELECT
 FROM equi_translate.worklist t
 LEFT JOIN ai2_classrep.equiclass_fall_arrester t1 ON t1.ai2_reference = t.ai2_reference
 WHERE t.s4_class = 'LLWAAB';
+
+
+-- ai2_classrep.equiclass_shear_legs ==> s4_classrep.equiclass_llwatr
+INSERT OR REPLACE INTO s4_classrep.equiclass_llwatr BY NAME
+SELECT
+    t.equipment_transit_id AS equipment_id,
+    t1."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM equi_translate.worklist t
+LEFT JOIN ai2_classrep.equiclass_shear_legs t1 ON t1.ai2_reference = t.ai2_reference
+WHERE t.s4_class = 'LLWATR';
 
 -- ai2_classrep.equiclass_ropes ==> s4_classrep.equiclass_llwrwi
 INSERT OR REPLACE INTO s4_classrep.equiclass_llwrwi BY NAME
