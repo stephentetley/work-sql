@@ -27,7 +27,11 @@ SELECT
     t."PlantEquipStatus",
     t."PlantEquipAssetTypeCode",
     t."PlantEquipAssetTypeDescription",
-FROM read_sheets([getvariable('aib_master_globpath')], sheets=['Sheet1'], error_as_null=true, nulls=['NULL'], columns={'*FromDate': 'varchar'}) t
+FROM read_sheets(
+    [getvariable('aib_master_globpath')], 
+    sheets=['Sheet1'], 
+    error_as_null=true, nulls=['NULL'], 
+    columns={'*FromDate': 'varchar'}) t
 WHERE
     t."PlantEquipRuleDeleted" = '0'
 AND t."PlantEquipReference" IS NOT NULL;

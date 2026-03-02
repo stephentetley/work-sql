@@ -128,6 +128,18 @@ LEFT JOIN ai2_classrep.equiclass_nitrate_instrument t1 ON t1.ai2_reference = t.a
 WHERE t.s4_class = 'ANALNO';
 
 
+-- ai2_classrep.equiclass_turbidity_instrument ==> s4_classrep.equiclass_analph
+INSERT OR REPLACE INTO s4_classrep.equiclass_analph BY NAME
+SELECT
+    t.equipment_transit_id AS equipment_id,
+    t1."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM equi_translate.worklist t
+LEFT JOIN ai2_classrep.equiclass_ph_instrument t1 ON t1.ai2_reference = t.ai2_reference
+WHERE t.s4_class = 'ANALPH';
+
+
 -- ai2_classrep.equiclass_turbidity_instrument ==> s4_classrep.equiclass_analtb
 INSERT OR REPLACE INTO s4_classrep.equiclass_analtb BY NAME
 SELECT
@@ -407,7 +419,7 @@ WHERE t.s4_class = 'FCDEVX';
 
 
 -- ai2_classrep.equiclass_magnetic_flow_instrument ==> s4_classrep.equiclass_fstnem
-INSERT OR REPLACE INTO s4_classrep.equiclass_fansce BY NAME
+INSERT OR REPLACE INTO s4_classrep.equiclass_fstnem BY NAME
 SELECT
     t.equipment_transit_id AS equipment_id, 
     t1."Location On Site" AS location_on_site,
@@ -2069,6 +2081,17 @@ LEFT JOIN ai2_classrep.equiclass_lv_air_cooled_transformer t1 ON t1.ai2_referenc
 WHERE t.s4_class = 'TRFMAC';
 
 
+-- ai2_classrep.equiclass_gearbox ==> s4_classrep.equiclass_trutbg
+INSERT OR REPLACE INTO s4_classrep.equiclass_trutbg BY NAME
+SELECT
+    t.equipment_transit_id AS equipment_id,
+    t1."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM equi_translate.worklist t
+LEFT JOIN ai2_classrep.equiclass_gearbox t1 ON t1.ai2_reference = t.ai2_reference
+WHERE t.s4_class = 'TRUTBG';
+
 -- ai2_classrep.equiclass_gearbox ==> s4_classrep.equiclass_truthg
 INSERT OR REPLACE INTO s4_classrep.equiclass_truthg BY NAME
 SELECT
@@ -2088,7 +2111,7 @@ WHERE t.s4_class = 'TRUTHG';
 
 
 -- ai2_classrep.equiclass_gearbox ==> s4_classrep.equiclass_trutpg
-INSERT OR REPLACE INTO s4_classrep.equiclass_tankst BY NAME
+INSERT OR REPLACE INTO s4_classrep.equiclass_trutpg BY NAME
 SELECT
     t.equipment_transit_id AS equipment_id,
     t1."Location On Site" AS location_on_site,
@@ -2192,7 +2215,7 @@ WHERE t.s4_class = 'VALVGA';
 
 
 -- ai2_classrep.equiclass_non_return_valve ==> s4_classrep.equiclass_valvnr
-INSERT OR REPLACE INTO s4_classrep.equiclass_valvga BY NAME
+INSERT OR REPLACE INTO s4_classrep.equiclass_valvnr BY NAME
 SELECT
     t.equipment_transit_id AS equipment_id,  
     t1."Location On Site" AS location_on_site,
