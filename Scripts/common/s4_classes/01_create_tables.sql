@@ -19,7 +19,6 @@
 
 
 CREATE SCHEMA IF NOT EXISTS s4_classlists;
-CREATE SCHEMA IF NOT EXISTS s4_classlists_landing;
 
 CREATE OR REPLACE TABLE s4_classlists.floc_characteristics (
     class_name TEXT NOT NULL,
@@ -34,12 +33,19 @@ CREATE OR REPLACE TABLE s4_classlists.floc_characteristics (
 
 
 CREATE OR REPLACE TABLE s4_classlists.equi_characteristics (
+    -- e.g. 'PODEPC'
     class_name TEXT NOT NULL,
+    -- e.g. 'MEMO_LINE'
     char_name TEXT NOT NULL,
+    -- e.g. 'Phase Converter'
     class_description TEXT,
+    -- e.g. 'Memo Line'
     char_description TEXT,
+    -- e.g. 'NUM'
     char_type TEXT,
+    -- e.g. 30
     char_length INTEGER,
+    -- e.g. 2
     char_precision INTEGER,
     PRIMARY KEY(class_name, char_name)
 );
