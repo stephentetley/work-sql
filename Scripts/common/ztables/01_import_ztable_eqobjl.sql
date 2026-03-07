@@ -8,22 +8,18 @@ CREATE OR REPLACE TABLE s4_ztables.eqobjl (
     remarks VARCHAR
 );
 
---  eqobjl
-CREATE OR REPLACE MACRO read_ztable_eqobjl(xlsx_file) AS TABLE
-SELECT 
+-- Setup the environment variable `ZT_EQOBJL_PATH` before running this file
+SELECT getenv('ZT_EQOBJL_PATH') AS ZT_EQOBJL_PATH;
+
+
+INSERT INTO s4_ztables.eqobjl
+SELECT
     t."Object Type" AS 'object_type',
     t."Object Type_1" AS 'object_type_1',
     t."Equipment category" AS 'equipment_category',
     t."Remarks" AS 'remarks',
-FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true) AS t;
+FROM read_xlsx(getenv('ZT_EQOBJL_PATH'), all_varchar=true) AS t;
 
--- Setup the variables `zt_eqobjl_path` before running this file
--- SET VARIABLE zt_eqobjl_path = 'path/to/zt_eqobj_20260205.XLSX';
-
-INSERT INTO s4_ztables.eqobjl
-FROM read_ztable_eqobjl(
-    getvariable('zt_eqobjl_path')
-);
 
 
 

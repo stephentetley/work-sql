@@ -19,13 +19,16 @@ SELECT
     t."Remarks" AS 'remarks',
 FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true) AS t;
 
--- Setup the variables `zt_flobjl_path` before running this file
--- SET VARIABLE zt_eqobjl_path = 'path/to/zt_flobjl_20260205.XLSX';
+-- Setup the environment variable `ZT_FLOBJL_PATH` before running this file
+SELECT getenv('ZT_FLOBJL_PATH') AS ZT_FLOBJL_PATH;
 
 INSERT INTO s4_ztables.flobjl
-FROM read_ztable_flobjl(
-    getvariable('zt_flobjl_path')
-);
+SELECT 
+    t."Structure indicator" AS 'structure_indicator',
+    t."Object Type" AS 'object_type',
+    t."Object Type_1" AS 'object_type_1',
+    t."Remarks" AS 'remarks',
+FROM read_xlsx(getenv('ZT_FLOBJL_PATH'), all_varchar=true) AS t;
 
 
 

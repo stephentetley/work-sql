@@ -9,18 +9,11 @@ CREATE OR REPLACE TABLE s4_ztables.flocdes (
 
 
 
---  flocdes
-CREATE OR REPLACE MACRO read_ztable_flocdes(xlsx_file) AS TABLE
+-- Setup the environment variable `ZT_FLOCDES_PATH` before running this file
+SELECT getenv('ZT_FLOCDES_PATH') AS ZT_FLOCDES_PATH;
+
+INSERT INTO s4_ztables.flocdes
 SELECT 
     t."Object Type" AS 'object_type',
     t."Standard FLoc Description" AS 'standard_floc_description',
-FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true) AS t;
-
-
--- Setup the variables `zt_flocdes_path` before running this file
--- SET VARIABLE zt_flocdes_path = 'path/to/zt_flocdes_20260205.XLSX';
-
-INSERT INTO s4_ztables.flocdes
-FROM read_ztable_flocdes(
-    getvariable('zt_flocdes_path')
-);
+FROM read_xlsx(getenv('ZT_FLOCDES_PATH'), all_varchar=true) AS t;

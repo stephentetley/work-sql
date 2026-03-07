@@ -9,22 +9,14 @@ CREATE OR REPLACE TABLE s4_ztables.obj (
 );
 
 
---  obj
-CREATE OR REPLACE MACRO read_ztable_obj(xlsx_file) AS TABLE
+-- Setup the environment variable `ZT_OBJ_PATH` before running this file
+SELECT getenv('ZT_OBJ_PATH') AS ZT_OBJ_PATH;
+
+INSERT INTO s4_ztables.obj
 SELECT 
     t."Object Type" AS 'object_type',
     t."Manufacturer" AS 'manufacturer',
     t."Remarks" AS 'remarks',
-FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true) AS t;
-
-
--- Setup the variables `zt_obj_path` before running this file
--- SET VARIABLE zt_obj_path = 'path/to/zt_objtype_manuf_20260205.XLSX';
-
-INSERT INTO s4_ztables.obj
-FROM read_ztable_obj(
-    getvariable('zt_obj_path')
-);
-
+FROM read_xlsx(getenv('ZT_OBJ_PATH'), all_varchar=true) AS t;
 
 

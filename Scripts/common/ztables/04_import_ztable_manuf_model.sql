@@ -8,21 +8,14 @@ CREATE OR REPLACE TABLE s4_ztables.manuf_model (
 );
 
 
---  manuf_model
-CREATE OR REPLACE MACRO read_ztable_manuf_model(xlsx_file) AS TABLE
+-- Setup the environment variable `ZT_MANUF_MODEL_PATH` before running this file
+SELECT getenv('ZT_MANUF_MODEL_PATH') AS ZT_MANUF_MODEL_PATH;
+
+INSERT INTO s4_ztables.manuf_model
 SELECT 
     t."Manufacturer" AS 'manufacturer',
     t."Model Number" AS 'model',
-FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true) AS t;
-
-
--- Setup the variables `zt_manuf_model_path` before running this file
--- SET VARIABLE zt_manuf_model_path = 'path/to/zt_manuf_20260205.XLSX';
-
-INSERT INTO s4_ztables.manuf_model
-FROM read_ztable_manuf_model(
-    getvariable('zt_manuf_model_path')
-);
+FROM read_xlsx(getenv('ZT_MANUF_MODEL_PATH'), all_varchar=true) AS t;
 
 
 
