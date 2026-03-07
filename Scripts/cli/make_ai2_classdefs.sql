@@ -2,7 +2,7 @@
 -- Setup the following environment variables:
 -- `ASSET_TYPES_ATTRIBUTES_PATH`
 -- `EQUIPMENT_ATTRIBUTE_SETS_PATH`
--- before running this file (e.g in a make file)
+-- before running this file (e.g in a makefile)
 
 
 .read '/home/stephen/_working/coding/work/work-sql/Scripts/common/ai2_classes/01_create_tables.sql'

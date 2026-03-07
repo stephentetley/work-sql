@@ -15,6 +15,8 @@ CASE
     ELSE 'VARCHAR'
 END;
 
+-- Setup the environment variable `ASSET_TYPES_ATTRIBUTES_PATH` before running this file
+SELECT getenv('ASSET_TYPES_ATTRIBUTES_PATH') AS ASSET_TYPES_ATTRIBUTES_PATH;
 
 CREATE OR REPLACE TABLE ai2_classlists_landing.asset_type_attributes AS
 SELECT 
@@ -32,6 +34,9 @@ WHERE t."Code" LIKE 'EQPT%'
 AND t."AssetTypeDeletionFlag" = '0'
 AND t."AttributeNameDeletionFlag" = '0';
 
+
+-- Setup the environment variable `EQUIPMENT_ATTRIBUTE_SETS_PATH` before running this file
+SELECT getenv('EQUIPMENT_ATTRIBUTE_SETS_PATH') AS EQUIPMENT_ATTRIBUTE_SETS_PATH;
 
 CREATE OR REPLACE TABLE ai2_classlists_landing.equipment_attribute_sets AS
 SELECT 

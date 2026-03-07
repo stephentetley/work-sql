@@ -2,9 +2,6 @@
 INSTALL rusty_sheet FROM community;
 LOAD rusty_sheet;
 
-SET VARIABLE equi_classdefs_path = '/home/stephen/_working/work/resources/s4_classdefs/002_equi_classdefs_20260205.xlsx';
-SET VARIABLE floc_classdefs_path = '/home/stephen/_working/work/resources/s4_classdefs/003_floc_classdefs_20260205.xlsx';
-
 
 CREATE OR REPLACE TEMPORARY MACRO trim_cell(str VARCHAR) AS
     CASE WHEN trim(str) = '' THEN NULL ELSE trim(str) END;
@@ -43,11 +40,18 @@ FROM cte2
 );
 
 
+-- Setup the environment variable `EQUI_CLASSDEFS_PATH` before running this file
+SELECT getenv('EQUI_CLASSDEFS_PATH') AS EQUI_CLASSDEFS_PATH;
+
 CREATE OR REPLACE TEMPORARY TABLE equi_import AS
-SELECT * FROM read_classdefs(getvariable('equi_classdefs_path'));
+SELECT * FROM read_classdefs(getenv('EQUI_CLASSDEFS_PATH'));
+
+
+-- Setup the environment variable `FLOC_CLASSDEFS_PATH` before running this file
+SELECT getenv('FLOC_CLASSDEFS_PATH') AS FLOC_CLASSDEFS_PATH;
 
 CREATE OR REPLACE TEMPORARY TABLE floc_import AS
-SELECT * FROM read_classdefs(getvariable('floc_classdefs_path'));
+SELECT * FROM read_classdefs(getenv('FLOC_CLASSDEFS_PATH'));
 
 CREATE OR REPLACE TEMPORARY MACRO setup_classes_table(table_name VARCHAR) AS TABLE
 WITH cte_classes AS (
