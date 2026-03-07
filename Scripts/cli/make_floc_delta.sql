@@ -1,4 +1,8 @@
 
+-- Setup the following environment variables:
+-- `FLOC_DELTA_WORKLIST`
+-- `IH06_PATCHES_GLOBPATH` [optional]
+-- before running this file (e.g in a makefile)
 
 .bail on
 

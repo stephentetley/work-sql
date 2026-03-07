@@ -21,14 +21,17 @@ JOIN masterdata_db.masterdata.ai2_equipment t1 ON t1.pli_number = t.ai2_referenc
 
 
 -- attributes
-SELECT getvariable('ai2_attributes_glob') AS ai2_attributes_glob;
+SELECT getenv('AI2_ATTRIBUTES_GLOB') AS AI2_ATTRIBUTES_GLOB;
+
 
 INSERT INTO ai2_eav.equipment_eav
 WITH cte1 AS (
     SELECT
         t."Reference" AS ai2_reference,
         t.* EXCLUDE("AssetId", "Reference", "Common Name", "Installed From", "Manufacturer", "Model", "Hierarchy Key", "AssetStatus", "Asset in AIDE ?"),
-    FROM read_sheets([getvariable('ai2_attributes_glob')], columns={'*': 'VARCHAR'}) t
+    FROM read_sheets(
+        [getenv('AI2_ATTRIBUTES_GLOB')], 
+        columns={'*': 'VARCHAR'}) t
 ), cte2 AS (
     FROM cte1 UNPIVOT INCLUDE NULLS (
         attr_value FOR attr_name IN (COLUMNS(* EXCLUDE "ai2_reference"))

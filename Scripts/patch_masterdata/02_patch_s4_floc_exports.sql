@@ -31,12 +31,12 @@ CREATE TABLE masterdata_patch_landing.s4_flocs (
 
 .print 'masterdata_patch_landing.s4_flocs...'
 
--- Setup the environment variable `S4_IH06_PATCHES_GLOBPATH` before running this file
-SELECT getenv('S4_IH06_PATCHES_GLOBPATH') AS S4_IH06_PATCHES_GLOBPATH;
+-- Setup the environment variable `IH06_PATCHES_GLOBPATH` before running this file
+SELECT getenv('IH06_PATCHES_GLOBPATH') AS IH06_PATCHES_GLOBPATH;
 
 
 -- Read from an empty ih06 export (with needed columns) if 
--- `S4_IH06_PATCHES_GLOBPATH` is blank 
+-- `IH06_PATCHES_GLOBPATH` is blank 
 -- 
 INSERT OR REPLACE INTO masterdata_patch_landing.s4_flocs BY NAME
 WITH cte AS (
@@ -58,7 +58,7 @@ WITH cte AS (
         t."Company Code",
         t."Address number",
     FROM read_sheets(
-        [getenv_with_default('S4_IH06_PATCHES_GLOBPATH', 
+        [getenv_with_default('IH06_PATCHES_GLOBPATH', 
                                 '/home/stephen/_working/work/resources/patch_masterdata/empty_ih06_floc_patch.xlsx')],
         sheets=['Sheet1'],
         error_as_null=true,

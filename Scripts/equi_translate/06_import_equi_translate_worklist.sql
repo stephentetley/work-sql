@@ -1,4 +1,4 @@
-.print 'Running 06_import_ai2_base_data.sql...'
+.print 'Running 06_import_equi_translate_worklist.sql...'
 
 INSTALL rusty_sheet FROM community;
 LOAD rusty_sheet;
@@ -22,7 +22,7 @@ CREATE OR REPLACE TABLE equi_translate.worklist (
 
 
 -- Worklist
-SELECT getvariable('equi_translate_worklist') AS equi_translate_worklist;
+SELECT getenv('EQUI_TRANSLATE_WORKLIST') AS EQUI_TRANSLATE_WORKLIST;
 
 DELETE FROM equi_translate.worklist;
 INSERT OR REPLACE INTO equi_translate.worklist BY NAME
@@ -39,7 +39,7 @@ SELECT
     try_cast(t."S4 Position" AS INTEGER) AS s4_position,
     t."Solution ID" AS solution_id,
 FROM read_sheet(
-    getvariable('equi_translate_worklist'), 
+    getenv('EQUI_TRANSLATE_WORKLIST'), 
     columns={
         'Batch': 'INTEGER', 
         'S4 Superord Equipment': 'VARCHAR'
