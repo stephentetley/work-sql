@@ -1,7 +1,6 @@
-.print 'Running 02_export_macros.sql...'
+.print 'Running 02_import_classlists.sql...'
 
-
-CREATE OR REPLACE MACRO decode_data_type(dtype) AS 
+CREATE OR REPLACE TEMPORARY MACRO decode_data_type(dtype) AS 
 CASE 
     WHEN (dtype :: VARCHAR) = 'AIYEAR4' THEN 'INTEGER'
     WHEN dtype = 'BOOL' THEN 'BOOLEAN'
@@ -17,8 +16,7 @@ CASE
 END;
 
 
-
-CREATE OR REPLACE MACRO read_asset_types_attributes(xlsx_file) AS TABLE
+CREATE OR REPLACE TABLE ai2_classlists_landing.asset_type_attributes AS
 SELECT 
     t."Code" AS class_name,
     t."Description" AS class_description,
@@ -29,18 +27,16 @@ SELECT
     IF(t."Data Type Name" = 'NULL' AND t."LookupTypeId" <> 'NULL', 'ENUM', t."Data Type Name") AS data_type,
     decode_data_type(data_type) AS ddl_data_type,
     t."Lookup Type Name" AS enum_name,
-FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true, sheet='AssetTypesAttributes') t
+FROM read_xlsx(getenv('ASSET_TYPES_ATTRIBUTES_PATH'), all_varchar=true, sheet='AssetTypesAttributes') t
 WHERE t."Code" LIKE 'EQPT%'
 AND t."AssetTypeDeletionFlag" = '0'
 AND t."AttributeNameDeletionFlag" = '0';
 
 
-
-CREATE OR REPLACE MACRO read_equipment_attribute_sets(xlsx_file) AS TABLE
+CREATE OR REPLACE TABLE ai2_classlists_landing.equipment_attribute_sets AS
 SELECT 
     t."Attribute Description" AS class_name,
     t."Attribute Set"  attribute_set_name,
     t."Class Derivation" AS class_derivation,
-FROM read_xlsx(xlsx_file :: VARCHAR, all_varchar=true, sheet='Sheet1') t;
-
+FROM read_xlsx(getenv('EQUIPMENT_ATTRIBUTE_SETS_PATH'), all_varchar=true, sheet='Sheet1') t;
 
