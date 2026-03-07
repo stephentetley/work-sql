@@ -46,3 +46,4 @@ SELECT
     try_cast(t."Company Code" AS INTEGER) AS company_code,
     try_cast(t."Address number" AS INTEGER) AS address_number,
 FROM masterdata_patch_landing.s4_flocs t;
+

@@ -1,7 +1,9 @@
 .print 'Running 02_import_worklist.sql...'
 
 .print 'Loading floc_delta_worklist...'
-SELECT getvariable('floc_delta_worklist') AS equi_master_globpath;
+
+-- Setup the environment variable `FLOC_DELTA_WORKLIST` before running this file
+SELECT getenv('FLOC_DELTA_WORKLIST') AS FLOC_DELTA_WORKLIST;
 
 -- TODO change to use rusty_sheet...
 
@@ -18,7 +20,7 @@ SELECT
     t."Solution ID" AS solution_id,
     t."Grid Ref" AS grid_ref
 FROM read_xlsx(
-    getvariable('floc_delta_worklist'), 
+    getenv('FLOC_DELTA_WORKLIST'), 
     all_varchar=true, 
     sheet='Flocs'
 ) AS t;

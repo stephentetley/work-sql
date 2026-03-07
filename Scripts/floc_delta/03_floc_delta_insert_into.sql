@@ -40,7 +40,7 @@ FROM floc_delta_landing.worklist t
 CROSS JOIN udf_db.udfx.get_east_north(t.grid_ref) t1
 );
 
-.print 'Inserting into floc_delta.existing_flocs'
+.print 'Inserting into floc_delta.existing_flocs from masterdata'
 
 DELETE FROM floc_delta.existing_flocs;
 INSERT INTO floc_delta.existing_flocs BY NAME
