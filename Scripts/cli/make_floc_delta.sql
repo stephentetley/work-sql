@@ -2,11 +2,19 @@
 
 .bail on
 
+SELECT 'The database created by the client must always be called `floc_delta_db`' AS WARNING;
+
 ATTACH OR REPLACE DATABASE '~/_working/work/resources/masterdata/masterdata_latest_db' AS masterdata_db (READ_ONLY);
+COPY FROM DATABASE masterdata_db TO floc_delta_db;
+DETACH DATABASE masterdata_db;
+
 
 ATTACH OR REPLACE DATABASE '~/_working/work/resources/ztables/ztables_db.duckdb' AS ztables_db (READ_ONLY);
 
 ATTACH OR REPLACE DATABASE '~/_working/work/resources/udf/udf_db.duckdb' AS udf_db (READ_ONLY);
+
+-- patch masterdata with updates from ih06 exports
+.read '/home/stephen/_working/coding/work/work-sql/Scripts/patch_masterdata/02_patch_s4_floc_exports.sql'
 
 -- setup output tables
 .read '/home/stephen/_working/coding/work/work-sql/Scripts/common/excel_uploader/03_setup_floc_create_tables.sql'

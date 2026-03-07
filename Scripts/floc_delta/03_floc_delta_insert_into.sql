@@ -55,8 +55,8 @@ SELECT
     t.maintenance_plant AS maintenance_plant,
     t1.easting AS easting,
     t1.northing AS northing,
-FROM masterdata_db.masterdata.s4_funcloc t
-LEFT JOIN masterdata_db.masterdata.s4_floc_east_north t1 ON t1.s4_floc = t.functional_location;
+FROM masterdata.s4_funcloc t
+LEFT JOIN masterdata.s4_floc_east_north t1 ON t1.s4_floc = t.functional_location;
     
 
 .print 'Inserting into floc_delta.existing_and_new_flocs'
