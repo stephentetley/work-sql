@@ -12,7 +12,9 @@ LOAD rusty_sheet;
 
 
 .print 'Loading masterdata_landing.ai2_plant...'
-SELECT getvariable('aib_master_globpath') AS aib_master_globpath;
+
+-- Setup the environment variable `AIB_MASTER_GLOBPATH` before running this file
+SELECT getenv('AIB_MASTER_GLOBPATH') AS AIB_MASTER_GLOBPATH;
 
 CREATE OR REPLACE TABLE masterdata_landing.ai2_plant AS
 SELECT
@@ -28,7 +30,7 @@ SELECT
     t."PlantEquipAssetTypeCode",
     t."PlantEquipAssetTypeDescription",
 FROM read_sheets(
-    [getvariable('aib_master_globpath')], 
+    [getenv('AIB_MASTER_GLOBPATH')], 
     sheets=['Sheet1'], 
     error_as_null=true, nulls=['NULL'], 
     columns={'*FromDate': 'varchar'}) t
@@ -53,7 +55,12 @@ SELECT
     t."SubPlantEquipAssetTypeCode",
     t."SubPlantEquipAssetTypeDescription",
     t."PlantEquipReference",
-FROM read_sheets([getvariable('aib_master_globpath')], sheets=['Sheet1'], error_as_null=true, nulls=['NULL'], columns={'*FromDate': 'varchar'}) t
+FROM read_sheets(
+    [getenv('AIB_MASTER_GLOBPATH')], 
+    sheets=['Sheet1'], 
+    error_as_null=true, 
+    nulls=['NULL'], 
+    columns={'*FromDate': 'varchar'}) t
 WHERE
     t."SubPlantEquipRuleDeleted" = '0'
 AND t."SubPlantEquipReference" IS NOT NULL;
@@ -75,7 +82,12 @@ SELECT
     t."PlantItemEquipAssetTypeDescription",
     t."PlantEquipReference",
     t."SubPlantEquipReference",
-FROM read_sheets([getvariable('aib_master_globpath')], sheets=['Sheet1'], error_as_null=true, nulls=['NULL'], columns={'*FromDate': 'varchar'}) t
+FROM read_sheets(
+    [getenv('AIB_MASTER_GLOBPATH')], 
+    sheets=['Sheet1'], 
+    error_as_null=true, 
+    nulls=['NULL'], 
+    columns={'*FromDate': 'varchar'}) t
 WHERE
     t."PlantItemEquipRuleDeleted" = '0'
 AND t."PlantItemEquipReference" IS NOT NULL;
@@ -99,34 +111,45 @@ SELECT
     t."PlantEquipReference",
     t."SubPlantEquipReference",
     t."PlantItemEquipReference",
-FROM read_sheets([getvariable('aib_master_globpath')], sheets=['Sheet1'], error_as_null=true, nulls=['NULL'], columns={'*FromDate': 'varchar'}) t
+FROM read_sheets(
+    [getenv('AIB_MASTER_GLOBPATH')],
+    sheets=['Sheet1'], 
+    error_as_null=true, 
+    nulls=['NULL'], 
+    columns={'*FromDate': 'varchar'}) t
 WHERE
     t."SubPlantItemEquipRuleDeleted" = '0'
 AND t."SubPlantItemEquipReference" IS NOT NULL;
 
 .print 'Loading masterdata_landing.s4_floc_data...'
-SELECT getvariable('floc_master_globpath') AS floc_master_globpath;
+
+-- SELECT getvariable('floc_master_globpath') AS floc_master_globpath;
+
+-- Setup the environment variable `FLOC_MASTER_GLOBPATH` before running this file
+SELECT getenv('FLOC_MASTER_GLOBPATH') AS FLOC_MASTER_GLOBPATH;
 
 
 CREATE OR REPLACE TABLE masterdata_landing.s4_floc_data AS
 SELECT 
     * 
 FROM read_sheets(
-    [getvariable('floc_master_globpath')], 
+    [getenv('FLOC_MASTER_GLOBPATH')], 
     sheets=['Sheet1'],
     columns={'Start-up date': 'varchar'}
 );
 
 
 .print 'Loading masterdata_landing.s4_equi_data...'
-SELECT getvariable('equi_master_globpath') AS equi_master_globpath;
 
+
+-- Setup the environment variable `EQUI_MASTER_GLOBPATH` before running this file
+SELECT getenv('EQUI_MASTER_GLOBPATH') AS EQUI_MASTER_GLOBPATH;
 
 CREATE OR REPLACE TABLE masterdata_landing.s4_equi_data AS
 SELECT 
     * 
 FROM read_sheets(
-    [getvariable('equi_master_globpath')], 
+    [getenv('EQUI_MASTER_GLOBPATH')], 
     sheets=['Sheet1'],
     columns={'Start-up date': 'varchar'}
 );
@@ -134,13 +157,17 @@ FROM read_sheets(
 
 
 .print 'Loading masterdata_landing.s4_equi_aib_refs_data...'
-SELECT getvariable('equi_aib_globpath') AS equi_aib_globpath;
+
+
+-- Setup the environment variable `EQUI_AIB_GLOBPATH` before running this file
+SELECT getenv('EQUI_AIB_GLOBPATH') AS EQUI_AIB_GLOBPATH;
+
 
 CREATE OR REPLACE TABLE masterdata_landing.s4_equi_aib_refs_data AS
 SELECT 
     * 
 FROM read_sheets(
-    [getvariable('equi_aib_globpath')], 
+    [getenv('EQUI_AIB_GLOBPATH')], 
     sheets=['Sheet1']
 );
 
