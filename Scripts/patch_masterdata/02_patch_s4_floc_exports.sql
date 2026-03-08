@@ -37,7 +37,7 @@ CREATE TABLE masterdata_patch_landing.s4_flocs (
 SELECT getenv('IH06_PATCHES_GLOBPATH') AS IH06_PATCHES_GLOBPATH;
 
 
--- Read from an empty ih06 export (with required columns) even if 
+-- Read from an empty ih06 export (with required columns) if 
 -- `IH06_PATCHES_GLOBPATH` is blank 
 -- 
 INSERT OR REPLACE INTO masterdata_patch_landing.s4_flocs BY NAME

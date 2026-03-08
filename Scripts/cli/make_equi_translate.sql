@@ -22,7 +22,7 @@ DETACH DATABASE masterdata_db;
 .read '/home/stephen/_working/coding/work/work-sql/Scripts/patch_masterdata/01_patch_ai2_structure_exports.sql'
 
 
-.read '/home/stephen/_working/coding/work/work-sql/Scripts/common/excel_uploader/01_setup_equi_create_tables.sql'
+.read '/home/stephen/_working/coding/work/work-sql/Scripts/common/excel_uploader_schema/01_setup_equi_create_tables.sql'
 
 .read '/home/stephen/_working/coding/work/work-sql/Scripts/equi_translate/01_create_ai2_classrep_base_tables.sql'
 .read '/home/stephen/_working/coding/work/work-sql/Generated/equi_translate/02o_create_ai2_equiclasses.sql'
