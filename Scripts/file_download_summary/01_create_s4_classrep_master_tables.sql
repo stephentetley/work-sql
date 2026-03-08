@@ -1,6 +1,5 @@
--- Equi tables are copied from `equi_create`
--- TODO how do we manage common scripts?
 
+.print 'Running 01_create_s4_classrep_master_tables.sql...'
 
 
 CREATE SCHEMA IF NOT EXISTS s4_classrep;
@@ -144,7 +143,7 @@ CREATE OR REPLACE TABLE s4_classrep.equi_solution_id (
 
 -- ## Equi shape classes
 
-CREATE OR REPLACE TABLE s4_classrep.equishape_cfbm (
+CREATE OR REPLACE TABLE s4_classrep.equishape_shcfbm (
     equipment_id VARCHAR NOT NULL,
     capacity_m3 DECIMAL(18,3),
     diameter_mm INTEGER,
@@ -154,7 +153,7 @@ CREATE OR REPLACE TABLE s4_classrep.equishape_cfbm (
     PRIMARY KEY (equipment_id)
 );
 
-CREATE OR REPLACE TABLE s4_classrep.equishape_cobm (
+CREATE OR REPLACE TABLE s4_classrep.equishape_shcobm (
     equipment_id VARCHAR NOT NULL,
     capacity_m3 DECIMAL(18,3),
     centre_depth_mm INTEGER,
@@ -164,7 +163,7 @@ CREATE OR REPLACE TABLE s4_classrep.equishape_cobm (
     PRIMARY KEY (equipment_id)
 );
 
-CREATE OR REPLACE TABLE s4_classrep.equishape_ecyl (
+CREATE OR REPLACE TABLE s4_classrep.equishape_shecyl (
     equipment_id VARCHAR NOT NULL,
     capacity_m3 DECIMAL(18,3),
     length_mm INTEGER,
@@ -174,7 +173,7 @@ CREATE OR REPLACE TABLE s4_classrep.equishape_ecyl (
     PRIMARY KEY (equipment_id)
 );
 
-CREATE OR REPLACE TABLE s4_classrep.equishape_hcyl (
+CREATE OR REPLACE TABLE s4_classrep.equishape_shhcyl (
     equipment_id VARCHAR NOT NULL,
     capacity_m3 DECIMAL(18,3),
     diameter_mm INTEGER,
@@ -183,7 +182,7 @@ CREATE OR REPLACE TABLE s4_classrep.equishape_hcyl (
     PRIMARY KEY (equipment_id)
 );
 
-CREATE OR REPLACE TABLE s4_classrep.equishape_miir (
+CREATE OR REPLACE TABLE s4_classrep.equishape_shmiir (
     equipment_id VARCHAR NOT NULL,
     capacity_m3 DECIMAL(18,3),
     centre_depth_mm INTEGER,
@@ -198,7 +197,7 @@ CREATE OR REPLACE TABLE s4_classrep.equishape_miir (
     PRIMARY KEY (equipment_id)
 );
 
-CREATE OR REPLACE TABLE s4_classrep.equishape_rfbm (
+CREATE OR REPLACE TABLE s4_classrep.equishape_shrfbm (
     equipment_id VARCHAR NOT NULL,
     capacity_m3 DECIMAL(18,3),
     length_mm INTEGER,
@@ -209,7 +208,7 @@ CREATE OR REPLACE TABLE s4_classrep.equishape_rfbm (
     PRIMARY KEY (equipment_id)
 );
 
-CREATE OR REPLACE TABLE s4_classrep.equishape_rpbm (
+CREATE OR REPLACE TABLE s4_classrep.equishape_shrpbm (
     equipment_id VARCHAR NOT NULL,
     capacity_m3 DECIMAL(18,3),
     centre_depth_mm INTEGER,
@@ -221,7 +220,8 @@ CREATE OR REPLACE TABLE s4_classrep.equishape_rpbm (
     PRIMARY KEY (equipment_id)
 );
 
-CREATE OR REPLACE TABLE s4_classrep.equishape_rsbm (
+-- Rectangular sloped bottom
+CREATE OR REPLACE TABLE s4_classrep.equishape_shrsbm (
     equipment_id VARCHAR NOT NULL,
     capacity_m3 DECIMAL(18,3),
     length_mm INTEGER,
@@ -233,7 +233,8 @@ CREATE OR REPLACE TABLE s4_classrep.equishape_rsbm (
     PRIMARY KEY (equipment_id)
 );
 
-CREATE OR REPLACE TABLE s4_classrep.equishape_scyl (
+-- Semi cylinder
+CREATE OR REPLACE TABLE s4_classrep.equishape_shscyl (
     equipment_id VARCHAR NOT NULL,
     capacity_m3 DECIMAL(18,3),
     diameter_mm INTEGER,

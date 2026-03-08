@@ -1,15 +1,5 @@
-DELETE FROM s4_classrep.floc_masterdata;
-DELETE FROM s4_classrep.equi_masterdata;
-DELETE FROM s4_classrep.floc_aib_reference;
-DELETE FROM s4_classrep.equi_aib_reference;
-DELETE FROM s4_classrep.equi_asset_condition;
-DELETE FROM s4_classrep.floc_solution_id;
-DELETE FROM s4_classrep.equi_solution_id;
-DELETE FROM s4_classrep.floc_east_north;
-DELETE FROM s4_classrep.equi_east_north;
 
-DELETE FROM s4_classrep.equishape_cfbm;
-DELETE FROM s4_classrep.equishape_cobm;
+.print 'Running 03_insert_into_s4_classrep_master_tables.sql...'
 
 
 INSERT OR REPLACE INTO s4_classrep.floc_masterdata BY NAME
@@ -200,7 +190,7 @@ AND solution_id IS NOT NULL;
 
 ---- ## Equi shape classes
 
-INSERT INTO s4_classrep.equishape_cfbm BY NAME
+INSERT INTO s4_classrep.equishape_shcfbm BY NAME
 WITH cte1 AS (
     PIVOT file_download_landing.valuaequi
     ON "CHARID" IN (
@@ -235,7 +225,7 @@ FROM cte3 t
 SEMI JOIN file_download_landing.classequi t1 ON (t1.equi = t.equipment_id) AND t1."CLASS" = 'SHCFBM';
 
 
-INSERT INTO s4_classrep.equishape_cobm BY NAME
+INSERT INTO s4_classrep.equishape_shcobm BY NAME
 WITH cte1 AS (
     PIVOT file_download_landing.valuaequi
     ON "CHARID" IN (

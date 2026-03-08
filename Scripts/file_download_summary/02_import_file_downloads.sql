@@ -1,14 +1,17 @@
-CREATE SCHEMA IF NOT EXISTS file_download;
+
+.print 'Running 02_import_file_downloads.sql...'
+
 CREATE SCHEMA IF NOT EXISTS file_download_landing;
 
+-- Setup the environment variable `FUNCLOC_DOWNLOAD` before running this file
+SELECT getenv('FUNCLOC_DOWNLOAD') AS FUNCLOC_DOWNLOAD;
 
--- Create landing tables from the respective CSV files
 
-CREATE OR REPLACE MACRO read_funcloc(file_name) AS TABLE
+CREATE OR REPLACE TABLE file_download_landing.funcloc AS
 SELECT 
     * RENAME("*FUNCLOC" AS "FUNCLOC")
 FROM read_csv(
-    file_name::VARCHAR, 
+    getenv('FUNCLOC_DOWNLOAD'), 
     dateformat='%d.%m.%Y',
     types = {
         '*FUNCLOC': 'VARCHAR',
@@ -37,12 +40,14 @@ FROM read_csv(
     nullstr = ['00.00.0000', '00.00.00', '']
 );
 
+-- Setup the environment variable `CLASSFLOC_DOWNLOAD` before running this file
+SELECT getenv('CLASSFLOC_DOWNLOAD') AS CLASSFLOC_DOWNLOAD;
 
-CREATE OR REPLACE MACRO read_classfloc(file_name) AS TABLE
+CREATE OR REPLACE TABLE file_download_landing.classfloc AS
 SELECT 
     * RENAME("*FUNCLOC" AS "FUNCLOC")
 FROM read_csv(
-    file_name::VARCHAR, 
+    getenv('CLASSFLOC_DOWNLOAD'), 
     dateformat='%d.%m.%Y',
     types = {
         '*FUNCLOC': 'VARCHAR',
@@ -52,11 +57,15 @@ FROM read_csv(
     nullstr = ['00.00.0000', '00.00.00', '']
 );
 
-CREATE OR REPLACE MACRO read_valuafloc(file_name) AS TABLE
+
+-- Setup the environment variable `VALUAFLOC_DOWNLOAD` before running this file
+SELECT getenv('VALUAFLOC_DOWNLOAD') AS VALUAFLOC_DOWNLOAD;
+
+CREATE OR REPLACE TABLE file_download_landing.valuafloc AS
 SELECT 
     * RENAME("*FUNCLOC" AS "FUNCLOC")
 FROM read_csv(
-    file_name::VARCHAR, 
+    getenv('VALUAFLOC_DOWNLOAD'), 
     dateformat='%d.%m.%Y',
     types = {
         '*FUNCLOC': 'VARCHAR',
@@ -74,11 +83,17 @@ FROM read_csv(
     nullstr = ['00.00.0000', '00.00.00', '']
 );
 
-CREATE OR REPLACE MACRO read_equi(file_name) AS TABLE
+
+
+
+-- Setup the environment variable `EQUI_DOWNLOAD` before running this file
+SELECT getenv('EQUI_DOWNLOAD') AS EQUI_DOWNLOAD;
+
+CREATE OR REPLACE TABLE file_download_landing.equi AS
 SELECT 
     * RENAME("*EQUI" AS "EQUI")
 FROM read_csv(
-    file_name::VARCHAR, 
+    getenv('EQUI_DOWNLOAD'), 
     dateformat='%d.%m.%Y',
     types = {
         '*EQUI': 'VARCHAR',
@@ -110,11 +125,14 @@ FROM read_csv(
 );
 
 
-CREATE OR REPLACE MACRO read_classequi(file_name) AS TABLE
+-- Setup the environment variable `CLASSEQUI_DOWNLOAD` before running this file
+SELECT getenv('CLASSEQUI_DOWNLOAD') AS CLASSEQUI_DOWNLOAD;
+
+CREATE OR REPLACE TABLE file_download_landing.classequi AS
 SELECT 
     * RENAME("*EQUI" AS "EQUI")
 FROM read_csv(
-    file_name::VARCHAR, 
+    getenv('CLASSEQUI_DOWNLOAD'), 
     dateformat='%d.%m.%Y',
     types = {
         '*EQUI': 'VARCHAR',
@@ -124,11 +142,14 @@ FROM read_csv(
     nullstr = ['00.00.0000', '00.00.00', '']
 );
 
-CREATE OR REPLACE MACRO read_valuaequi(file_name) AS TABLE
+-- Setup the environment variable `VALUAEQUI_DOWNLOAD` before running this file
+SELECT getenv('VALUAEQUI_DOWNLOAD') AS VALUAEQUI_DOWNLOAD;
+
+CREATE OR REPLACE TABLE file_download_landing.valuaequi AS
 SELECT 
     * RENAME("*EQUI" AS "EQUI")
 FROM read_csv(
-    file_name::VARCHAR, 
+    getenv('VALUAEQUI_DOWNLOAD'), 
     dateformat='%d.%m.%Y',
     types = {
         '*EQUI': 'VARCHAR',
@@ -145,5 +166,3 @@ FROM read_csv(
     },
     nullstr = ['00.00.0000', '00.00.00', '']
 );
-
-
