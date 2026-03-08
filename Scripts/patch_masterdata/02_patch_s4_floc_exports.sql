@@ -8,6 +8,8 @@ CREATE OR REPLACE TEMPORARY MACRO getenv_with_default(varname VARCHAR, default_v
 
 
 CREATE SCHEMA IF NOT EXISTS masterdata_patch_landing;
+
+
 CREATE TABLE masterdata_patch_landing.s4_flocs (
     "Functional Location" VARCHAR,
     "Description of functional location" VARCHAR,
@@ -35,7 +37,7 @@ CREATE TABLE masterdata_patch_landing.s4_flocs (
 SELECT getenv('IH06_PATCHES_GLOBPATH') AS IH06_PATCHES_GLOBPATH;
 
 
--- Read from an empty ih06 export (with needed columns) if 
+-- Read from an empty ih06 export (with required columns) even if 
 -- `IH06_PATCHES_GLOBPATH` is blank 
 -- 
 INSERT OR REPLACE INTO masterdata_patch_landing.s4_flocs BY NAME

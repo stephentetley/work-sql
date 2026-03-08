@@ -17,7 +17,7 @@ SELECT
     t.ai2_reference,
     t1.equi_type_name AS equipment_type,
 FROM equi_translate.worklist t
-JOIN masterdata_db.masterdata.ai2_equipment t1 ON t1.pli_number = t.ai2_reference;
+JOIN masterdata.ai2_equipment t1 ON t1.pli_number = t.ai2_reference;
 
 
 -- attributes

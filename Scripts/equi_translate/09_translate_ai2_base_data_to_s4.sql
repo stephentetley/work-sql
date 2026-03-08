@@ -22,7 +22,7 @@ SELECT
     t2.pandi_tag AS technical_ident_number,
     t.s4_position AS display_position,
 FROM equi_translate.worklist t
-JOIN masterdata_db.masterdata.ai2_equipment t1 ON t1.pli_number = t.ai2_reference
+JOIN masterdata.ai2_equipment t1 ON t1.pli_number = t.ai2_reference
 JOIN ai2_classrep.equi_extra_masterdata t2 ON t2.ai2_reference = t.ai2_reference;
 
 -- AIB_REFERENCE
@@ -40,7 +40,7 @@ WITH cte1 AS (
         2 AS value_index,
         t1.sai_number AS ai2_aib_reference
     FROM equi_translate.worklist t
-    JOIN masterdata_db.masterdata.ai2_equipment t1 ON t1.pli_number = t.ai2_reference
+    JOIN masterdata.ai2_equipment t1 ON t1.pli_number = t.ai2_reference
 )
 SELECT * FROM cte1
 UNION BY NAME

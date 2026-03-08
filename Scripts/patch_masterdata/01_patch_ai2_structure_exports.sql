@@ -1,21 +1,41 @@
-.print 'Running 01_patch_ai2_exports.sql...'
+.print 'Running 01_patch_ai2_structure_exports.sql...'
 
 INSTALL rusty_sheet FROM community;
 LOAD rusty_sheet;
 
+CREATE OR REPLACE TEMPORARY MACRO getenv_with_default(varname VARCHAR, default_value VARCHAR) AS
+    IF(getenv(varname) = '', default_value, getenv(varname));
 
 CREATE SCHEMA IF NOT EXISTS masterdata_patch_landing;
 
-.print 'masterdata_patch_landing.ai2_equi...'
-SELECT getvariable('ai2_structure_globpath') AS ai2_structure_globpath;
+
+CREATE TABLE masterdata_patch_landing.ai2_structure (
+    row_num INTEGER NOT NULL,
+    ai2_reference VARCHAR,
+    common_name VARCHAR,
+    installed_from_date TIMESTAMP,
+    manufacturer VARCHAR,
+    model VARCHAR,
+    user_status VARCHAR,
+    PRIMARY KEY (row_num)
+);
 
 
-CREATE OR REPLACE TABLE masterdata_patch_landing.ai2_structure AS
+.print 'masterdata_patch_landing.ai2_structure...'
+
+SELECT getenv('AI2_STRUCTURE_PATCHES_GLOBPATH') AS AI2_STRUCTURE_PATCHES_GLOBPATH;
+
+
+-- Read from an empty ih06 export (with required columns) if 
+-- `IH06_PATCHES_GLOBPATH` is blank 
+-- 
+INSERT OR REPLACE INTO masterdata_patch_landing.ai2_structure BY NAME
 WITH cte AS (
     SELECT
         t.*,
     FROM read_sheets(
-        [getvariable('ai2_structure_globpath')],
+        [getenv_with_default('AI2_STRUCTURE_PATCHES_GLOBPATH',
+            '/home/stephen/_working/work/resources/patch_masterdata/empty_ai2_structure_patch.xlsx')],
         sheets=['Sheet1'],
         error_as_null=true,
         nulls=['NULL'],

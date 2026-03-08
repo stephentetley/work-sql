@@ -2,6 +2,7 @@
 -- Setup the following environment variables:
 -- `EQUI_TRANSLATE_WORKLIST`
 -- `AI2_ATTRIBUTES_GLOB`
+-- `AI2_STRUCTURE_PATCHES_GLOBPATH` [optional]
 -- before running this file (e.g in a makefile)
 
 
@@ -10,10 +11,15 @@
 
 
 
--- Attach masterdata as a working data source
-ATTACH OR REPLACE DATABASE
-    '~/_working/work/2026/masterdata/02_24/masterdata_feb24_db.duckdb'
-AS masterdata_db (READ_ONLY);
+
+SELECT 'The database created by the client must always be called `floc_delta_db`' AS WARNING;
+
+ATTACH OR REPLACE DATABASE '~/_working/work/resources/masterdata/masterdata_latest_db' AS masterdata_db (READ_ONLY);
+COPY FROM DATABASE masterdata_db TO equi_translate_db;
+DETACH DATABASE masterdata_db;
+
+-- patch masterdata with updates from ih06 exports
+.read '/home/stephen/_working/coding/work/work-sql/Scripts/patch_masterdata/01_patch_ai2_structure_exports.sql'
 
 
 .read '/home/stephen/_working/coding/work/work-sql/Scripts/common/excel_uploader/01_setup_equi_create_tables.sql'
