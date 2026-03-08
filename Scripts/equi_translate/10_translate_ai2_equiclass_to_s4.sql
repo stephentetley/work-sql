@@ -1734,16 +1734,17 @@ LEFT JOIN ai2_classrep.equiclass_screens t1 ON t1.ai2_reference = t.ai2_referenc
 WHERE t.s4_class = 'SCRCBA';
 
 
--- ai2_classrep.equiclass_screens ==> s4_classrep.equiclass_scrfsc
--- INSERT OR REPLACE INTO s4_classrep.equiclass_scrfsc BY NAME
--- SELECT
---     t.equipment_transit_id AS equipment_id,
---     t1."Location On Site" AS location_on_site,
---     'TEMP_VALUE' AS uniclass_code,
---     'TEMP_VALUE' AS uniclass_desc,
--- FROM equi_translate.worklist t
--- LEFT JOIN ai2_classrep.equiclass_screens t1 ON t1.ai2_reference = t.ai2_reference
--- WHERE t.s4_class = 'SCRFSC';
+-- To Brush Screen
+-- ai2_classrep.equiclass_screens ==> s4_classrep.equiclass_scrfbr
+INSERT OR REPLACE INTO s4_classrep.equiclass_scrfbr BY NAME
+SELECT
+    t.equipment_transit_id AS equipment_id,
+    t1."Location On Site" AS location_on_site,
+    'TEMP_VALUE' AS uniclass_code,
+    'TEMP_VALUE' AS uniclass_desc,
+FROM equi_translate.worklist t
+LEFT JOIN ai2_classrep.equiclass_screens t1 ON t1.ai2_reference = t.ai2_reference
+WHERE t.s4_class = 'SCRFBR';
 
 
 -- ai2_classrep.equiclass_slip_ring_assembly ==> s4_classrep.equiclass_slipra

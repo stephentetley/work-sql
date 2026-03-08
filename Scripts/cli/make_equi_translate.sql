@@ -12,7 +12,7 @@
 
 
 
-SELECT 'The database created by the client must always be called `floc_delta_db`' AS WARNING;
+SELECT 'The database created by the client must always be called `equi_translate_db`' AS WARNING;
 
 ATTACH OR REPLACE DATABASE '~/_working/work/resources/masterdata/masterdata_latest_db' AS masterdata_db (READ_ONLY);
 COPY FROM DATABASE masterdata_db TO equi_translate_db;
