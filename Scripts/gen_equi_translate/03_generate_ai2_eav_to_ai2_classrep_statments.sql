@@ -2,8 +2,6 @@
 
 -- This doesn't work in DBeaver, it has to be run from the CLI...
 
--- TODO move this into a separate gen_equi_translate sub project
-
 -- NOTE we generate some fatuous casts and renamings as we need to avoid empty
 -- lists of casts and renamings during SQL generation
 
