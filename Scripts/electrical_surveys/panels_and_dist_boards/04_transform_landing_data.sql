@@ -1,66 +1,10 @@
-.bail on
 
-CREATE SCHEMA IF NOT EXISTS electrical_surveys;
-
-INSTALL rusty_sheet FROM community;
-LOAD rusty_sheet;
-
-CREATE OR REPLACE TEMPORARY MACRO norm_text(name VARCHAR) AS
-    trim(name).regexp_replace('\s+', ' ', 'g');
-
--- -- Setup the environment variable `ELECTRICAL_SURVEYS_GLOB_PATH` before running this file
--- SELECT getenv('ELECTRICAL_SURVEYS_GLOB_PATH') AS ELECTRICAL_SURVEYS_GLOB_PATH;
-
-
--- Something strange is happening with ctes, sheet glob and row_number...
--- Do the processing from a temporary table
-
-
-
-
-CREATE OR REPLACE TEMPORARY MACRO read_survey_simple(file_name VARCHAR, sheet_names VARCHAR[]) AS TABLE (
-SELECT
-    row_number() OVER (PARTITION BY survey_file, sheet_names) AS row_num,
-    norm_text(COLUMNS(*))
-FROM read_sheets(
-    [file_name],
-    sheets=sheet_names,
-    header=false,
-    file_name_column='survey_file',
-    sheet_name_column='sheet_name',
-    columns={'*': 'varchar'},
-    range='A1:K35'
-    )
-);
-
-CREATE OR REPLACE TEMPORARY TABLE surveys_landing (
-    row_num INTEGER,
-    survey_file VARCHAR,
-    sheet_name VARCHAR,
-    "A" VARCHAR,
-    "B" VARCHAR,
-    "C" VARCHAR,
-    "D" VARCHAR,
-    "E" VARCHAR,
-    "F" VARCHAR,
-    "G" VARCHAR,
-    "H" VARCHAR,
-    "I" VARCHAR,
-    "J" VARCHAR,
-    "K" VARCHAR,
-    PRIMARY KEY (row_num, survey_file, sheet_name)
-);
-
-
--- to be generated...
-INSERT OR REPLACE INTO surveys_landing BY NAME
-SELECT * FROM read_survey_simple('* (As Fitted).xlsx', ['DB-*', 'MCC-*', 'CP-*']);
-
+CREATE OR REPLACE TABLE electrical_surveys.distboard_or_panels AS
 WITH cte1 AS (
     SELECT
         survey_file,
         sheet_name,
-    FROM surveys_landing
+    FROM panel_or_dist_board_surveys_landing
     GROUP BY survey_file, sheet_name
 ), cte2 AS (
     SELECT
@@ -97,23 +41,23 @@ WITH cte1 AS (
         t6."I" AS circuit_description7,
         t6."J" AS circuit_description8,
         t6."K" AS circuit_description9,
-        t7."C" AS load1,
-        t7."D" AS load2,
-        t7."E" AS load3,
-        t7."F" AS load4,
-        t7."G" AS load5,
-        t7."H" AS load6,
-        t7."I" AS load7,
-        t7."J" AS load8,
-        t7."K" AS load9,
+        t7."C" AS circuit_load1,
+        t7."D" AS circuit_load2,
+        t7."E" AS circuit_load3,
+        t7."F" AS circuit_load4,
+        t7."G" AS circuit_load5,
+        t7."H" AS circuit_load6,
+        t7."I" AS circuit_load7,
+        t7."J" AS circuit_load8,
+        t7."K" AS circuit_load9,
     FROM cte1 t
-    LEFT JOIN surveys_landing t1 ON t1.survey_file = t.survey_file AND t1.sheet_name = t.sheet_name AND t1.row_num = 3
-    LEFT JOIN surveys_landing t2 ON t2.survey_file = t.survey_file AND t2.sheet_name = t.sheet_name AND t2.row_num = 5
-    LEFT JOIN surveys_landing t3 ON t3.survey_file = t.survey_file AND t3.sheet_name = t.sheet_name AND t3.row_num = 7
-    LEFT JOIN surveys_landing t4 ON t4.survey_file = t.survey_file AND t4.sheet_name = t.sheet_name AND t4.row_num = 11
-    LEFT JOIN surveys_landing t5 ON t5.survey_file = t.survey_file AND t5.sheet_name = t.sheet_name AND t5.row_num = 12
-    LEFT JOIN surveys_landing t6 ON t6.survey_file = t.survey_file AND t6.sheet_name = t.sheet_name AND t6.row_num = 13
-    LEFT JOIN surveys_landing t7 ON t7.survey_file = t.survey_file AND t7.sheet_name = t.sheet_name AND t7.row_num = 34
+    LEFT JOIN panel_or_dist_board_surveys_landing t1 ON t1.survey_file = t.survey_file AND t1.sheet_name = t.sheet_name AND t1.row_num = 3
+    LEFT JOIN panel_or_dist_board_surveys_landing t2 ON t2.survey_file = t.survey_file AND t2.sheet_name = t.sheet_name AND t2.row_num = 5
+    LEFT JOIN panel_or_dist_board_surveys_landing t3 ON t3.survey_file = t.survey_file AND t3.sheet_name = t.sheet_name AND t3.row_num = 7
+    LEFT JOIN panel_or_dist_board_surveys_landing t4 ON t4.survey_file = t.survey_file AND t4.sheet_name = t.sheet_name AND t4.row_num = 11
+    LEFT JOIN panel_or_dist_board_surveys_landing t5 ON t5.survey_file = t.survey_file AND t5.sheet_name = t.sheet_name AND t5.row_num = 12
+    LEFT JOIN panel_or_dist_board_surveys_landing t6 ON t6.survey_file = t.survey_file AND t6.sheet_name = t.sheet_name AND t6.row_num = 13
+    LEFT JOIN panel_or_dist_board_surveys_landing t7 ON t7.survey_file = t.survey_file AND t7.sheet_name = t.sheet_name AND t7.row_num = 34
 ), cte_ans1 AS (
    SELECT
         t.survey_file,
@@ -126,7 +70,7 @@ WITH cte1 AS (
         t.fed_from1 AS fed_from,
         t.circuit_ref_and_phase1 AS circuit_ref_and_phase,
         t.circuit_description1 AS circuit_description,
-        t.load1 AS load,
+        t.circuit_load1 AS circuit_load,
     FROM cte2 t
     WHERE t.fed_from1 IS NOT NULL
 ), cte_ans2 AS (
@@ -141,7 +85,7 @@ WITH cte1 AS (
         t.fed_from2 AS fed_from,
         t.circuit_ref_and_phase2 AS circuit_ref_and_phase,
         t.circuit_description2 AS circuit_description,
-        t.load2 AS load,
+        t.circuit_load2 AS circuit_load,
     FROM cte2 t
     WHERE t.fed_from2 IS NOT NULL
 ), cte_ans3 AS (
@@ -156,7 +100,7 @@ WITH cte1 AS (
         t.fed_from3 AS fed_from,
         t.circuit_ref_and_phase3 AS circuit_ref_and_phase,
         t.circuit_description3 AS circuit_description,
-        t.load3 AS load,
+        t.circuit_load3 AS circuit_load,
     FROM cte2 t
     WHERE t.fed_from3 IS NOT NULL
 ), cte_ans4 AS (
@@ -171,7 +115,7 @@ WITH cte1 AS (
         t.fed_from4 AS fed_from,
         t.circuit_ref_and_phase4 AS circuit_ref_and_phase,
         t.circuit_description4 AS circuit_description,
-        t.load4 AS load,
+        t.circuit_load4 AS circuit_load,
     FROM cte2 t
     WHERE t.fed_from4 IS NOT NULL
 ), cte_ans5 AS (
@@ -186,7 +130,7 @@ WITH cte1 AS (
         t.fed_from5 AS fed_from,
         t.circuit_ref_and_phase5 AS circuit_ref_and_phase,
         t.circuit_description5 AS circuit_description,
-        t.load5 AS load,
+        t.circuit_load5 AS circuit_load,
     FROM cte2 t
     WHERE t.fed_from5 IS NOT NULL
 ), cte_ans6 AS (
@@ -201,7 +145,7 @@ WITH cte1 AS (
         t.fed_from6 AS fed_from,
         t.circuit_ref_and_phase6 AS circuit_ref_and_phase,
         t.circuit_description6 AS circuit_description,
-        t.load6 AS load,
+        t.circuit_load6 AS circuit_load,
     FROM cte2 t
     WHERE t.fed_from6 IS NOT NULL
 ), cte_ans7 AS (
@@ -216,7 +160,7 @@ WITH cte1 AS (
         t.fed_from7 AS fed_from,
         t.circuit_ref_and_phase7 AS circuit_ref_and_phase,
         t.circuit_description7 AS circuit_description,
-        t.load7 AS load,
+        t.circuit_load7 AS circuit_load,
     FROM cte2 t
     WHERE t.fed_from7 IS NOT NULL
 ), cte_ans8 AS (
@@ -231,7 +175,7 @@ WITH cte1 AS (
         t.fed_from8 AS fed_from,
         t.circuit_ref_and_phase8 AS circuit_ref_and_phase,
         t.circuit_description8 AS circuit_description,
-        t.load8 AS load,
+        t.circuit_load8 AS circuit_load,
     FROM cte2 t
     WHERE t.fed_from8 IS NOT NULL
 ), cte_ans9 AS (
@@ -246,7 +190,7 @@ WITH cte1 AS (
         t.fed_from9 AS fed_from,
         t.circuit_ref_and_phase9 AS circuit_ref_and_phase,
         t.circuit_description9 AS circuit_description,
-        t.load9 AS load,
+        t.circuit_load9 AS circuit_load,
     FROM cte2 t
     WHERE t.fed_from9 IS NOT NULL
 )
@@ -269,4 +213,3 @@ UNION BY NAME
 SELECT * FROM cte_ans9
 ORDER BY survey_file, sheet_name, item_number;
 
--- SELECT * FROM analyze_sheets(['* (As Fitted).xlsx']) WHERE column_name = 'TEST SHEET';
