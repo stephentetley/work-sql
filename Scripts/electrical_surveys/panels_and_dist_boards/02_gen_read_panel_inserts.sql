@@ -15,7 +15,7 @@ WITH cte AS (
         sheet_name
     FROM analyze_sheets(
         [getenv('SURVEY_SHEETS_GLOB_PATH')], 
-        sheets=['BB-*', 'CP-*', 'DB-*', 'MCC-*', 'MS-*', 'SF-*', 'TX-*', 'UPS-*']
+        sheets=['BB-*', 'CP-*', 'DB-*', 'FS-*', 'MCC-*', 'MS-*', 'SF-*', 'TX-*', 'UPS-*']
         )
     GROUP BY file_name, sheet_name
 )

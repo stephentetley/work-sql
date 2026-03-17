@@ -1,5 +1,6 @@
 
-CREATE OR REPLACE TABLE electrical_surveys.distboard_or_panels AS
+DELETE FROM electrical_surveys.distboard_or_panels;
+INSERT INTO electrical_surveys.distboard_or_panels BY NAME
 WITH cte1 AS (
     SELECT
         survey_file,
