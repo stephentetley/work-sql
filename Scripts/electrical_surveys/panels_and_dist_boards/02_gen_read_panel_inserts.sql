@@ -1,3 +1,5 @@
+.print 'Running 02_gen_read_panel_inserts.sql...'
+
 
 INSTALL rusty_sheet FROM community;
 LOAD rusty_sheet;

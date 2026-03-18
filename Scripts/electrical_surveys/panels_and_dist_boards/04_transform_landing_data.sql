@@ -1,3 +1,5 @@
+.print 'Running 04_transform_landing_data.sql...'
+
 
 DELETE FROM electrical_surveys.distboard_or_panels;
 INSERT INTO electrical_surveys.distboard_or_panels BY NAME

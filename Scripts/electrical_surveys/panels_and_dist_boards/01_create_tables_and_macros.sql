@@ -1,3 +1,5 @@
+.print 'Running 01_create_tables_and_macros.sql...'
+
 .bail on
 
 CREATE SCHEMA IF NOT EXISTS electrical_surveys;
