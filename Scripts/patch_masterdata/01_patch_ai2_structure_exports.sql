@@ -9,7 +9,7 @@ CREATE OR REPLACE TEMPORARY MACRO getenv_with_default(varname VARCHAR, default_v
 CREATE SCHEMA IF NOT EXISTS masterdata_patch_landing;
 
 
-CREATE TABLE masterdata_patch_landing.ai2_structure (
+CREATE OR REPLACE TABLE masterdata_patch_landing.ai2_structure (
     row_num INTEGER NOT NULL,
     ai2_reference VARCHAR,
     common_name VARCHAR,
@@ -29,6 +29,7 @@ SELECT getenv('AI2_STRUCTURE_PATCHES_GLOBPATH') AS AI2_STRUCTURE_PATCHES_GLOBPAT
 -- Read from an empty ih06 export (with required columns) if 
 -- `IH06_PATCHES_GLOBPATH` is blank 
 -- 
+DELETE FROM masterdata_patch_landing.ai2_structure;
 INSERT OR REPLACE INTO masterdata_patch_landing.ai2_structure BY NAME
 WITH cte AS (
     SELECT

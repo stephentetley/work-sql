@@ -1,11 +1,15 @@
 .print 'Running 11_s4_equiclass_to_excel_uploader.sql...'
 
+
+
 DELETE FROM excel_uploader_equi_create.batch_worklist;
 INSERT OR REPLACE INTO excel_uploader_equi_create.batch_worklist BY NAME
 SELECT
     t.equipment_transit_id AS equi,
     t.batch AS batch_number,
 FROM equi_translate.worklist t;
+
+
 
 DELETE FROM excel_uploader_equi_create.equipment_data;
 INSERT OR REPLACE INTO excel_uploader_equi_create.equipment_data BY NAME 
@@ -34,6 +38,8 @@ FROM s4_classrep.equi_masterdata t;
 -- Characteristics
 DELETE FROM excel_uploader_equi_create.classification;
 
+
+
 -- AIB_REFERENCE (needs to exclude value_index)
 INSERT INTO excel_uploader_equi_create.classification BY NAME
 WITH cte1 AS (
@@ -52,6 +58,8 @@ SELECT
     upper(characteristics) AS characteristics,
     char_value,
 FROM cte2;
+
+
 
 -- SOLUTION_ID (needs to exclude value_index)
 INSERT INTO excel_uploader_equi_create.classification BY NAME
@@ -74,7 +82,7 @@ FROM cte2;
 
 
 
-CREATE OR REPLACE MACRO get_excel_loader_characteristics_for(s4_class_name, table_name) AS TABLE (
+CREATE OR REPLACE TEMPORARY MACRO get_excel_loader_characteristics_for(s4_class_name VARCHAR, table_name VARCHAR) AS TABLE (
 WITH cte AS (
     UNPIVOT (SELECT CAST(COLUMNS(*) AS VARCHAR) FROM query_table(table_name::VARCHAR))
     ON COLUMNS (* EXCLUDE (equipment_id))
@@ -89,6 +97,8 @@ SELECT
     char_value,
 FROM cte
 );
+
+
 
 INSERT INTO excel_uploader_equi_create.classification BY NAME
 (
