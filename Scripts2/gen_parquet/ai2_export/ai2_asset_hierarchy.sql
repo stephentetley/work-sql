@@ -7,6 +7,8 @@ LOAD rusty_sheet;
 CREATE SCHEMA IF NOT EXISTS ai2_masterdata;
 CREATE SCHEMA IF NOT EXISTS landing;
 
+-- ## CREATE TABLE
+
 CREATE OR REPLACE TABLE ai2_masterdata.equi (
     -- e.g. 'PLI00123456'
     pli_number VARCHAR NOT NULL,
@@ -53,7 +55,7 @@ CREATE OR REPLACE MACRO sqlserver_date(str) AS (
 -- memory usage low. Do no processing until the data is stored 
 -- on disk otherwise we are getting out-of-memory memory issues
 
-
+-- ## LOAD DATA
 
 -- Setup the environment variable `AIB_MASTER_GLOBPATH` before running this file
 SELECT getenv('AIB_MASTER_GLOBPATH') AS AIB_MASTER_GLOBPATH;

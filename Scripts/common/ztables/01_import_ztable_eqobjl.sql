@@ -2,9 +2,9 @@ CREATE SCHEMA IF NOT EXISTS s4_ztables;
 
 
 CREATE OR REPLACE TABLE s4_ztables.eqobjl (
-    structure_indicator VARCHAR NOT NULL,
     object_type VARCHAR NOT NULL,
     object_type_1 VARCHAR NOT NULL,
+    equipment_category VARCHAR,
     remarks VARCHAR
 );
 
