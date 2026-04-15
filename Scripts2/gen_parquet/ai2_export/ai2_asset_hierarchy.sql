@@ -3,13 +3,9 @@
 INSTALL rusty_sheet FROM community;
 LOAD rusty_sheet;
 
-
-CREATE SCHEMA IF NOT EXISTS ai2_masterdata;
-CREATE SCHEMA IF NOT EXISTS landing;
-
 -- ## CREATE TABLE
 
-CREATE OR REPLACE TABLE ai2_masterdata.equi (
+CREATE OR REPLACE TABLE ai2_equi (
     -- e.g. 'PLI00123456'
     pli_number VARCHAR NOT NULL,
     -- e.g. 'LCC'
@@ -61,10 +57,10 @@ CREATE OR REPLACE MACRO sqlserver_date(str) AS (
 SELECT getenv('AIB_MASTER_GLOBPATH') AS AIB_MASTER_GLOBPATH;
 
 
-.print 'Loading landing.ai2_plant...'
+.print 'Loading ai2_plant_landing...'
 
 
-CREATE OR REPLACE TABLE landing.ai2_plant AS
+CREATE OR REPLACE TABLE ai2_plant_landing AS
 SELECT
     t."InstallationCommonName",
     t."SubInstallationCommonName",
@@ -87,9 +83,9 @@ WHERE
 AND t."PlantEquipReference" IS NOT NULL;
 
 
-.print 'Loading landing.ai2_sub_plant...'
+.print 'Loading ai2_sub_plant_landing...'
 
-CREATE OR REPLACE TABLE landing.ai2_sub_plant AS
+CREATE OR REPLACE TABLE ai2_sub_plant_landing AS
 SELECT
     t."InstallationCommonName",
     t."SubInstallationCommonName",
@@ -113,9 +109,9 @@ WHERE
     t."SubPlantEquipRuleDeleted" = '0'
 AND t."SubPlantEquipReference" IS NOT NULL;
 
-.print 'Loading landing.ai2_plant_item...'
+.print 'Loading ai2_plant_item_landing...'
 
-CREATE OR REPLACE TABLE landing.ai2_plant_item AS
+CREATE OR REPLACE TABLE ai2_plant_item_landing AS
 SELECT
     t."InstallationCommonName",
     t."SubInstallationCommonName",
@@ -141,9 +137,9 @@ WHERE
 AND t."PlantItemEquipReference" IS NOT NULL;
 
 
-.print 'Loading landing.ai2_sub_plant_item...'
+.print 'Loading ai2_sub_plant_item_landing...'
 
-CREATE OR REPLACE TABLE landing.ai2_sub_plant_item AS
+CREATE OR REPLACE TABLE ai2_sub_plant_item_landing AS
 SELECT
     t."InstallationCommonName",
     t."SubInstallationCommonName",
@@ -172,12 +168,12 @@ AND t."SubPlantItemEquipReference" IS NOT NULL;
 
 -- ai2
 
-DELETE FROM ai2_masterdata.equi;
+DELETE FROM ai2_equi;
 
 -- insert part 1
-.print 'Inserting ai2_plant data into masterdata.ai2_equipment...'
+.print 'Inserting ai2_plant data into ai2_equi...'
 
-INSERT OR REPLACE INTO ai2_masterdata.equi BY NAME
+INSERT OR REPLACE INTO ai2_equi BY NAME
 SELECT 
     t."PlantEquipReference" AS pli_number,
     regexp_extract(t."PlantCommonName", '/([^/]*)$', 1) AS equipment_name,
@@ -191,12 +187,12 @@ SELECT
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
     t."PlantReference" AS sai_number,
     NULL AS superequi_id,
-FROM landing.ai2_plant t;
+FROM ai2_plant_landing t;
 
 -- insert part 2    
-.print 'Inserting ai2_sub_plant data into ai2_masterdata.equi...'
+.print 'Inserting ai2_sub_plant data into ai2_equi...'
 
-INSERT OR REPLACE INTO ai2_masterdata.equi BY NAME
+INSERT OR REPLACE INTO ai2_equi BY NAME
 SELECT 
     t."SubPlantEquipReference" AS pli_number,
     regexp_extract(t."SubPlantCommonName", '/([^/]*)$', 1) AS equipment_name,
@@ -210,13 +206,13 @@ SELECT
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
     t."SubPlantReference" AS sai_number,
     t."PlantEquipReference" AS superequi_id,
-FROM landing.ai2_sub_plant t;
+FROM ai2_sub_plant_landing t;
 
 
 -- insert part 3  
-.print 'Inserting ai2_plant_item data into ai2_masterdata.equi...'
+.print 'Inserting ai2_plant_item data into ai2_equi...'
 
-INSERT OR REPLACE INTO ai2_masterdata.equi BY NAME
+INSERT OR REPLACE INTO ai2_equi BY NAME
 SELECT 
     t."PlantItemEquipReference" AS pli_number,
     regexp_extract(t."PlantItemCommonName", '/([^/]*)$', 1) AS equipment_name,
@@ -230,12 +226,12 @@ SELECT
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
     t."PlantItemReference" AS sai_number,
     t."PlantEquipReference" AS superequi_id,
-FROM landing.ai2_plant_item t;
+FROM ai2_plant_item_landing t;
 
 -- insert part 4 
-.print 'Inserting ai2_sub_plant_item data into ai2_masterdata.equi...'
+.print 'Inserting ai2_sub_plant_item data into ai2_equi...'
 
-INSERT OR REPLACE INTO ai2_masterdata.equi BY NAME
+INSERT OR REPLACE INTO ai2_equi BY NAME
 SELECT 
     t."SubPlantItemEquipReference" AS pli_number,
     regexp_extract(t."SubPlantItemCommonName", '/([^/]*)$', 1) AS equipment_name,
@@ -249,10 +245,10 @@ SELECT
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
     t."SubPlantItemReference" AS sai_number,
     t."PlantItemEquipReference" AS superequi_id,
-FROM landing.ai2_sub_plant_item t;
+FROM ai2_sub_plant_item_landing t;
 
 
 
 -- Can't have a COPY statement with variables, do this in script, makefile...
--- COPY (SELECT * FROM ai2_masterdata.equi) TO '$(AIB_MASTER_OUTPATH)' (FORMAT parquet, COMPRESSION uncompressed);
+-- COPY (SELECT * FROM ai2_equi) TO '$(AIB_MASTER_OUTPATH)' (FORMAT parquet, COMPRESSION uncompressed);
 
