@@ -249,6 +249,7 @@ WHERE
 CREATE OR REPLACE TABLE ai2_process_group_landing AS
 SELECT
     t."ProcessGroupReference",
+    coalesce(t."SubInstallationCommonName", t."InstallationCommonName") || '/' || t."ProcessGroupAssetTypeDescription" AS "CommonName",
     t."ProcessGroupStatus",
     t."ProcessGroupAssetTypeDescription",
     coalesce(t."SubInstallationReference", t."InstallationReference") AS "ParentRef",
@@ -264,6 +265,10 @@ WHERE
 CREATE OR REPLACE TABLE ai2_process_landing AS
 SELECT
     t."ProcessReference",
+    coalesce(t."SubInstallationCommonName", t."InstallationCommonName") 
+        || '/' 
+        || if(t."ProcessGroupAssetTypeDescription" IS NULL, '', (t."ProcessGroupAssetTypeDescription" || '/'))
+        || t."ProcessAssetTypeDescription" AS "CommonName",
     t."ProcessStatus",
     t."ProcessAssetTypeDescription",
     coalesce(t."ProcessGroupReference", t."SubInstallationReference", t."InstallationReference") AS "ParentRef",
@@ -404,7 +409,7 @@ GROUP BY t."SubInstallationReference";
 INSERT OR REPLACE INTO ai2_floc BY NAME
 SELECT 
     t."ProcessGroupReference" AS sai_number,
-    NULL AS common_name,
+    any_value(t."CommonName") AS common_name,
     any_value(t."ProcessGroupStatus") as user_status,
     any_value(t."ProcessGroupAssetTypeDescription") AS type_decription,
     any_value(t."ParentRef") AS parent_ref,
@@ -417,7 +422,7 @@ GROUP BY t."ProcessGroupReference";
 INSERT OR REPLACE INTO ai2_floc BY NAME
 SELECT 
     t."ProcessReference" AS sai_number,
-    NULL AS common_name,
+    any_value(t."CommonName") AS common_name,
     any_value(t."ProcessStatus") as user_status,
     any_value(t."ProcessAssetTypeDescription") AS type_decription,
     any_value(t."ParentRef") AS parent_ref,
