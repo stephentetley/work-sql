@@ -1,4 +1,4 @@
-.print 'Running ai2_asset_hierarchy.sql...'
+.print 'Running ai2_masterdata.sql...'
 
 INSTALL rusty_sheet FROM community;
 LOAD rusty_sheet;
