@@ -56,8 +56,8 @@ CREATE OR REPLACE TABLE excel_uploader_floc_create.functional_location (
     plant_section VARCHAR,
     position INTEGER,
     status_profile VARCHAR,
+    user_status VARCHAR,
     status_of_an_object VARCHAR,
-    status_without_stsno VARCHAR,
     PRIMARY KEY (functional_location)
 );
 
@@ -131,8 +131,9 @@ SELECT
     cast(null AS VARCHAR) AS "Single Inst.",
     cast(null AS VARCHAR) AS "Construction type",
     t.status_profile AS "Status Profile",
+    t.user_status AS "User Status",
     t.status_of_an_object AS "Status of an object",
-    t.status_without_stsno AS "Status without stsno",
+    cast(null AS VARCHAR) AS "Status without stsno",
     cast(null AS VARCHAR) AS "Begin guarantee(C)",
     cast(null AS VARCHAR) AS "Warranty end(C)",
     cast(null AS VARCHAR) AS "Master Warranty(C)",
