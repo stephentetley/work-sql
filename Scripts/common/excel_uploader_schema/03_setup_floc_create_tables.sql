@@ -33,8 +33,8 @@ CREATE OR REPLACE VIEW excel_uploader_floc_create.vw_change_request_header AS
 SELECT 
     t.usmd_crequest AS "Change Request",
     t.change_request_decription AS "Change Request Description",
-    null AS "Priority",
-    null AS "Due Date",
+    cast(null AS VARCHAR) AS "Priority",
+    cast(null AS VARCHAR) AS "Due Date",
 FROM excel_uploader_floc_create.change_request_header t;
     
     
