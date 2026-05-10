@@ -36,7 +36,6 @@ CREATE OR REPLACE TABLE floc_delta.worklist(
     PRIMARY KEY (requested_floc)
 );
 
-
 CREATE OR REPLACE TABLE floc_delta.existing_flocs (
     funcloc VARCHAR NOT NULL,
     floc_name VARCHAR,
@@ -112,6 +111,8 @@ FROM floc_delta.new_generated_flocs t
 LEFT OUTER JOIN floc_delta.vw_existing_ancestor t1 ON t1.new_funcloc = t.funcloc
 LEFT OUTER JOIN floc_delta.existing_flocs t2 ON t2.funcloc = t1.existing_ancestor
 LEFT OUTER JOIN floc_delta.worklist t3 ON t3.requested_floc = t.funcloc;
+
+
 
 -- NOTE list(plant_uml1).... is not providing a sufficient ordering
 CREATE OR REPLACE VIEW floc_delta.vw_plant_uml_export AS
