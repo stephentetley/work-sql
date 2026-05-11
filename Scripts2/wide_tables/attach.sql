@@ -1,4 +1,4 @@
-.print 'attach.sql'
+.print 'Running attach.sql'
 
 -- expects to be run from root of `work-sql`
 
