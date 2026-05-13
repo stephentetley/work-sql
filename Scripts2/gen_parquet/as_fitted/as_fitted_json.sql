@@ -2,32 +2,25 @@
 
 
 -- Setup the environment variable `AS_FITTED_GLOBPATH` before running this file
-SELECT getenv('AS_FITTED_GLOBPATH') AS AS_FITTED_GLOBPATH;
+select getenv('AS_FITTED_GLOBPATH') as AS_FITTED_GLOBPATH;
 
 
-create or replace table motor_checklists as
-with cte as (
-    select unnest(motor_checklists, recursive:=true) 
-    from read_json(
-            getenv('AS_FITTED_GLOBPATH'), 
-            auto_detect=true, 
-            maximum_depth=-1)
-) select * replace (unnest(items) as items) from cte;
 
-create or replace table test_sheets as
-with cte1 as (
-    select unnest(test_sheets, recursive:=true) 
-    from read_json(
-        getenv('AS_FITTED_GLOBPATH'), 
-        auto_detect=true, 
-        maximum_depth=-1)
-), cte2 as (
-    select * exclude(circuit_or_cables), unnest(circuit_or_cables, recursive:=true) from cte1
-) select * from cte2;
+create or replace temporary macro replace_empty(str varchar) as
+    case when str = '' then null else str end;
+
+
+create or replace temporary macro norm_text(str varchar) as
+    trim(str).regexp_replace('\s+', ' ', 'g').replace_empty();
+
+create or replace table as_fitted_circuits as
+select 
+    norm_text(COLUMNS(*)) 
+from read_json(getenv('AS_FITTED_GLOBPATH'));
+
 
 -- Can't have a COPY statement with variables, do this in script, makefile...
--- COPY (SELECT * FROM motor_checklists) TO '$(MOTOR_CHECKLISTS_OUTPATH)' (FORMAT parquet, COMPRESSION uncompressed);
+-- COPY (SELECT * FROM as_fitted_circuits) TO '$(AS_FITTED_OUTPATH)' (FORMAT parquet, COMPRESSION uncompressed);
 
--- COPY (SELECT * FROM test_sheets) TO '$(TEST_SHEETS_OUTPATH)' (FORMAT parquet, COMPRESSION uncompressed);
 
 
