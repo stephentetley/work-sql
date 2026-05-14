@@ -32,6 +32,8 @@ CREATE OR REPLACE TABLE ai2_equi (
     sai_number VARCHAR,
     -- e.g. 'PLI00012345'
     superequi_id VARCHAR,
+    -- e.g. 'SAI00001000'
+    site_reference VARCHAR,
     PRIMARY KEY (pli_number)
 );    
 
@@ -48,6 +50,8 @@ CREATE OR REPLACE TABLE ai2_floc (
     parent_ref VARCHAR,
     -- derived, one of 'INSTALLATION' | 'SUB_INSTALLATION' | 'PROCESS_GROUP' | 'PROCESS'
     floc_source_type VARCHAR NOT NULL,
+    -- e.g. 'SAI00001000'
+    site_reference VARCHAR,
     PRIMARY KEY (sai_number)
 );  
 
@@ -83,10 +87,9 @@ CREATE OR REPLACE MACRO sqlserver_date(str) AS (
 SELECT getenv('AIB_MASTERDATA_SRCPATH') AS AIB_MASTERDATA_SRCPATH;
 
 
-
-
 CREATE OR REPLACE TABLE ai2_plant_landing AS
 SELECT
+    t."SiteReference",
     t."InstallationCommonName",
     t."SubInstallationCommonName",
     t."PlantEquipReference",
@@ -112,6 +115,7 @@ AND t."PlantEquipReference" IS NOT NULL;
 
 CREATE OR REPLACE TABLE ai2_sub_plant_landing AS
 SELECT
+    t."SiteReference",
     t."InstallationCommonName",
     t."SubInstallationCommonName",
     t."SubPlantEquipReference",
@@ -138,6 +142,7 @@ AND t."SubPlantEquipReference" IS NOT NULL;
 
 CREATE OR REPLACE TABLE ai2_plant_item_landing AS
 SELECT
+    t."SiteReference",
     t."InstallationCommonName",
     t."SubInstallationCommonName",
     t."PlantItemEquipReference",
@@ -166,6 +171,7 @@ AND t."PlantItemEquipReference" IS NOT NULL;
 
 CREATE OR REPLACE TABLE ai2_sub_plant_item_landing AS
 SELECT
+    t."SiteReference",
     t."InstallationCommonName",
     t."SubInstallationCommonName",
     t."SubPlantItemEquipReference",
@@ -213,6 +219,7 @@ AND t."SiteCommonName" IS NOT NULL;
 
 CREATE OR REPLACE TABLE ai2_installation_landing AS
 SELECT
+    t."SiteReference",
     t."InstallationReference",
     t."InstallationCommonName",
     t."InstallationStatus",
@@ -230,6 +237,7 @@ WHERE
 
 CREATE OR REPLACE TABLE ai2_sub_installation_landing AS
 SELECT
+    t."SiteReference",
     t."SubInstallationReference",
     t."SubInstallationCommonName",
     t."SubInstallationStatus",
@@ -248,6 +256,7 @@ WHERE
 
 CREATE OR REPLACE TABLE ai2_process_group_landing AS
 SELECT
+    t."SiteReference",
     t."ProcessGroupReference",
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") || '/' || t."ProcessGroupAssetTypeDescription" AS "CommonName",
     t."ProcessGroupStatus",
@@ -264,6 +273,7 @@ WHERE
 
 CREATE OR REPLACE TABLE ai2_process_landing AS
 SELECT
+    t."SiteReference",
     t."ProcessReference",
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") 
         || '/' 
@@ -305,6 +315,7 @@ SELECT
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
     t."PlantReference" AS sai_number,
     NULL AS superequi_id,
+    t."SiteReference" as site_reference,
 FROM ai2_plant_landing t;
 
 -- insert part 2    
@@ -324,6 +335,7 @@ SELECT
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
     t."SubPlantReference" AS sai_number,
     t."PlantEquipReference" AS superequi_id,
+    t."SiteReference" as site_reference,
 FROM ai2_sub_plant_landing t;
 
 
@@ -344,6 +356,7 @@ SELECT
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
     t."PlantItemReference" AS sai_number,
     t."PlantEquipReference" AS superequi_id,
+    t."SiteReference" as site_reference,
 FROM ai2_plant_item_landing t;
 
 -- insert part 4 
@@ -363,6 +376,7 @@ SELECT
     coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
     t."SubPlantItemReference" AS sai_number,
     t."PlantItemEquipReference" AS superequi_id,
+    t."SiteReference" as site_reference,
 FROM ai2_sub_plant_item_landing t;
 
 
@@ -380,6 +394,7 @@ DELETE FROM ai2_floc;
 
 INSERT OR REPLACE INTO ai2_floc BY NAME
 SELECT 
+    t."SiteReference" as site_reference,
     t."InstallationReference" AS sai_number,
     any_value(t."InstallationCommonName") AS common_name,
     any_value(t."InstallationStatus") as user_status,
@@ -387,7 +402,7 @@ SELECT
     NULL AS parent_ref,
     'INSTALLATION' AS floc_source_type
 FROM ai2_installation_landing t
-GROUP BY t."InstallationReference";
+GROUP BY t."SiteReference", t."InstallationReference";
 
 
 
@@ -395,6 +410,7 @@ GROUP BY t."InstallationReference";
 
 INSERT OR REPLACE INTO ai2_floc BY NAME
 SELECT 
+    t."SiteReference" as site_reference,
     t."SubInstallationReference" AS sai_number,
     any_value(t."SubInstallationCommonName") AS common_name,
     any_value(t."SubInstallationStatus") as user_status,
@@ -402,12 +418,13 @@ SELECT
     any_value(t."ParentRef") AS parent_ref,
     'SUB_INSTALLATION' AS floc_source_type
 FROM ai2_sub_installation_landing t
-GROUP BY t."SubInstallationReference";
+GROUP BY t."SiteReference", t."SubInstallationReference";
 
 .print 'Inserting process_group data into ai2_floc...'
 
 INSERT OR REPLACE INTO ai2_floc BY NAME
 SELECT 
+    t."SiteReference" as site_reference,
     t."ProcessGroupReference" AS sai_number,
     any_value(t."CommonName") AS common_name,
     any_value(t."ProcessGroupStatus") as user_status,
@@ -415,12 +432,13 @@ SELECT
     any_value(t."ParentRef") AS parent_ref,
     'PROCESS_GROUP' AS floc_source_type
 FROM ai2_process_group_landing t
-GROUP BY t."ProcessGroupReference";
+GROUP BY t."SiteReference", t."ProcessGroupReference";
 
 .print 'Inserting process data into ai2_floc...'
 
 INSERT OR REPLACE INTO ai2_floc BY NAME
 SELECT 
+    t."SiteReference" as site_reference,
     t."ProcessReference" AS sai_number,
     any_value(t."CommonName") AS common_name,
     any_value(t."ProcessStatus") as user_status,
@@ -428,7 +446,7 @@ SELECT
     any_value(t."ParentRef") AS parent_ref,
     'PROCESS' AS floc_source_type
 FROM ai2_process_landing t
-GROUP BY t."ProcessReference";
+GROUP BY t."SiteReference", t."ProcessReference";
 
 -- ai2_site 
 
