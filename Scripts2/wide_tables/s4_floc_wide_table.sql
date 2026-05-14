@@ -2,7 +2,7 @@
 -- .read './Scripts2/wide_tables/s4_floc_wide_table.sql'
 
 create or replace table s4_floc_wide_table as
-with cte_s4_flocs as (
+with cte1_s4_flocs as (
     select 
         columns(t.*) as 's4_\0',
         string_split(t.functional_location, '-')[1] as s4_site_floc,
@@ -13,37 +13,32 @@ with cte_s4_flocs as (
         string_split(t.functional_location, '-')[6] as s4_assembly_code,
         string_split(t.functional_location, '-')[7] as s4_item_code,
         string_split(t.functional_location, '-')[8] as s4_component_code,
+        (t.user_status like 'OPER%') as is_operational,
+        (t.user_status like 'DISP%') as is_disposed_of,
+        (t.user_status like 'NOP%') as is_non_op,
+        (t.user_status like 'DCOM%') as is_decommissioned,        
     from asset_lake.s4_masterdata.s4_floc t
-), site_names as (
+), cte2_add_site_names as (
     select 
-        t.s4_functional_location, 
-        t.s4_funcloc_name as site_name,
-    from cte_s4_flocs t
-    where
-        s4_category = 1
-), equipment1 as (
-    select 
-        t.functional_location as s4_functional_location, 
-        list(t.equipment_id) as s4_equipment_list, 
-    from asset_lake.s4_masterdata.s4_equi t
-    group by all    
-), direct_equipment as (
-    select 
-        t.s4_functional_location, 
-        t.s4_equipment_list as s4_direct_equipment, 
-        length(t.s4_equipment_list) as s4_direct_equipment_count,
-        (s4_direct_equipment_count>0) as s4_has_direct_equipment,
-    from equipment1 t
-), floc_wide_table as (
+        t.*, 
+        t1.s4_funcloc_name as s4_site_name,
+    from cte1_s4_flocs t
+    left join cte1_s4_flocs t1 on t1.s4_functional_location = t.s4_site_floc and t1.s4_category = 1
+), cte3_add_equipment_list as (
     select 
         t.*,
-        t1.site_name as site_name,
-        t2.* exclude (t2.s4_functional_location),
-    from cte_s4_flocs t
-    left join site_names t1 on t1.s4_functional_location = t.s4_site_floc
-    left join direct_equipment t2 on t2.s4_functional_location = t.s4_functional_location
+        list(t1.equipment_id) as equipment_list, 
+    from cte2_add_site_names t
+    left join asset_lake.s4_masterdata.s4_equi t1 on t1.functional_location = t.s4_functional_location
+    group by all    
+), cte4_add_equipment_list_stats as (
+    select 
+        t.*, 
+        length(t.equipment_list) as equipment_list_count,
+        (equipment_list_count>0) as has_equipment,
+    from cte3_add_equipment_list t
 )
-select * from floc_wide_table 
+select * from cte4_add_equipment_list_stats 
 order by s4_functional_location;
 
 describe s4_floc_wide_table;

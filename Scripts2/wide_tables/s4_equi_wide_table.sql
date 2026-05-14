@@ -13,7 +13,11 @@ with cte_s4_equi as (
         string_split(t.functional_location, '-')[5] as s4_system_code,
         string_split(t.functional_location, '-')[6] as s4_assembly_code,
         string_split(t.functional_location, '-')[7] as s4_item_code,
-        string_split(t.functional_location, '-')[8] as s4_component_code,    
+        string_split(t.functional_location, '-')[8] as s4_component_code,
+        (t.user_status like 'OPER%') as is_operational,
+        (t.user_status like 'DISP%') as is_disposed_of,
+        (t.user_status like 'NOP%') as is_non_op,
+        (t.user_status like 'DCOM%') as is_decommissioned,         
     from asset_lake.s4_masterdata.s4_equi t
 ), site_names as (
     select 
