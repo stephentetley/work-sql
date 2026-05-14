@@ -18,17 +18,18 @@ with cte1_s4_flocs as (
         (t.user_status like 'NOP%') as is_non_op,
         (t.user_status like 'DCOM%') as is_decommissioned,        
     from asset_lake.s4_masterdata.s4_floc t
-), cte2_add_site_names as (
+), cte2_add_site_name as (
     select 
         t.*, 
         t1.s4_funcloc_name as s4_site_name,
     from cte1_s4_flocs t
-    left join cte1_s4_flocs t1 on t1.s4_functional_location = t.s4_site_floc and t1.s4_category = 1
+    left join cte1_s4_flocs t1 
+        on t1.s4_functional_location = t.s4_site_floc and t1.s4_category = 1
 ), cte3_add_equipment_list as (
     select 
         t.*,
         list(t1.equipment_id) as equipment_list, 
-    from cte2_add_site_names t
+    from cte2_add_site_name t
     left join asset_lake.s4_masterdata.s4_equi t1 on t1.functional_location = t.s4_functional_location
     group by all    
 ), cte4_add_equipment_list_stats as (

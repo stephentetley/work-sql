@@ -3,7 +3,7 @@
 
 
 create or replace table s4_equi_wide_table as
-with cte_s4_equi as (
+with cte1_s4_equi as (
     select 
         columns(t.*) as 's4_\0',
         string_split(t.functional_location, '-')[1] as s4_site_floc,
@@ -19,21 +19,15 @@ with cte_s4_equi as (
         (t.user_status like 'NOP%') as is_non_op,
         (t.user_status like 'DCOM%') as is_decommissioned,         
     from asset_lake.s4_masterdata.s4_equi t
-), site_names as (
+), cte2_ai2_site_name as (
     select 
-        t.functional_location as s4_functional_location, 
-        t.funcloc_name as site_name,
-    from asset_lake.s4_masterdata.s4_floc t
-    where
-        category = 1
-), equi_wide_table as (
-    select 
-        t.*,
-        t1.site_name as site_name,
-    from cte_s4_equi t
-    left join site_names t1 on t1.s4_functional_location = t.s4_site_floc
+        t.*, 
+        t1.funcloc_name as s4_site_name,
+    from cte1_s4_equi t
+    left join asset_lake.s4_masterdata.s4_floc t1 
+        on t1.functional_location = t.s4_site_floc and t1.category = 1
 )
-select * from equi_wide_table 
+select * from cte2_ai2_site_name 
 order by s4_functional_location;
 
 
