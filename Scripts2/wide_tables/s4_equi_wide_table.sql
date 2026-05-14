@@ -1,5 +1,8 @@
+-- run with
+-- .read './Scripts2/wide_tables/s4_equi_wide_table.sql'
 
-create or replace view vw_equi_wide_table as
+
+create or replace table s4_equi_wide_table as
 with cte_s4_equi as (
     select 
         columns(t.*) as 's4_\0',
@@ -30,6 +33,8 @@ select * from equi_wide_table
 order by s4_functional_location;
 
 
-select * from vw_equi_wide_table order by s4_functional_location limit 20;
-describe vw_equi_wide_table;
+
+describe s4_equi_wide_table;
+
+-- select * from vw_equi_wide_table order by s4_functional_location limit 20;
 

@@ -1,5 +1,7 @@
+-- run with
+-- .read './Scripts2/wide_tables/s4_floc_wide_table.sql'
 
-create or replace view vw_floc_wide_table as
+create or replace table s4_floc_wide_table as
 with cte_s4_flocs as (
     select 
         columns(t.*) as 's4_\0',
@@ -44,6 +46,6 @@ with cte_s4_flocs as (
 select * from floc_wide_table 
 order by s4_functional_location;
 
-describe vw_floc_wide_table;
+describe s4_floc_wide_table;
 
 -- copy (select * from vw_floc_wide_table limit 100) to './data/vw_floc_wide_table.csv';

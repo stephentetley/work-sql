@@ -1,8 +1,19 @@
+-- run with
+-- .read './Scripts2/wide_tables/ai2_floc_wide_table.sql'
+
 
 create or replace table ai2_floc_wide_table as
 with cte1_ai2_flocs as (
     select 
         columns(t.*) as 'ai2_\0',
+        (t.user_status = 'OPERATIONAL') as is_operational,
+        (t.user_status = 'DISPOSED OF') as is_disposed_of,
+        (t.user_status = 'NON OPERATIONAL') as is_non_op,
+        (t.user_status = 'DECOMMISSIONED') as is_decommissioned,
+        (t.user_status = 'INSTALLATION') as is_installation,
+        (t.user_status = 'SUB_INSTALLATION') as is_sub_installation,
+        (t.user_status = 'PROCESS_GROUP') as is_process_group,
+        (t.user_status = 'PROCESS') as is_process,
     from asset_lake.ai2_masterdata.ai2_floc t
 ), cte2_ai2_site_name as (
     select 
@@ -32,4 +43,4 @@ describe ai2_floc_wide_table;
 
 -- COPY (SELECT * FROM ai2_floc_wide_table) TO 'ai2_floc_wide_table.parquet' (FORMAT parquet, COMPRESSION snappy);
    
-   -- select * from asset_lake.site_mapping.site_mapping where ai2_site_id = 'SAI00002748'
+   -- select * from ai2_floc_wide_table where ai2_site_id = 'SAI00002748'
