@@ -24,8 +24,20 @@ select * from read_parquet(getenv('AI2_FLOC_WIDE_TABLE'));
 create or replace temporary macro clean_aib_ref(str varchar) as
     regexp_replace(str, '\s+', '', 'g');
 
-create or replace temporary macro clean_fed_from(fed_from varchar) as
-    trim(fed_from).regexp_replace('\s+', '-', 'g').regexp_replace('\-+', '-', 'g').upper();
+-- create or replace temporary macro clean_fed_from(fed_from varchar) as
+--     trim(fed_from).regexp_replace('\s+', '-', 'g').regexp_replace('\-+', '-', 'g').upper();
+
+create or replace temporary macro get_path1(str varchar) as
+    regexp_extract(str, '^([A-Z]+)(-[A-Z0-9\-]+)', 2, 'i').upper();
+
+create or replace temporary macro sld_path(db_or_panel_number varchar, circuit_ref_and_phase varchar) as 
+    if(contains(circuit_ref_and_phase.upper(), get_path1(db_or_panel_number)),
+        'SLD' || get_path1(circuit_ref_and_phase),
+        'SLD' || get_path1(db_or_panel_number || '-' || circuit_ref_and_phase));
+
+
+
+
 
 
 create or replace table as_fitted_with_site_info as
@@ -51,8 +63,8 @@ with cte1 as (
     group by all
 )
 select
-    t.* replace(clean_fed_from(fed_from) as fed_from,
-                upper(db_or_panel_number) as db_or_panel_number ),
+    t.*,
+    sld_path(t.db_or_panel_number, circuit_ref_and_phase) as "sld_path",
     coalesce(t1.ai2_site_name, t2.ai2_site_name) as ai2_site_name,
     coalesce(t1.s4_all_site_codes, t2.s4_all_site_codes) as s4_all_site_codes,
     coalesce(t1.s4_best_site_code, t2.s4_best_site_code) as s4_best_site_code,
