@@ -15,28 +15,28 @@ with cte1_ai2_flocs as (
         (t.user_status = 'PROCESS_GROUP') as is_process_group,
         (t.user_status = 'PROCESS') as is_process,
     from asset_lake.ai2_masterdata.ai2_floc t
-), cte2_ai2_site_name as (
+), cte2_add_site_name as (
     select 
         t.*,
         t1.site_name as ai2_site_name
     from cte1_ai2_flocs t
     left join asset_lake.ai2_masterdata.ai2_sites t1 on t1.sai_number = t.ai2_site_reference
-), cte3_s4_site_name1 as (
+), cte3_add_s4_site_codes as (
     select 
         t.*,
         list(t1.s4_site_funcloc) as __s4_site_codes,
-    from cte2_ai2_site_name t
+    from cte2_add_site_name t
     left join asset_lake.site_mapping.site_mapping t1 on t1.ai2_site_id = t.ai2_site_reference
     group by all
-), cte4_s4_site_name2 as (
+), cte4_s4_site_name_stats as (
     select 
         columns(lambda c: c not like '$_$_%' escape '$'),
         list_aggregate(t.__s4_site_codes, 'histogram') as __hist,
         map_keys(__hist) as s4_all_site_codes,
         map_keys(__hist).list_aggregate('mode') as s4_best_site_code,
-    from cte3_s4_site_name1 t
+    from cte3_add_s4_site_codes t
 )
-select columns(lambda c: c not like '$_$_%' escape '$') from cte4_s4_site_name2 
+select columns(lambda c: c not like '$_$_%' escape '$') from cte4_s4_site_name_stats 
 order by ai2_common_name;
 
 describe ai2_floc_wide_table;

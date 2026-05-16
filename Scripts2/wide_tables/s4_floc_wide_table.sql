@@ -28,18 +28,19 @@ with cte1_s4_flocs as (
 ), cte3_add_equipment_list as (
     select 
         t.*,
-        list(t1.equipment_id) as equipment_list, 
+        list(t1.equipment_id) filter (t1.equipment_id is not null) as __equipment_list 
     from cte2_add_site_name t
     left join asset_lake.s4_masterdata.s4_equi t1 on t1.functional_location = t.s4_functional_location
     group by all    
 ), cte4_add_equipment_list_stats as (
     select 
         t.*, 
-        length(t.equipment_list) as equipment_list_count,
-        (equipment_list_count>0) as has_equipment,
+        ifnull(t.__equipment_list, []) as equipment_list,
+        length(equipment_list) as equipment_list_count,
+        (equipment_list_count > 0) as has_equipment,
     from cte3_add_equipment_list t
 )
-select * from cte4_add_equipment_list_stats 
+select columns(lambda c: c not like '$_$_%' escape '$') from cte4_add_equipment_list_stats 
 order by s4_functional_location;
 
 describe s4_floc_wide_table;
