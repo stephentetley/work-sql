@@ -1,11 +1,5 @@
--- run with:
--- duckdb -c ".read 'as_fitted_with_site_info.sql"
+.print 'join with ai2 floc wide table for site names...'
 
-
-.print 'join with ai2 floc wide table for site names'
-
-INSTALL inflector FROM community;
-LOAD inflector;
 
 
 -- Setup the environment variable `AS_FITTED_TEST_SHEETS` before running this file
