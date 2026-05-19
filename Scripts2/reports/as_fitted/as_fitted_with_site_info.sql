@@ -45,6 +45,23 @@ create or replace temporary macro is_db_sp(str varchar) as
         else false
     end;
 
+create or replace temporary macro is_motor_or_starter_candidate(str varchar) as
+    case 
+        when str = 'INV' then true
+        when str like 'FWD%REV' then true
+        when str like '%ASD%' then true
+        when str like '%DOL%' then true
+        when str like '%MOTOR%' then true
+        when str like '%STAR DELTA%' then true
+        when str like '%SOFT START%' then true
+        when str like '%STARTER%' then true
+        when str like '%USD%' then true
+        when str like 'INV%' and damerau_levenshtein('INVERTOR', str) <= 2 then true
+        else false
+    end;
+
+
+
 create or replace table as_fitted_with_site_info as
 with cte1 as (
     -- aib_ref is the site
@@ -71,6 +88,7 @@ select
     t.*,
     is_radial(t.circuit_type) as is_circuit_type_radial,
     not is_db_sp(t.fed_from) as is_not_dist_board_or_switch_panel,
+    is_motor_or_starter_candidate(t.load) as is_motor_or_starter_candidate,
     sld_path(t.db_or_panel_number, circuit_ref_and_phase) as "sld_path",
     coalesce(t1.ai2_site_name, t2.ai2_site_name) as ai2_site_name,
     coalesce(t1.s4_all_site_codes, t2.s4_all_site_codes) as s4_all_site_codes,
