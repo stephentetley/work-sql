@@ -29,10 +29,21 @@ create or replace temporary macro sld_path(db_or_panel_number varchar, circuit_r
         'SLD' || get_path1(circuit_ref_and_phase),
         'SLD' || get_path1(db_or_panel_number || '-' || circuit_ref_and_phase));
 
+create or replace temporary macro is_radial(str varchar) as
+    case 
+        when str = 'RADIAL' then true
+        when str = 'RADIAL/RING' then true
+        when str like 'RA%' and damerau_levenshtein('RADIAL', str) <= 2 then true
+        else false
+    end;
 
 
-
-
+create or replace temporary macro is_db_sp(str varchar) as
+    case 
+        when str like 'DB%' then true
+        when str like 'SP%' then true
+        else false
+    end;
 
 create or replace table as_fitted_with_site_info as
 with cte1 as (
@@ -58,6 +69,8 @@ with cte1 as (
 )
 select
     t.*,
+    is_radial(t.circuit_type) as is_circuit_type_radial,
+    not is_db_sp(t.fed_from) as is_not_dist_board_or_switch_panel,
     sld_path(t.db_or_panel_number, circuit_ref_and_phase) as "sld_path",
     coalesce(t1.ai2_site_name, t2.ai2_site_name) as ai2_site_name,
     coalesce(t1.s4_all_site_codes, t2.s4_all_site_codes) as s4_all_site_codes,

@@ -15,7 +15,8 @@ create or replace temporary macro norm_text(str varchar) as
 
 create or replace table as_fitted_circuits as
 select 
-    norm_text(COLUMNS(*)) 
+    norm_text(columns(* exclude(checklist_year))),
+    checklist_year,
 from read_json(getenv('AS_FITTED_GLOBPATH'));
 
 
