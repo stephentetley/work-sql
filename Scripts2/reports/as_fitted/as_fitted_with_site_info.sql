@@ -45,6 +45,7 @@ create or replace temporary macro is_db_sp(str varchar) as
         else false
     end;
 
+-- valve aka actuated valve
 create or replace temporary macro is_motor_or_starter_candidate(str varchar) as
     case 
         when str = 'INV' then true
@@ -56,6 +57,7 @@ create or replace temporary macro is_motor_or_starter_candidate(str varchar) as
         when str like '%SOFT START%' then true
         when str like '%STARTER%' then true
         when str like '%USD%' then true
+        when str like '%VALVE%' then true
         when str like 'INV%' and damerau_levenshtein('INVERTOR', str) <= 2 then true
         else false
     end;
@@ -83,19 +85,47 @@ with cte1 as (
     from as_fitted_cicuits t
     join ai2_flocs t1 on t1.ai2_sai_number = clean_aib_ref(t.aib_ref)
     group by all
+), cte3 as (
+    select
+        t.*,
+        is_radial(t.circuit_type) as is_circuit_type_radial,
+        not is_db_sp(t.fed_from) as is_not_dist_board_or_switch_panel,
+        is_motor_or_starter_candidate(t.load) as is_motor_or_starter_candidate,
+        sld_path(t.db_or_panel_number, circuit_ref_and_phase) as "sld_path",
+        coalesce(t1.ai2_site_name, t2.ai2_site_name) as ai2_site_name,
+        coalesce(t1.s4_all_site_codes, t2.s4_all_site_codes) as s4_all_site_codes,
+        coalesce(t1.s4_best_site_code, t2.s4_best_site_code) as s4_best_site_code,
+    from as_fitted_cicuits t
+    left join cte1 t1 on t1.aib_ref = t.aib_ref
+    left join cte2 t2 on t2.aib_ref = t.aib_ref
 )
-select
-    t.*,
-    is_radial(t.circuit_type) as is_circuit_type_radial,
-    not is_db_sp(t.fed_from) as is_not_dist_board_or_switch_panel,
-    is_motor_or_starter_candidate(t.load) as is_motor_or_starter_candidate,
-    sld_path(t.db_or_panel_number, circuit_ref_and_phase) as "sld_path",
-    coalesce(t1.ai2_site_name, t2.ai2_site_name) as ai2_site_name,
-    coalesce(t1.s4_all_site_codes, t2.s4_all_site_codes) as s4_all_site_codes,
-    coalesce(t1.s4_best_site_code, t2.s4_best_site_code) as s4_best_site_code,
-from as_fitted_cicuits t
-left join cte1 t1 on t1.aib_ref = t.aib_ref
-left join cte2 t2 on t2.aib_ref = t.aib_ref;
+select 
+    t.site_name,
+    t.checklist_year,
+    t.s4_best_site_code,
+    t.location, 
+    t.db_or_panel_number, 
+    t.sld_path, 
+    t.fed_from, 
+    t.circuit_ref_and_phase,
+    t.circuit_description, 
+    t.load, 
+    t.circuit_type, 
+    t.is_circuit_type_radial, 
+    t.is_not_dist_board_or_switch_panel, 
+    t.is_motor_or_starter_candidate, 
+    t.file_name, 
+    t.sheet_name, 
+    t.header_test_date, 
+    t.sheet_number, 
+    t.aib_ref, 
+    t.tp_or_sp,
+    t.db_or_panel_incomer_details,
+    t.test_date, 
+    t.comments,
+    t.ai2_site_name,
+from cte3 t
+order by t.site_name asc, t.checklist_year desc, t.sld_path asc;
 
 
 
