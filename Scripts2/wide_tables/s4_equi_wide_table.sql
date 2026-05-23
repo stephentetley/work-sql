@@ -19,15 +19,22 @@ with cte1_s4_equi as (
         (t.user_status like 'NOP%') as is_non_op,
         (t.user_status like 'DCOM%') as is_decommissioned,         
     from asset_lake.s4_masterdata.s4_equi t
-), cte2_ai2_site_name as (
+), cte2_add_s4_site_name as (
     select 
         t.*, 
         t1.funcloc_name as s4_site_name,
     from cte1_s4_equi t
     left join asset_lake.s4_masterdata.s4_floc t1 
         on t1.functional_location = t.s4_site_floc and t1.category = 1
+), cte3_add_stdclass_name as (
+    select 
+        t.*,
+        any_value(t1.class_description) as std_class_description
+    from cte2_add_s4_site_name t
+    left join asset_lake.s4_classlists.s4_equi_classes t1 on t1.class_name = t.s4_std_class
+    group by all
 )
-select * from cte2_ai2_site_name 
+select columns(lambda c: c not like '$_$_%' escape '$') from cte3_add_stdclass_name  
 order by s4_functional_location;
 
 
