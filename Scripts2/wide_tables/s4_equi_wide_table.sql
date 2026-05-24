@@ -33,13 +33,53 @@ with cte1_s4_equi as (
     from cte2_add_s4_site_name t
     left join asset_lake.s4_classlists.s4_equi_classes t1 on t1.class_name = t.s4_std_class
     group by all
+), cte4_add_equipment_list as (
+    select 
+        t.*,
+        list(t1.equipment_id) filter (t1.equipment_id is not null) as __equipment_list 
+    from cte3_add_stdclass_name t
+    left join asset_lake.s4_masterdata.s4_equi t1 on t1.superequi_id = t.s4_equipment_id
+    group by all    
+), cte5_add_equipment_list_stats as (
+    select 
+        t.*, 
+        ifnull(t.__equipment_list, []) as equipment_list,
+        length(equipment_list) as equipment_list_count,
+        t.s4_superequi_id is not null as is_sub_equi,
+        (equipment_list_count > 0) as is_super_equi,
+    from cte4_add_equipment_list t
+), cte6_add_floc_names as (
+    select 
+        t.*,
+        t1.funcloc_name as function_name,
+        t2.funcloc_name as process_group_name,
+        t3.funcloc_name as process_name,
+        t4.funcloc_name as system_name,
+        t5.funcloc_name as item_name,
+    from cte5_add_equipment_list_stats t
+    left join asset_lake.s4_masterdata.s4_floc t1 
+        on t1.functional_location = t.s4_functional_location[:9]
+        and t1.category = 2
+    left join asset_lake.s4_masterdata.s4_floc t2 
+        on t2.functional_location = t.s4_functional_location[:13]
+        and t2.category = 3
+    left join asset_lake.s4_masterdata.s4_floc t3 
+        on t3.functional_location = t.s4_functional_location[:17]
+        and t3.category = 4
+    left join asset_lake.s4_masterdata.s4_floc t4
+        on t4.functional_location = t.s4_functional_location[:23]
+        and t4.category = 5
+    left join asset_lake.s4_masterdata.s4_floc t5
+        on t5.functional_location = t.s4_functional_location[:29]
+        and t5.category = 6
 )
-select columns(lambda c: c not like '$_$_%' escape '$') from cte3_add_stdclass_name  
+select columns(lambda c: c not like '$_$_%' escape '$') from cte6_add_floc_names  
 order by s4_functional_location;
 
 
 
 describe s4_equi_wide_table;
+select count(s4_equipment_id) from s4_equi_wide_table;
 
--- select * from vw_equi_wide_table order by s4_functional_location limit 20;
+-- select * from s4_equi_wide_table order by s4_functional_location limit 20;
 

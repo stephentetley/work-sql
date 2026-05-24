@@ -39,8 +39,32 @@ with cte1_s4_flocs as (
         length(equipment_list) as equipment_list_count,
         (equipment_list_count > 0) as has_equipment,
     from cte3_add_equipment_list t
+), cte5_add_floc_names as (
+    select 
+        t.*,
+        t1.funcloc_name as function_name,
+        t2.funcloc_name as process_group_name,
+        t3.funcloc_name as process_name,
+        t4.funcloc_name as system_name,
+        t5.funcloc_name as item_name,
+    from cte4_add_equipment_list_stats   t
+    left join asset_lake.s4_masterdata.s4_floc t1 
+        on t1.functional_location = t.s4_functional_location[:9]
+        and t1.category = 2
+    left join asset_lake.s4_masterdata.s4_floc t2 
+        on t2.functional_location = t.s4_functional_location[:13]
+        and t2.category = 3
+    left join asset_lake.s4_masterdata.s4_floc t3 
+        on t3.functional_location = t.s4_functional_location[:17]
+        and t3.category = 4
+    left join asset_lake.s4_masterdata.s4_floc t4
+        on t4.functional_location = t.s4_functional_location[:23]
+        and t4.category = 5
+    left join asset_lake.s4_masterdata.s4_floc t5
+        on t5.functional_location = t.s4_functional_location[:29]
+        and t5.category = 6
 )
-select columns(lambda c: c not like '$_$_%' escape '$') from cte4_add_equipment_list_stats 
+select columns(lambda c: c not like '$_$_%' escape '$') from cte5_add_floc_names 
 order by s4_functional_location;
 
 describe s4_floc_wide_table;
