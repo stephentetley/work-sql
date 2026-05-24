@@ -6,14 +6,14 @@ create or replace table s4_equi_wide_table as
 with cte1_s4_equi as (
     select 
         columns(t.*) as 's4_\0',
-        string_split(t.functional_location, '-')[1] as s4_site_floc,
-        string_split(t.functional_location, '-')[2] as s4_function_code,
-        string_split(t.functional_location, '-')[3] as s4_process_group_code,
-        string_split(t.functional_location, '-')[4] as s4_process_code,
-        string_split(t.functional_location, '-')[5] as s4_system_code,
-        string_split(t.functional_location, '-')[6] as s4_assembly_code,
-        string_split(t.functional_location, '-')[7] as s4_item_code,
-        string_split(t.functional_location, '-')[8] as s4_component_code,
+        string_split(t.functional_location, '-')[1] as site_floc,
+        string_split(t.functional_location, '-')[2] as function_code,
+        string_split(t.functional_location, '-')[3] as process_group_code,
+        string_split(t.functional_location, '-')[4] as process_code,
+        string_split(t.functional_location, '-')[5] as system_code,
+        string_split(t.functional_location, '-')[6] as subsystem_code,
+        string_split(t.functional_location, '-')[7] as level7_code,
+        string_split(t.functional_location, '-')[8] as level8_code,
         (t.user_status like 'OPER%') as is_operational,
         (t.user_status like 'DISP%') as is_disposed_of,
         (t.user_status like 'NOP%') as is_non_op,
@@ -25,7 +25,7 @@ with cte1_s4_equi as (
         t1.funcloc_name as s4_site_name,
     from cte1_s4_equi t
     left join asset_lake.s4_masterdata.s4_floc t1 
-        on t1.functional_location = t.s4_site_floc and t1.category = 1
+        on t1.functional_location = t.site_floc and t1.category = 1
 ), cte3_add_stdclass_name as (
     select 
         t.*,
@@ -55,7 +55,7 @@ with cte1_s4_equi as (
         t2.funcloc_name as process_group_name,
         t3.funcloc_name as process_name,
         t4.funcloc_name as system_name,
-        t5.funcloc_name as item_name,
+        t5.funcloc_name as subsystem_name,
     from cte5_add_equipment_list_stats t
     left join asset_lake.s4_masterdata.s4_floc t1 
         on t1.functional_location = t.s4_functional_location[:9]
@@ -79,7 +79,7 @@ order by s4_functional_location;
 
 
 describe s4_equi_wide_table;
-select count(s4_equipment_id) from s4_equi_wide_table;
+select count(s4_equipment_id) as "count should equal 321003" from s4_equi_wide_table;
 
 -- select * from s4_equi_wide_table order by s4_functional_location limit 20;
 

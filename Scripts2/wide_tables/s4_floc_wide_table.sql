@@ -5,14 +5,14 @@ create or replace table s4_floc_wide_table as
 with cte1_s4_flocs as (
     select 
         columns(t.*) as 's4_\0',
-        string_split(t.functional_location, '-')[1] as s4_site_floc,
-        string_split(t.functional_location, '-')[2] as s4_function_code,
-        string_split(t.functional_location, '-')[3] as s4_process_group_code,
-        string_split(t.functional_location, '-')[4] as s4_process_code,
-        string_split(t.functional_location, '-')[5] as s4_system_code,
-        string_split(t.functional_location, '-')[6] as s4_assembly_code,
-        string_split(t.functional_location, '-')[7] as s4_item_code,
-        string_split(t.functional_location, '-')[8] as s4_component_code,
+        string_split(t.functional_location, '-')[1] as site_floc,
+        string_split(t.functional_location, '-')[2] as function_code,
+        string_split(t.functional_location, '-')[3] as process_group_code,
+        string_split(t.functional_location, '-')[4] as process_code,
+        string_split(t.functional_location, '-')[5] as system_code,
+        string_split(t.functional_location, '-')[6] as subsystem_code,
+        string_split(t.functional_location, '-')[7] as level7_code,
+        string_split(t.functional_location, '-')[8] as level8_code,
         (t.user_status like 'OPER%') as is_operational,
         (t.user_status like 'DISP%') as is_disposed_of,
         (t.user_status like 'NOP%') as is_non_op,
@@ -24,7 +24,7 @@ with cte1_s4_flocs as (
         t1.s4_funcloc_name as s4_site_name,
     from cte1_s4_flocs t
     left join cte1_s4_flocs t1 
-        on t1.s4_functional_location = t.s4_site_floc and t1.s4_category = 1
+        on t1.s4_functional_location = t.site_floc and t1.s4_category = 1
 ), cte3_add_equipment_list as (
     select 
         t.*,
@@ -68,5 +68,6 @@ select columns(lambda c: c not like '$_$_%' escape '$') from cte5_add_floc_names
 order by s4_functional_location;
 
 describe s4_floc_wide_table;
+select count(s4_functional_location) as "count should equal 245061" from s4_floc_wide_table;
 
 -- copy (select * from vw_floc_wide_table limit 100) to './data/vw_floc_wide_table.csv';
