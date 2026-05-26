@@ -63,8 +63,15 @@ with cte1_s4_flocs as (
     left join asset_lake.s4_masterdata.s4_floc t5
         on t5.functional_location = t.s4_functional_location[:29]
         and t5.category = 6
+), cte6_add_easing_northing as (
+    select 
+        t.*,
+        t1.easting as easting,
+        t1.northing as northing,
+    from cte5_add_floc_names t
+    left join asset_lake.s4_masterdata.s4_floc_east_north t1 on t1.s4_floc = t.s4_functional_location
 )
-select columns(lambda c: c not like '$_$_%' escape '$') from cte5_add_floc_names 
+select columns(lambda c: c not like '$_$_%' escape '$') from cte6_add_easing_northing 
 order by s4_functional_location;
 
 describe s4_floc_wide_table;
