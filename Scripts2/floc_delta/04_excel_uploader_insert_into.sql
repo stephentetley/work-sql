@@ -14,7 +14,6 @@
 -- limitations under the License.
 -- 
 
-.print 'Running 04_excel_uploader_insert_into.sql...'
 
 -- Preliminary: 
 -- Must have a sqlite database attached called `sqlite_db`

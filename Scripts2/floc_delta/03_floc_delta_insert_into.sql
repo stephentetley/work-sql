@@ -19,7 +19,6 @@
 
 -- Use explicit DDL and INSERT INTO statements...
 
-.print 'Inserting into floc_delta.worklist'
 
 DELETE FROM floc_delta.worklist;
 INSERT OR REPLACE INTO floc_delta.worklist BY NAME (
@@ -43,7 +42,6 @@ select
 from cte t
 );
 
-.print 'Inserting into floc_delta.existing_flocs from masterdata'
 
 DELETE FROM floc_delta.existing_flocs;
 INSERT INTO floc_delta.existing_flocs BY NAME
@@ -62,9 +60,6 @@ FROM asset_lake.s4_masterdata.s4_floc t
 left join asset_lake.s4_masterdata.s4_floc_east_north t1 on t1.s4_floc = t.functional_location;
 
     
-
-.print 'Inserting into floc_delta.existing_and_new_flocs'
-
 DELETE FROM floc_delta.existing_and_new_flocs;
 INSERT INTO floc_delta.existing_and_new_flocs BY NAME (
 WITH 
@@ -195,7 +190,7 @@ FROM cte2 WHERE cte2.floc_category = 6)
 ORDER BY funcloc
 );
 
-.print 'Inserting into floc_delta.new_generated_flocs'
+
 
 DELETE FROM floc_delta.new_generated_flocs;
 INSERT INTO floc_delta.new_generated_flocs BY NAME (

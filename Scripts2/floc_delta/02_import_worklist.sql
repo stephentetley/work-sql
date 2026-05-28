@@ -6,7 +6,7 @@
 
 
 -- Setup the environment variable `FLOC_DELTA_WORKLIST` before running this file
-SELECT getenv('FLOC_DELTA_WORKLIST') AS FLOC_DELTA_WORKLIST;
+-- SELECT getenv('FLOC_DELTA_WORKLIST') AS FLOC_DELTA_WORKLIST;
 
 
 
@@ -22,7 +22,7 @@ SELECT
     t."Solution ID" AS solution_id,
     t."Grid Ref" AS grid_ref
 FROM read_xlsx(
-    getenv('FLOC_DELTA_WORKLIST'), 
+    getvariable('floc_delta_worklist'),
     all_varchar=true, 
     sheet='Flocs'
 ) AS t;
