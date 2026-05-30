@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Make sure to run this as a dot script...
+
 if [ -z "$1" ]; then
     echo "Supply the output SQLite filename as param $1"
     return 1 
