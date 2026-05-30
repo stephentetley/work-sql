@@ -1,7 +1,28 @@
-.print 'Running ai2_classlists.sql...' 
+--
+-- Copyright 2026 Stephen Tetley
+-- 
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+-- 
+-- http://www.apache.org/licenses/LICENSE-2.0
+-- 
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
+-- 
 
-INSTALL excel;
-LOAD excel;
+
+-- Preliminaries: 
+-- The variables `asset_types_attributes_path` and `equipment_attribute_sets_path` 
+-- set in DuckDb (i.e. not env vars)
+-- The core extension `excel` is loaded:
+-- D INSTALL excel;
+-- D LOAD excel;
+
+
 
 CREATE OR REPLACE TABLE ai2_equi_classes (
     -- e.g. 'EQPTBBA'
@@ -44,8 +65,6 @@ CASE
     ELSE 'VARCHAR'
 END;
 
--- Setup the environment variable `ASSET_TYPES_ATTRIBUTES_PATH` before running this file
-SELECT getenv('ASSET_TYPES_ATTRIBUTES_PATH') AS ASSET_TYPES_ATTRIBUTES_PATH;
 
 CREATE OR REPLACE TABLE asset_type_attributes_landing AS
 SELECT 
@@ -58,21 +77,25 @@ SELECT
     IF(t."Data Type Name" = 'NULL' AND t."LookupTypeId" <> 'NULL', 'ENUM', t."Data Type Name") AS data_type,
     decode_data_type(data_type) AS ddl_data_type,
     t."Lookup Type Name" AS enum_name,
-FROM read_xlsx(getenv('ASSET_TYPES_ATTRIBUTES_PATH'), all_varchar=true, sheet='AssetTypesAttributes') t
+FROM read_xlsx(
+    getvariable('asset_types_attributes_path'), 
+    all_varchar=true, 
+    sheet='AssetTypesAttributes') t
 WHERE t."Code" LIKE 'EQPT%'
 AND t."AssetTypeDeletionFlag" = '0'
 AND t."AttributeNameDeletionFlag" = '0';
 
 
--- Setup the environment variable `EQUIPMENT_ATTRIBUTE_SETS_PATH` before running this file
-SELECT getenv('EQUIPMENT_ATTRIBUTE_SETS_PATH') AS EQUIPMENT_ATTRIBUTE_SETS_PATH;
 
 CREATE OR REPLACE TABLE equi_attribute_sets_landing AS
 SELECT 
     t."Attribute Description" AS class_name,
     t."Attribute Set"  attribute_set_name,
     t."Class Derivation" AS class_derivation,
-FROM read_xlsx(getenv('EQUIPMENT_ATTRIBUTE_SETS_PATH'), all_varchar=true, sheet='Sheet1') t;
+FROM read_xlsx(
+    getvariable('equipment_attribute_sets_path'), 
+    all_varchar=true, 
+    sheet='Sheet1') t;
 
 CREATE OR REPLACE TEMPORARY MACRO get_table_name(name) AS (
     replace(name :: VARCHAR, 'EQUIPMENT: ', '').
