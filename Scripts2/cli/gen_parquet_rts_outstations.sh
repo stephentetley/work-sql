@@ -4,7 +4,7 @@
 # (but not a dot script from a Makefile)...
 
 if ! { [ -n "$1" ] && [ -n "$2" ]; } ; then
-    echo "Supply the Excel site mapping path as param 1 (*.xlsb)"
+    echo "Supply the outstations report path as param 1 (tab separated text)"
     echo "Optionally supply the output folder as param 2"
     return 1 
 fi
@@ -14,8 +14,8 @@ if ! test -f $1; then
     return 1 
 fi
 
-if [[ "$1" != *.xlsb ]]; then
-    echo "File $1 must be a *.xlsb file"
+if [[ "$1" != *.txt ]]; then
+    echo "File $1 must be a *.txt file"
     return 1;
 fi
 
@@ -28,15 +28,12 @@ fi
 if [[ ! -z "${WORK_SQL}" ]]; then
     
 duckdb <<EOF
-install rusty_sheet FROM community;
-load rusty_sheet;
-
-set variable site_mapping_xlsb_path = '$1';
-.read '$WORK_SQL/Scripts2/gen_parquet/site_mapping/site_mapping.sql'
-copy (select * from ai2_to_s4_site_mapping) to '$dest/site_mapping.parquet' (format parquet, compression snappy);
+set variable outstations_summary_txt_path = '$1';
+.read '$WORK_SQL/Scripts2/gen_parquet/rts_outstations/rts_outstations.sql'
+-- copy (select * from rts_outstations) to '$dest/rts_outstations.parquet' (format parquet, compression snappy);
 EOF
 
-    echo "Created $dest/site_mapping.parquet"
+    echo "Created $dest/rts_outstations.parquet"
 else
     echo "Must set the env var WORK_SQL"
 fi
