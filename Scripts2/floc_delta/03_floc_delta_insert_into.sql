@@ -15,7 +15,7 @@
 -- 
 
 -- Preliminary: 
--- Env var `S4_FLOC_WIDETABLE` set
+-- `asset_lake` is attached
 
 -- Use explicit DDL and INSERT INTO statements...
 

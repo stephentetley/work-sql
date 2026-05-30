@@ -16,10 +16,14 @@
 
 
 -- Preliminary: 
--- Must have a sqlite database attached called `sqlite_db`
--- Run from DuckDB - no guarantee SQLite is installed 
+-- Must have a SQLite database attached called `sqlite_db`
+-- This script is run from DuckDB - i.e. it relies on the SQLite extension 
+-- (which must be already loaded). There is no necessity for a 
+-- standalone SQLite to be installed 
+
 
 -- Floc Create tables
+
 
 create or replace table sqlite_db.floc_create_change_request_header (
     change_request varchar,

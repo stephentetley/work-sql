@@ -1,11 +1,30 @@
-.print 'Running site_mapping.sql...'
+-- 
+-- Copyright 2026 Stephen Tetley
+-- 
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+-- 
+-- http://www.apache.org/licenses/LICENSE-2.0
+-- 
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
+-- 
 
-INSTALL rusty_sheet FROM community;
-LOAD rusty_sheet;
+
+-- Preliminaries: 
+-- The variable `site_mapping_xlsb_path` is set in DuckDb (i.e. not an env var)
+-- The community extension `rusty_sheet` is loaded:
+-- D INSTALL rusty_sheet FROM community;
+-- D LOAD rusty_sheet;
 
 
--- Setup the environment variable `SITE_MAPPING_XLSB_PATH` before running this file
-SELECT getenv('SITE_MAPPING_XLSB_PATH') AS SITE_MAPPING_XLSB_PATH;
+-- Set the variable `site_mapping_xlsb_path` before running this file
+
+
 
 
 
@@ -31,7 +50,7 @@ SELECT
     t."S/4 Hana Floc Description" AS s4_site_name,
     t."Asset Status 02/01/2025" AS asset_status,    
 FROM read_sheet(
-    getenv('SITE_MAPPING_XLSB_PATH'),
+    getvariable('site_mapping_xlsb_path'),
     sheet = 'inst to SAP migration',
     nulls = ['NULL', '#N/A'],
     columns = {

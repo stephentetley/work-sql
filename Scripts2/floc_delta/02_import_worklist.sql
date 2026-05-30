@@ -2,11 +2,10 @@
 
 
 -- Preliminary: 
--- Env var `FLOC_DELTA_WORKLIST` set
+-- The variable `floc_delta_worklist` is set in DuckDb (i.e. not an env var)
 
 
--- Setup the environment variable `FLOC_DELTA_WORKLIST` before running this file
--- SELECT getenv('FLOC_DELTA_WORKLIST') AS FLOC_DELTA_WORKLIST;
+-- Set the variable `floc_delta_worklist` before running this file
 
 
 
