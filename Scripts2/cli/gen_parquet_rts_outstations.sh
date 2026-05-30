@@ -30,7 +30,7 @@ if [[ ! -z "${WORK_SQL}" ]]; then
 duckdb <<EOF
 set variable outstations_summary_txt_path = '$1';
 .read '$WORK_SQL/Scripts2/gen_parquet/rts_outstations/rts_outstations.sql'
--- copy (select * from rts_outstations) to '$dest/rts_outstations.parquet' (format parquet, compression snappy);
+copy (select * from rts_outstations) to '$dest/rts_outstations.parquet' (format parquet, compression snappy);
 EOF
 
     echo "Created $dest/rts_outstations.parquet"

@@ -50,4 +50,11 @@ FROM read_csv(
     delim='\t'
 );
 
-
+insert or replace into rts_outstations by name 
+select 
+    t."OS name" as os_name,
+    t."OD name" as od_name,
+    t."OD comment" as od_comment,
+    t."OS comment" as os_comment,
+    t."Scan" as on_scan,
+from outstations_landing t;
