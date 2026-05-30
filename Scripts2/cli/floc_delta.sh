@@ -14,6 +14,11 @@ if ! test -f $1; then
     return 1 
 fi
 
+if [[ "$1" != *.xlsx ]]; then
+    echo "File $1 must be a *.xlsx file"
+    return 1;
+fi
+
 
 if { [ ! -z "${WORK_SQL}" ] && [ ! -z "${ASSET_LAKE_CONNECT_STRING}" ]; }; then
     
