@@ -25,11 +25,6 @@
 -- Set the variable `site_mapping_xlsb_path` before running this file
 
 
-
-
-
-
-
 CREATE OR REPLACE TABLE ai2_to_s4_site_mapping (
     ai2_site_id VARCHAR NOT NULL,
     ai2_site_name VARCHAR,
