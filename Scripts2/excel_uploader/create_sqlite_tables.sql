@@ -1,4 +1,4 @@
-    -- 
+--
 -- Copyright 2026 Stephen Tetley
 -- 
 -- Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 -- 
 
 
--- Preliminary: 
+-- Preliminaries: 
 -- Must have a SQLite database attached called `sqlite_db`
 -- This script is run from DuckDB - i.e. it relies on the SQLite extension 
 -- (which must be already loaded). There is no necessity for a 

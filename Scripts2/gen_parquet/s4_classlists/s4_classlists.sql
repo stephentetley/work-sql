@@ -1,8 +1,31 @@
-.print 'Running s4_classlists.sql...'
+--
+-- Copyright 2026 Stephen Tetley
+-- 
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+-- 
+-- http://www.apache.org/licenses/LICENSE-2.0
+-- 
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
+-- 
 
 
-INSTALL rusty_sheet FROM community;
-LOAD rusty_sheet;
+-- Preliminaries: 
+-- The variables `floc_classlist_xlsx_path` and `equi_classlist_xlsx_path` 
+-- set in DuckDb (i.e. not env vars)
+-- The community extension `rusty_sheet` is loaded:
+-- D INSTALL rusty_sheet FROM community;
+-- D LOAD rusty_sheet;
+
+
+
+
+
 
 -- ## CREATE TABLES
 
@@ -126,18 +149,17 @@ WHERE t.char_value IS NOT NULL;
 
 
 
--- Setup the environment variable `FLOC_CLASSLIST_XLS_PATH` before running this file
-SELECT getenv('FLOC_CLASSLIST_XLS_PATH') AS FLOC_CLASSLIST_XLS_PATH;
 
 CREATE OR REPLACE TABLE floc_classlist_landing AS
-SELECT * FROM read_classdefs(getenv('FLOC_CLASSLIST_XLS_PATH'));
+SELECT 
+    * 
+FROM read_classdefs(getvariable('floc_classlist_xlsx_path'));
 
-
--- Setup the environment variable `EQUI_CLASSLIST_XLS_PATH` before running this file
-SELECT getenv('EQUI_CLASSLIST_XLS_PATH') AS EQUI_CLASSLIST_XLS_PATH;
 
 CREATE OR REPLACE TABLE equi_classlist_landing AS
-SELECT * FROM read_classdefs(getenv('EQUI_CLASSLIST_XLS_PATH'));
+SELECT 
+    * 
+FROM read_classdefs(getvariable('equi_classlist_xlsx_path'));
 
 
 INSERT INTO s4_floc_classes BY NAME
