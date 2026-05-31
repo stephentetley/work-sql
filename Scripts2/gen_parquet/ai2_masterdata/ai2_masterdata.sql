@@ -180,7 +180,7 @@ SELECT
     t."PlantEquipReference",
     t."SubPlantEquipReference",
 FROM read_sheet(
-    getenv('AIB_MASTERDATA_SRCPATH'), 
+    getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
     error_as_null=true, 
     nulls=['NULL'], 
@@ -210,7 +210,7 @@ SELECT
     t."SubPlantEquipReference",
     t."PlantItemEquipReference",
 FROM read_sheet(
-    getenv('AIB_MASTERDATA_SRCPATH'),
+    getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
     error_as_null=true, 
     nulls=['NULL'], 
@@ -228,7 +228,7 @@ SELECT
     t."SiteReference",
     t."SiteCommonName",
 FROM read_sheet(
-    getenv('AIB_MASTERDATA_SRCPATH'), 
+    getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
     error_as_null=true, nulls=['NULL'], 
     columns={'*': 'varchar'}) t
@@ -248,7 +248,7 @@ SELECT
     t."InstallationStatus",
     t."InstallationTypeDescription",
 FROM read_sheet(
-    getenv('AIB_MASTERDATA_SRCPATH'),
+    getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
     error_as_null=true, 
     nulls=['NULL'], 
@@ -267,7 +267,7 @@ SELECT
     t."SubInstallationTypeDescription",
     t."InstallationReference" AS "ParentRef",
 FROM read_sheet(
-    getenv('AIB_MASTERDATA_SRCPATH'),
+    getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
     error_as_null=true, 
     nulls=['NULL'], 
@@ -286,7 +286,7 @@ SELECT
     t."ProcessGroupAssetTypeDescription",
     coalesce(t."SubInstallationReference", t."InstallationReference") AS "ParentRef",
 FROM read_sheet(
-    getenv('AIB_MASTERDATA_SRCPATH'),
+    getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
     error_as_null=true, 
     nulls=['NULL'], 
@@ -306,7 +306,7 @@ SELECT
     t."ProcessAssetTypeDescription",
     coalesce(t."ProcessGroupReference", t."SubInstallationReference", t."InstallationReference") AS "ParentRef",
 FROM read_sheet(
-    getenv('AIB_MASTERDATA_SRCPATH'),
+    getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
     error_as_null=true, 
     nulls=['NULL'], 
