@@ -1,7 +1,30 @@
-.print 'Running ai2_masterdata.sql...'
+--
+-- Copyright 2026 Stephen Tetley
+-- 
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+-- 
+-- http://www.apache.org/licenses/LICENSE-2.0
+-- 
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
+-- 
 
-INSTALL rusty_sheet FROM community;
-LOAD rusty_sheet;
+
+-- Preliminaries: 
+-- The variables `ai2_masterdata_srcpath` and `equi_classlist_xlsx_path` 
+-- set in DuckDb (i.e. not env vars)
+-- The community extension `rusty_sheet` is loaded:
+-- D INSTALL rusty_sheet FROM community;
+-- D LOAD rusty_sheet;
+
+
+
+-- This script akes a long time so we have left in some `.print` statements
 
 -- ## CREATE TABLE
 
@@ -83,8 +106,8 @@ CREATE OR REPLACE MACRO sqlserver_date(str) AS (
 
 -- ## LOAD DATA
 
--- Setup the environment variable `AIB_MASTERDATA_SRCPATH` before running this file
-SELECT getenv('AIB_MASTERDATA_SRCPATH') AS AIB_MASTERDATA_SRCPATH;
+
+.print 'Loading ai2_plant_landing...'
 
 
 CREATE OR REPLACE TABLE ai2_plant_landing AS
@@ -102,7 +125,7 @@ SELECT
     t."PlantEquipAssetTypeCode",
     t."PlantEquipAssetTypeDescription",
 FROM read_sheet(
-    getenv('AIB_MASTERDATA_SRCPATH'), 
+    getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
     error_as_null=true, nulls=['NULL'], 
     columns={'*FromDate': 'varchar'}) t
@@ -129,7 +152,7 @@ SELECT
     t."SubPlantEquipAssetTypeDescription",
     t."PlantEquipReference",
 FROM read_sheet(
-    getenv('AIB_MASTERDATA_SRCPATH'), 
+    getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
     error_as_null=true, 
     nulls=['NULL'], 
