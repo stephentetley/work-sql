@@ -1,7 +1,29 @@
-.print 'Running s4_masterdata.sql...'
+--
+-- Copyright 2026 Stephen Tetley
+-- 
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+-- 
+-- http://www.apache.org/licenses/LICENSE-2.0
+-- 
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
+-- 
 
-INSTALL rusty_sheet FROM community;
-LOAD rusty_sheet;
+
+-- Preliminaries: 
+-- The masterdata *.xlsx files have been converted to Parquet 
+-- The variables 
+--  s4_floc_parquet_globpath
+--  s4_equi_parquet_globpath 
+--  s4_equi_aib_ref_parquet_globpath
+-- are set in DuckDb 
+-- (i.e. not env vars)
+
 
 -- ## CREATE TABLES
 
@@ -100,39 +122,38 @@ CREATE OR REPLACE TABLE s4_floc_east_north (
 
 .print 'Loading s4_floc_data_landing...'
 
--- Setup the environment variable `S4_FLOC_PARQUET_GLOBPATH` before running this file
-SELECT getenv('S4_FLOC_PARQUET_GLOBPATH') AS S4_FLOC_PARQUET_GLOBPATH;
 
 
 CREATE OR REPLACE TABLE s4_floc_data_landing AS
 SELECT 
     * 
-FROM read_parquet(getenv('S4_FLOC_PARQUET_GLOBPATH'));
+FROM read_parquet(
+    getvariable('s4_floc_parquet_globpath')
+);
 
 
 .print 'Loading s4_equi_data_landing...'
 
 
--- Setup the environment variable `S4_EQUI_PARQUET_GLOBPATH` before running this file
-SELECT getenv('S4_EQUI_PARQUET_GLOBPATH') AS S4_EQUI_PARQUET_GLOBPATH;
 
 CREATE OR REPLACE TABLE s4_equi_data_landing AS
 SELECT 
     * 
-FROM read_parquet(getenv('S4_EQUI_PARQUET_GLOBPATH'));
+FROM read_parquet(
+    getvariable('s4_equi_parquet_globpath')
+);
 
 
 
 .print 'Loading s4_equi_aib_refs_data_landing...'
 
--- Setup the environment variable `S4_EQUI_AIBREF_PARQUET_GLOBPATH` before running this file
-SELECT getenv('S4_EQUI_AIBREF_PARQUET_GLOBPATH') AS S4_EQUI_AIBREF_PARQUET_GLOBPATH;
-
 
 CREATE OR REPLACE TABLE s4_equi_aib_refs_data_landing AS
 SELECT 
     * 
-FROM read_parquet(getenv('S4_EQUI_AIBREF_PARQUET_GLOBPATH'));
+FROM read_parquet(
+    getvariable('s4_equi_aib_ref_parquet_globpath')
+);
 
 
 .print 'Inserting s4_equi_data_landing data into s4_equi...'
