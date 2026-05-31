@@ -4,7 +4,7 @@ import glob
 from pathlib import Path
 import duckdb
 
-def make_parquet(path: str, read_sheet_args: str, con: duckdb.DuckDBPyConnection):
+def make_parquet1(path: str, read_sheet_args: str, con: duckdb.DuckDBPyConnection):
     outpath = Path(path).with_suffix(".parquet")
     
     con.execute("INSTALL rusty_sheet FROM community;")
@@ -23,7 +23,7 @@ def make_parquet(path: str, read_sheet_args: str, con: duckdb.DuckDBPyConnection
         COPY 
             (SELECT * FROM landing) 
         TO '{outpath}' 
-        (FORMAT parquet, COMPRESSION uncompressed);
+        (FORMAT parquet, COMPRESSION snappy);
     """
     con.execute(write_sql)
     print(f"Wrote {outpath}")
@@ -41,7 +41,7 @@ def main():
     con = duckdb.connect()
 
     for file in list(glob.glob(glob_to_xls)): 
-        make_parquet(file, read_sheet_args, con)
+        make_parquet1(file, read_sheet_args, con)
 
     con.close()
 main()

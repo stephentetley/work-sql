@@ -1,6 +1,0 @@
--- expects to be run from root of `work-sql`
--- D .read './Scripts2/wide_tables/attach.sql'
-
-.print 'Running attach.sql...'
-
-attach 'ducklake:../../../work/2026/asset_lake/asset_lake.ducklake' as asset_lake (READ_ONLY);
