@@ -36,10 +36,11 @@ with cte1_s4_equi as (
 ), cte4_add_equipment_list as (
     select 
         t.*,
-        list(t1.equipment_id) filter (t1.equipment_id is not null) as __equipment_list 
+        list(t1.equipment_id) filter (t1.equipment_id is not null) as __equipment_list,
+        list(distinct t1.obj_type) filter (t1.obj_type is not null) as __equipment_types_list,
     from cte3_add_stdclass_name t
     left join asset_lake.s4_masterdata.s4_equi t1 on t1.superequi_id = t.s4_equipment_id
-    group by all    
+    group by all
 ), cte5_add_equipment_list_stats as (
     select 
         t.*, 
@@ -72,8 +73,17 @@ with cte1_s4_equi as (
     left join asset_lake.s4_masterdata.s4_floc t5
         on t5.functional_location = t.s4_functional_location[:29]
         and t5.category = 6
+), cte7_specific_subequi as (
+    select 
+        t.*,
+        contains(__equipment_types_list, 'ACTU') as has_subequi_actuator,
+        contains(__equipment_types_list, 'EMTR') or contains(__equipment_types_list, 'GMTR') as has_subequi_motor,
+        contains(__equipment_types_list, 'STAR') as has_subequi_starter,
+        contains(__equipment_types_list, 'PODE') as has_subequi_power,
+        contains(__equipment_types_list, 'TRUT') as has_subequi_gearbox,
+    from cte6_add_floc_names t
 )
-select columns(lambda c: c not like '$_$_%' escape '$') from cte6_add_floc_names  
+select columns(lambda c: c not like '$_$_%' escape '$') from cte7_specific_subequi  
 order by s4_functional_location;
 
 
