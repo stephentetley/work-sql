@@ -13,6 +13,8 @@ fi
 if { [ ! -z "${WORK_SQL}" ] && [ ! -z "${ASSET_LAKE_CONNECT_STRING}" ]; }; then
     
 duckdb <<EOF
+load ducklake;
+
 attach '$ASSET_LAKE_CONNECT_STRING' as asset_lake (READ_ONLY);
 
 .read '$WORK_SQL/Scripts2/wide_tables/ai2_floc_wide_table.sql'

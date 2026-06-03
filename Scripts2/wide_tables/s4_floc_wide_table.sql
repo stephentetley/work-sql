@@ -13,10 +13,11 @@ with cte1_s4_flocs as (
         string_split(t.functional_location, '-')[6] as subsystem_code,
         string_split(t.functional_location, '-')[7] as level7_code,
         string_split(t.functional_location, '-')[8] as level8_code,
-        (t.user_status like 'OPER%') as is_operational,
-        (t.user_status like 'DISP%') as is_disposed_of,
-        (t.user_status like 'NOP%') as is_non_op,
-        (t.user_status like 'DCOM%') as is_decommissioned,        
+        split_part(t.user_status, ' ', 1) as status1,
+        (status1 = 'OPER') as is_operational,
+        (status1 = 'DISP') as is_disposed_of,
+        (status1 = 'NOP') as is_non_op,
+        (status1 = 'DCOM') as is_decommissioned,        
     from asset_lake.s4_masterdata.s4_floc t
 ), cte2_add_site_name as (
     select 

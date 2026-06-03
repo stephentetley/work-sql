@@ -14,10 +14,11 @@ with cte1_s4_equi as (
         string_split(t.functional_location, '-')[6] as subsystem_code,
         string_split(t.functional_location, '-')[7] as level7_code,
         string_split(t.functional_location, '-')[8] as level8_code,
-        (t.user_status like 'OPER%') as is_operational,
-        (t.user_status like 'DISP%') as is_disposed_of,
-        (t.user_status like 'NOP%') as is_non_op,
-        (t.user_status like 'DCOM%') as is_decommissioned,         
+        split_part(t.user_status, ' ', 1) as status1,
+        (status1 = 'OPER') as is_operational,
+        (status1 = 'DISP') as is_disposed_of,
+        (status1 = 'NOP') as is_non_op,
+        (status1 = 'DCOM') as is_decommissioned,       
     from asset_lake.s4_masterdata.s4_equi t
 ), cte2_add_s4_site_name as (
     select 
@@ -39,7 +40,8 @@ with cte1_s4_equi as (
         list(t1.equipment_id) filter (t1.equipment_id is not null) as __equipment_list,
         list(distinct t1.obj_type) filter (t1.obj_type is not null) as __equipment_types_list,
     from cte3_add_stdclass_name t
-    left join asset_lake.s4_masterdata.s4_equi t1 on t1.superequi_id = t.s4_equipment_id
+    left join asset_lake.s4_masterdata.s4_equi t1 
+        on t1.superequi_id = t.s4_equipment_id and t1.user_status = t.s4_user_status
     group by all
 ), cte5_add_equipment_list_stats as (
     select 
