@@ -46,7 +46,8 @@ with cte1_s4_equi as (
 ), cte5_add_equipment_list_stats as (
     select 
         t.*, 
-        ifnull(t.__equipment_list, []) as equipment_list,
+        coalesce(t.__equipment_list, []) as equipment_list,
+        coalesce(t.__equipment_types_list, []) as equipment_types_list,
         length(equipment_list) as equipment_list_count,
         t.s4_superequi_id is not null as is_sub_equi,
         (equipment_list_count > 0) as is_super_equi,
@@ -78,11 +79,11 @@ with cte1_s4_equi as (
 ), cte7_specific_subequi as (
     select 
         t.*,
-        contains(__equipment_types_list, 'ACTU') as has_subequi_actuator,
-        contains(__equipment_types_list, 'EMTR') or contains(__equipment_types_list, 'GMTR') as has_subequi_motor,
-        contains(__equipment_types_list, 'STAR') as has_subequi_starter,
-        contains(__equipment_types_list, 'PODE') as has_subequi_power,
-        contains(__equipment_types_list, 'TRUT') as has_subequi_gearbox,
+        contains(equipment_types_list, 'ACTU') as has_subequi_actuator,
+        contains(equipment_types_list, 'EMTR') or contains(equipment_types_list, 'GMTR') as has_subequi_motor,
+        contains(equipment_types_list, 'STAR') as has_subequi_starter,
+        contains(equipment_types_list, 'PODE') as has_subequi_power,
+        contains(equipment_types_list, 'TRUT') as has_subequi_gearbox,
     from cte6_add_floc_names t
 )
 select columns(lambda c: c not like '$_$_%' escape '$') from cte7_specific_subequi  
