@@ -6,7 +6,9 @@
 SELECT getenv('AS_FITTED_TEST_SHEETS') AS AS_FITTED_TEST_SHEETS;
 
 create or replace table as_fitted_cicuits as
-select * from read_parquet(getenv('AS_FITTED_TEST_SHEETS'));
+select 
+    * 
+from read_parquet(getenv('AS_FITTED_TEST_SHEETS'));
 
 -- Setup the environment variable `AI2_FLOC_WIDE_TABLE` before running this file
 SELECT getenv('AI2_FLOC_WIDE_TABLE') AS AI2_FLOC_WIDE_TABLE;
