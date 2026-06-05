@@ -11,5 +11,6 @@ select
     norm_text(columns(* exclude(checklist_year))),
     checklist_year as checklist_year,
 from read_json(
-    getvariable('as_fitted_globpath')
+    getvariable('as_fitted_globpath'),
+    union_by_name = true
 );

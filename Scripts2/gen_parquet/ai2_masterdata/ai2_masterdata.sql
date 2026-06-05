@@ -29,7 +29,6 @@
 -- ## CREATE TABLE
 
 
-
 CREATE OR REPLACE TABLE ai2_equi (
     -- e.g. 'PLI00123456'
     pli_number VARCHAR NOT NULL,
@@ -105,6 +104,44 @@ CREATE OR REPLACE MACRO sqlserver_date(str) AS (
 -- on disk otherwise we are getting out-of-memory memory issues
 
 -- ## LOAD DATA
+
+
+.print 'Loading ai2_floc_site_landing...'
+
+create or replace table ai2_floc_site_landing as
+select
+    t."SiteReference",
+    t."SiteCommonName",
+from read_sheet(
+    getvariable('ai2_masterdata_srcpath'), 
+    sheet='Sheet1', 
+    error_as_null=true, nulls=['NULL'], 
+    columns={'*': 'varchar'}) t
+where
+    t."SiteReference" is not null
+and t."SiteCommonName" is not null;
+
+
+
+.print 'Loading ai2_floc_installation_landing...'
+
+create or replace table ai2_floc_installation_landing as
+select
+    t."InstallationReference",
+    t."InstallationCommonName",
+    t."InstallationStatus",
+    t."InstallationTypeCode",
+    t."InstallationTypeDescription",
+    t."SiteReference",
+    t."SiteCommonName",
+from read_sheet(
+    getvariable('ai2_masterdata_srcpath'), 
+    sheet='Sheet1', 
+    error_as_null=true, 
+    nulls=['NULL'], 
+    columns={'*': 'varchar'}) t
+where
+    t."InstallationReference" is not null;
 
 
 .print 'Loading ai2_plant_landing...'
@@ -220,41 +257,9 @@ WHERE
 AND t."SubPlantItemEquipReference" IS NOT NULL;
 
 
-.print 'Loading ai2_site_landing...'
-
-
-CREATE OR REPLACE TABLE ai2_site_landing AS
-SELECT
-    t."SiteReference",
-    t."SiteCommonName",
-FROM read_sheet(
-    getvariable('ai2_masterdata_srcpath'), 
-    sheet='Sheet1', 
-    error_as_null=true, nulls=['NULL'], 
-    columns={'*': 'varchar'}) t
-WHERE
-    t."SiteReference" IS NOT NULL
-AND t."SiteCommonName" IS NOT NULL;
 
 
 
-.print 'Loading ai2_installation_landing...'
-
-CREATE OR REPLACE TABLE ai2_installation_landing AS
-SELECT
-    t."SiteReference",
-    t."InstallationReference",
-    t."InstallationCommonName",
-    t."InstallationStatus",
-    t."InstallationTypeDescription",
-FROM read_sheet(
-    getvariable('ai2_masterdata_srcpath'), 
-    sheet='Sheet1', 
-    error_as_null=true, 
-    nulls=['NULL'], 
-    columns={'*': 'varchar'}) t
-WHERE
-    t."InstallationReference" IS NOT NULL;
 
 .print 'Loading ai2_sub_installation_landing...'
 
@@ -285,6 +290,8 @@ SELECT
     t."ProcessGroupStatus",
     t."ProcessGroupAssetTypeDescription",
     coalesce(t."SubInstallationReference", t."InstallationReference") AS "ParentRef",
+    t."InstallationReference",
+    t."SubInstallationReference",
 FROM read_sheet(
     getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
@@ -305,6 +312,9 @@ SELECT
     t."ProcessStatus",
     t."ProcessAssetTypeDescription",
     coalesce(t."ProcessGroupReference", t."SubInstallationReference", t."InstallationReference") AS "ParentRef",
+    t."InstallationReference",
+    t."SubInstallationReference",
+    t."ProcessGroupReference",
 FROM read_sheet(
     getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
@@ -424,7 +434,7 @@ SELECT
     any_value(t."InstallationTypeDescription") AS type_decription,
     NULL AS parent_ref,
     'INSTALLATION' AS floc_source_type
-FROM ai2_installation_landing t
+FROM ai2_floc_installation_landing t
 GROUP BY t."SiteReference", t."InstallationReference";
 
 
@@ -479,6 +489,6 @@ INSERT OR REPLACE INTO ai2_site_simple BY NAME
 SELECT 
     t."SiteReference" AS sai_number,
     any_value(t."SiteCommonName") AS site_name,
-FROM ai2_site_landing t
+FROM ai2_floc_site_landing t
 GROUP BY t."SiteReference";
  
