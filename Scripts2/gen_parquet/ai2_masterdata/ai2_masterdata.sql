@@ -153,7 +153,6 @@ select
     t."InstallationTypeCode",
     t."InstallationTypeDescription" as type_decription,
     t."SiteReference" as site_reference,
-    t."SiteCommonName",
 from read_sheet(
     getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
@@ -175,7 +174,6 @@ select
     t."SiteReference" as parent_ref,
     t."InstallationReference",
     t."SiteReference" as site_reference,
-    t."SiteCommonName",
 from read_sheet(
     getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
@@ -203,7 +201,6 @@ select
     t."SubInstallationReference",
     t."InstallationReference",
     t."SiteReference" as site_reference,
-    t."SiteCommonName",
 from read_sheet(
     getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
@@ -234,7 +231,6 @@ select
     t."SubInstallationReference",
     t."InstallationReference",
     t."SiteReference" as site_reference,
-    t."SiteCommonName",
 from read_sheet(
     getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
@@ -243,6 +239,116 @@ from read_sheet(
     columns={'*': 'varchar'}) t
 where
     t."ProcessReference" is not null;
+
+
+.print 'Loading ai2_floc_plant_landing...'
+
+create or replace table ai2_floc_plant_landing as
+select
+    t."PlantReference" as sai_reference,
+    t."PlantCommonName" as common_name,
+    t."PlantStatus" as user_status,
+    t."PlantAssetTypeDescription" as type_decription,
+    coalesce(t."ProcessReference", 
+        t."ProcessGroupReference", 
+        t."SubInstallationReference", 
+        t."InstallationReference") as parent_ref,
+    t."ProcessGroupReference",
+    t."SubInstallationReference",
+    t."InstallationReference",
+    t."SiteReference" as site_reference,
+from read_sheet(
+    getvariable('ai2_masterdata_srcpath'), 
+    sheet='Sheet1', 
+    error_as_null=true, 
+    nulls=['NULL'], 
+    columns={'*': 'varchar'}) t
+where
+    t."PlantReference" is not null;
+
+
+.print 'Loading ai2_floc_sub_plant_landing...'
+
+create or replace table ai2_floc_sub_plant_landing as
+select
+    t."SubPlantReference" as sai_reference,
+    t."SubPlantCommonName" as common_name,
+    t."SubPlantStatus" as user_status,
+    t."SubPlantAssetTypeDescription" as type_decription,
+    coalesce(t."PlantReference",
+        t."ProcessReference", 
+        t."ProcessGroupReference", 
+        t."SubInstallationReference", 
+        t."InstallationReference") as parent_ref,
+    t."ProcessGroupReference",
+    t."SubInstallationReference",
+    t."InstallationReference",
+    t."SiteReference" as site_reference,
+from read_sheet(
+    getvariable('ai2_masterdata_srcpath'), 
+    sheet='Sheet1', 
+    error_as_null=true, 
+    nulls=['NULL'], 
+    columns={'*': 'varchar'}) t
+where
+    t."SubPlantReference" is not null;
+
+
+.print 'Loading ai2_floc_plantitem_landing...'
+
+create or replace table ai2_floc_plantitem_landing as
+select
+    t."PlantItemReference" as sai_reference,
+    t."PlantItemCommonName" as common_name,
+    t."PlantItemStatus" as user_status,
+    t."PlantItemAssetTypeDescription" as type_decription,
+    coalesce(t."PlantReference",
+        t."ProcessReference", 
+        t."ProcessGroupReference", 
+        t."SubInstallationReference", 
+        t."InstallationReference") as parent_ref,
+    t."ProcessGroupReference",
+    t."SubInstallationReference",
+    t."InstallationReference",
+    t."SiteReference" as site_reference,
+from read_sheet(
+    getvariable('ai2_masterdata_srcpath'), 
+    sheet='Sheet1', 
+    error_as_null=true, 
+    nulls=['NULL'], 
+    columns={'*': 'varchar'}) t
+where
+    t."PlantItemReference" is not null;
+
+.print 'Loading ai2_floc_sub_plantitem_landing...'
+
+create or replace table ai2_floc_sub_plantitem_landing as
+select
+    t."SubPlantItemReference" as sai_reference,
+    t."SubPlantItemCommonName" as common_name,
+    t."SubPlantItemStatus" as user_status,
+    t."SubPlantItemAssetTypeDescription" as type_decription,
+    coalesce(t."PlantItemReference",
+        t."PlantReference",
+        t."ProcessReference", 
+        t."ProcessGroupReference", 
+        t."SubInstallationReference", 
+        t."InstallationReference") as parent_ref,
+    t."ProcessGroupReference",
+    t."SubInstallationReference",
+    t."InstallationReference",
+    t."SiteReference" as site_reference,
+from read_sheet(
+    getvariable('ai2_masterdata_srcpath'), 
+    sheet='Sheet1', 
+    error_as_null=true, 
+    nulls=['NULL'], 
+    columns={'*': 'varchar'}) t
+where
+    t."SubPlantItemReference" is not null;
+
+
+-- equipment
 
 
 .print 'Loading ai2_equi_plant_landing...'
@@ -275,7 +381,7 @@ where
 and t."PlantEquipReference" is not null;
 
 
-.print 'Loading ai2_sub_plant_landing...'
+.print 'Loading ai2_equi_sub_plant_landing...'
 
 create or replace table ai2_equi_sub_plant_landing as
 select
@@ -304,7 +410,7 @@ where
     t."SubPlantEquipRuleDeleted" = '0'
 and t."SubPlantEquipReference" is not null;
 
-.print 'Loading ai2_plantitem_landing...'
+.print 'Loading ai2_equi_plantitem_landing...'
 
 create or replace table ai2_equi_plantitem_landing as
 SELECT
@@ -335,7 +441,7 @@ WHERE
 AND t."PlantItemEquipReference" IS NOT NULL;
 
 
-.print 'Loading ai2_sub_plantitem_landing...'
+.print 'Loading ai2_equi_sub_plantitem_landing...'
 
 create or replace table ai2_equi_sub_plantitem_landing as
 SELECT
@@ -448,6 +554,64 @@ select
     'PROCESS' as floc_source_type,
     t.site_reference,
 from ai2_floc_process_landing t
+group by all;
+
+
+.print 'Inserting plant data into ai2_floc...'
+
+insert or replace into ai2_floc by name
+select
+    t.sai_reference as sai_number,
+    t.common_name,
+    any_value(t.user_status) as user_status,
+    any_value(t.type_decription) as type_decription,
+    any_value(t.parent_ref) as parent_ref,
+    'PLANT' as floc_source_type,
+    t.site_reference,
+from ai2_floc_plant_landing t
+group by all;
+
+.print 'Inserting sub_plant data into ai2_floc...'
+
+insert or replace into ai2_floc by name
+select
+    t.sai_reference as sai_number,
+    t.common_name,
+    any_value(t.user_status) as user_status,
+    any_value(t.type_decription) as type_decription,
+    any_value(t.parent_ref) as parent_ref,
+    'SUB_PLANT' as floc_source_type,
+    t.site_reference,
+from ai2_floc_sub_plant_landing t
+group by all;
+
+
+.print 'Inserting plantitem data into ai2_floc...'
+
+insert or replace into ai2_floc by name
+select
+    t.sai_reference as sai_number,
+    t.common_name,
+    any_value(t.user_status) as user_status,
+    any_value(t.type_decription) as type_decription,
+    any_value(t.parent_ref) as parent_ref,
+    'PLANTITEM' as floc_source_type,
+    t.site_reference,
+from ai2_floc_plantitem_landing t
+group by all;
+
+.print 'Inserting plantitem data into ai2_floc...'
+
+insert or replace into ai2_floc by name
+select
+    t.sai_reference as sai_number,
+    t.common_name,
+    any_value(t.user_status) as user_status,
+    any_value(t.type_decription) as type_decription,
+    any_value(t.parent_ref) as parent_ref,
+    'SUB_PLANTITEM' as floc_source_type,
+    t.site_reference,
+from ai2_floc_sub_plantitem_landing t
 group by all;
 
 
