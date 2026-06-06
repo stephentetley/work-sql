@@ -35,8 +35,21 @@ with cte1_ai2_flocs as (
         map_keys(__hist) as s4_all_site_codes,
         map_keys(__hist).list_aggregate('mode') as s4_best_site_code,
     from cte3_add_s4_site_codes t
+), cte5_add_equipment1 as (
+    -- ai2 only allows 1 equipment on a floc
+    select 
+        t.*,
+        any_value(t1.pli_number) as equipment
+    from cte3_add_s4_site_codes t
+    left join asset_lake.ai2_masterdata.ai2_equi t1 on t1.sai_number = t.ai2_sai_number
+    group by all    
+), cte6_add_equipment_stats as (
+    select 
+        t.*, 
+        (t.equipment is not null) as has_equipment,
+    from cte5_add_equipment1 t
 )
-select columns(lambda c: c not like '$_$_%' escape '$') from cte4_s4_site_name_stats 
+select columns(lambda c: c not like '$_$_%' escape '$') from cte6_add_equipment_stats 
 order by ai2_common_name;
 
 describe ai2_floc_wide_table;
