@@ -29,61 +29,64 @@
 -- ## CREATE TABLE
 
 
-CREATE OR REPLACE TABLE ai2_equi (
-    -- e.g. 'PLI00123456'
-    pli_number VARCHAR NOT NULL,
-    -- e.g. 'LCC'
-    equipment_name VARCHAR NOT NULL,
-    -- e.g. 'EQUIPMENT: PENSTOCK'
-    equi_type_name VARCHAR,
-    -- e.g. 'EQPTMVNR'
-    equi_type_code VARCHAR,
-    -- e.g. '2017-09-12'
-    installed_from_date DATE,
-    -- e.g. 'UNKNOWN MANUFACTURER'
-    manufacturer VARCHAR,
-    -- e.g. 'UNSPECIFIED'
-    model VARCHAR,
-    -- e.g. 'OPERATIONAL'
-    user_status VARCHAR,
-    -- e.g. 'SITENAME/SPS/CONTROL SERVICES/PLC CONTROL/LCC' 
-    common_name VARCHAR,
-    -- e.g. 'SITENAME/SPS'
-    site_or_installation_name VARCHAR,
+create or replace table ai2_site_simple (
     -- e.g. 'SAI00123456'
-    sai_number VARCHAR,
-    -- e.g. 'PLI00012345'
-    superequi_id VARCHAR,
-    -- e.g. 'SAI00001000'
-    site_reference VARCHAR,
-    PRIMARY KEY (pli_number)
-);    
-
-CREATE OR REPLACE TABLE ai2_floc (
-    -- e.g. 'SAI00123456'
-    sai_number VARCHAR NOT NULL,
-    -- e.g. 'WATERFALL/WPS'
-    common_name VARCHAR,
-    -- e.g. 'OPERATIONAL'
-    user_status VARCHAR,
-    -- e.g. 'WATER SERVICES'
-    type_decription VARCHAR,
-    -- e.g. 'SAI00123456'
-    parent_ref VARCHAR,
-    -- derived, one of 'INSTALLATION' | 'SUB_INSTALLATION' | 'PROCESS_GROUP' | 'PROCESS'
-    floc_source_type VARCHAR NOT NULL,
-    -- e.g. 'SAI00001000'
-    site_reference VARCHAR,
-    PRIMARY KEY (sai_number)
+    sai_number varchar not null,
+    -- e.g. 'BRUNSWICK COMPLEX'
+    site_name varchar not null,
+    primary key (sai_number)
 );  
 
-CREATE OR REPLACE TABLE ai2_site_simple (
+create or replace table ai2_floc (
     -- e.g. 'SAI00123456'
-    sai_number VARCHAR NOT NULL,
-    -- e.g. 'BRUNSWICK COMPLEX'
-    site_name VARCHAR NOT NULL,
-    PRIMARY KEY (sai_number)
+    sai_number varchar not null,
+    -- e.g. 'WATERFALL/WPS'
+    common_name varchar,
+    -- e.g. 'OPERATIONAL'
+    user_status varchar,
+    -- e.g. 'WATER SERVICES'
+    type_decription varchar,
+    -- e.g. 'SAI00123456'
+    parent_ref varchar,
+    -- derived, one of 'INSTALLATION' | 'SUB_INSTALLATION' | 'PROCESS_GROUP' | 'PROCESS' | ...
+    floc_source_type varchar not null,
+    -- e.g. 'SAI00001000'
+    site_reference varchar,
+    primary key (sai_number)
+);  
+
+
+create or replace table ai2_equi (
+    -- e.g. 'PLI00123456'
+    pli_number varchar not null,
+    -- e.g. 'LCC'
+    equipment_name varchar not null,
+    -- e.g. 'EQUIPMENT: PENSTOCK'
+    equi_type_name varchar,
+    -- e.g. 'EQPTMVNR'
+    equi_type_code varchar,
+    -- e.g. '2017-09-12'
+    installed_from_date date,
+    -- e.g. 'UNKNOWN MANUFACTURER'
+    manufacturer varchar,
+    -- e.g. 'UNSPECIFIED'
+    model varchar,
+    -- e.g. 'OPERATIONAL'
+    user_status varchar,
+    -- e.g. 'SITENAME/SPS/CONTROL SERVICES/PLC CONTROL/LCC' 
+    common_name varchar,
+    -- e.g. 'SITENAME/SPS'
+    site_or_installation_name varchar,
+    -- e.g. 'SAI00123456'
+    sai_number varchar,
+    -- e.g. 'PLI00012345' (calculated by looking at rows to the left)
+    superequi_id varchar,
+    -- e.g. 'SAI00001000'
+    site_reference varchar,
+    primary key (pli_number)
 );    
+
+  
 
 
 -- For dates on or after 1899-12-30, Sqlserver's date string format is 
@@ -91,12 +94,29 @@ CREATE OR REPLACE TABLE ai2_site_simple (
 -- Dates before 1899-12-30 are stored as '%Y-%m-%d %H:%M:%S' 
 -- e.g. '1898-01-01 00:00:00.000' 
 -- 
-CREATE OR REPLACE MACRO sqlserver_date(str) AS (
+create or replace temporary macro sqlserver_date(str varchar) as (
     coalesce(
-        try(strptime(str::VARCHAR, '%Y-%m-%d %H:%M:%S.%g')::DATETIME),
-        try(date_add(DATE '1899-12-30', INTERVAL (try_cast(regexp_extract(str::VARCHAR, '^(\d+):\d{2}:\d{2}', 1) AS BIGINT)) HOUR))
+        try(strptime(str, '%Y-%m-%d %H:%M:%S.%g')::dateTIME),
+        try(date_add(date '1899-12-30', INTERVAL (try_cast(regexp_extract(str::varchar, '^(\d+):\d{2}:\d{2}', 1) as BIGINT)) HOUR))
     )
 );
+
+
+create or replace temporary macro make_common_name(xs varchar[]) as 
+    list_aggregate(xs, 'string_agg', '/');
+
+create or replace temporary macro split_plant_common_name(common_name varchar, process_atd varchar, process_group_atd varchar) as 
+    coalesce(
+        split_part(common_name, coalesce(process_atd, process_group_atd) || '/', 2),
+        regexp_extract(common_name, '/([^/]*)$', 1),
+        );
+
+create or replace temporary macro split_sub_plant_common_name(common_name varchar, plant_common_name varchar) as 
+    coalesce(
+        split_part(common_name, plant_common_name || '/', 2),
+        regexp_extract(common_name, '/([^/]*)$', 1),
+        );
+
 
 -- ai2 export:
 -- Read fixed set of columns and do multiple passes to keep 
@@ -110,8 +130,8 @@ CREATE OR REPLACE MACRO sqlserver_date(str) AS (
 
 create or replace table ai2_floc_site_landing as
 select
-    t."SiteReference",
-    t."SiteCommonName",
+    t."SiteReference" as sai_number,
+    t."SiteCommonName" as site_name,
 from read_sheet(
     getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
@@ -127,12 +147,12 @@ and t."SiteCommonName" is not null;
 
 create or replace table ai2_floc_installation_landing as
 select
-    t."InstallationReference",
-    t."InstallationCommonName",
-    t."InstallationStatus",
+    t."InstallationReference" as sai_reference,
+    t."InstallationCommonName" as common_name,
+    t."InstallationStatus" as user_status,
     t."InstallationTypeCode",
-    t."InstallationTypeDescription",
-    t."SiteReference",
+    t."InstallationTypeDescription" as type_decription,
+    t."SiteReference" as site_reference,
     t."SiteCommonName",
 from read_sheet(
     getvariable('ai2_masterdata_srcpath'), 
@@ -143,79 +163,167 @@ from read_sheet(
 where
     t."InstallationReference" is not null;
 
+.print 'Loading ai2_floc_sub_installation_landing...'
 
-.print 'Loading ai2_plant_landing...'
+create or replace table ai2_floc_sub_installation_landing as
+select
+    t."SubInstallationReference" as sai_reference,
+    t."SubInstallationCommonName" as common_name,
+    t."SubInstallationStatus" as user_status,
+    t."SubInstallationTypeCode",
+    t."SubInstallationTypeDescription" as type_decription,
+    t."SiteReference" as parent_ref,
+    t."InstallationReference",
+    t."SiteReference" as site_reference,
+    t."SiteCommonName",
+from read_sheet(
+    getvariable('ai2_masterdata_srcpath'), 
+    sheet='Sheet1', 
+    error_as_null=true, 
+    nulls=['NULL'], 
+    columns={'*': 'varchar'}) t
+where
+    t."SubInstallationReference" is not null;
 
 
-CREATE OR REPLACE TABLE ai2_plant_landing AS
-SELECT
-    t."SiteReference",
+
+.print 'Loading ai2_floc_process_group_landing...'
+
+-- Don't bother with 'ProcessGroupAssetTypeCode' it is a numeric enum
+-- that we don't have coding information for.
+-- No 'ProcessGroupCommonName' column.
+create or replace table ai2_floc_process_group_landing as
+select
+    t."ProcessGroupReference" as sai_reference,
+    make_common_name([coalesce(t."SubInstallationCommonName", t."InstallationCommonName"), 
+        t."ProcessGroupAssetTypeDescription"]) as common_name,        
+    t."ProcessGroupStatus" as user_status,
+    t."ProcessGroupAssetTypeDescription" as type_decription, -- e.g. 'CONTROL SERVICES'
+    coalesce(t."SubInstallationReference", t."InstallationReference") as parent_ref,
+    t."SubInstallationReference",
+    t."InstallationReference",
+    t."SiteReference" as site_reference,
+    t."SiteCommonName",
+from read_sheet(
+    getvariable('ai2_masterdata_srcpath'), 
+    sheet='Sheet1', 
+    error_as_null=true, 
+    nulls=['NULL'], 
+    columns={'*': 'varchar'}) t
+where
+    t."ProcessGroupReference" is not null;
+
+
+.print 'Loading ai2_floc_process_landing...'
+
+-- Don't bother with 'ProcessAssetTypeCode' it is a numeric enum
+-- that we don't have coding information for.
+-- No 'ProcessCommonName' column.
+create or replace table ai2_floc_process_landing as
+select
+    t."ProcessReference" as sai_reference,
+    make_common_name([coalesce(t."SubInstallationCommonName", t."InstallationCommonName"),
+        t."ProcessGroupAssetTypeDescription",
+        t."ProcessAssetTypeDescription"]) as common_name,
+    t."ProcessStatus" as user_status,
+    t."ProcessAssetTypeDescription" as type_decription,        -- e.g. 'RTS MONITORING'
+    coalesce(t."ProcessGroupReference", 
+        t."SubInstallationReference", 
+        t."InstallationReference") as parent_ref,
+    t."ProcessGroupReference",
+    t."SubInstallationReference",
+    t."InstallationReference",
+    t."SiteReference" as site_reference,
+    t."SiteCommonName",
+from read_sheet(
+    getvariable('ai2_masterdata_srcpath'), 
+    sheet='Sheet1', 
+    error_as_null=true, 
+    nulls=['NULL'], 
+    columns={'*': 'varchar'}) t
+where
+    t."ProcessReference" is not null;
+
+
+.print 'Loading ai2_equi_plant_landing...'
+
+-- 'PlantCommonName' column is common_name minus "EQUIPMENT: ..."
+create or replace table ai2_equi_plant_landing as
+select
+    t."PlantEquipReference" as pli_reference,
+    t."PlantReference" as sai_number,
+    t."PlantEquipInstalledFromDate" as installed_from_date,
+    t."PlantEquipManufacturer" as manufacturer,
+    t."PlantEquipModel" as model,
+    t."PlantEquipStatus" as user_status,
+    t."PlantEquipAssetTypeCode" as equi_type_code,
+    t."PlantEquipAssetTypeDescription" as equi_type_name, -- e.g. 'EQUIPMENT: PLC'
+    t."SiteReference" as site_reference,
+    t."PlantCommonName", 
+    t."ProcessAssetTypeDescription", 
+    t."ProcessGroupAssetTypeDescription",
+    t."PlantEquipAssetTypeDescription",
     t."InstallationCommonName",
     t."SubInstallationCommonName",
-    t."PlantEquipReference",
-    t."PlantEquipInstalledFromDate",
-    t."PlantReference",
-    t."PlantCommonName",
-    t."PlantEquipManufacturer",
-    t."PlantEquipModel",
-    t."PlantEquipStatus",
-    t."PlantEquipAssetTypeCode",
-    t."PlantEquipAssetTypeDescription",
-FROM read_sheet(
+from read_sheet(
     getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
     error_as_null=true, nulls=['NULL'], 
     columns={'*FromDate': 'varchar'}) t
-WHERE
+where
     t."PlantEquipRuleDeleted" = '0'
-AND t."PlantEquipReference" IS NOT NULL;
+and t."PlantEquipReference" is not null;
 
 
 .print 'Loading ai2_sub_plant_landing...'
 
-CREATE OR REPLACE TABLE ai2_sub_plant_landing AS
-SELECT
-    t."SiteReference",
-    t."InstallationCommonName",
-    t."SubInstallationCommonName",
-    t."SubPlantEquipReference",
-    t."SubPlantEquipInstalledFromDate",
-    t."SubPlantReference",
+create or replace table ai2_equi_sub_plant_landing as
+select
+    t."SubPlantEquipReference" as pli_reference,
+    t."SubPlantReference" as sai_number,
+    t."SubPlantEquipInstalledFromDate" as installed_from_date,
+    t."SubPlantEquipManufacturer" as manufacturer,
+    t."SubPlantEquipModel" as model,
+    t."SubPlantEquipStatus" as user_status,
+    t."SubPlantEquipAssetTypeCode" as equi_type_code,
+    t."SubPlantEquipAssetTypeDescription" as equi_type_name,
+    t."PlantEquipReference" as superequi_id,
+    t."SiteReference" as site_reference,
+    t."PlantCommonName",
     t."SubPlantCommonName",
-    t."SubPlantEquipManufacturer",
-    t."SubPlantEquipModel",
-    t."SubPlantEquipStatus",
-    t."SubPlantEquipAssetTypeCode",
     t."SubPlantEquipAssetTypeDescription",
-    t."PlantEquipReference",
-FROM read_sheet(
+    t."InstallationCommonName",
+    t."SubInstallationCommonName",    
+from read_sheet(
     getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
     error_as_null=true, 
     nulls=['NULL'], 
     columns={'*FromDate': 'varchar'}) t
-WHERE
+where
     t."SubPlantEquipRuleDeleted" = '0'
-AND t."SubPlantEquipReference" IS NOT NULL;
+and t."SubPlantEquipReference" is not null;
 
-.print 'Loading ai2_plant_item_landing...'
+.print 'Loading ai2_plantitem_landing...'
 
-CREATE OR REPLACE TABLE ai2_plant_item_landing AS
+create or replace table ai2_equi_plantitem_landing as
 SELECT
-    t."SiteReference",
-    t."InstallationCommonName",
-    t."SubInstallationCommonName",
-    t."PlantItemEquipReference",
-    t."PlantItemEquipInstalledFromDate",
-    t."PlantItemReference",
+    t."PlantItemEquipReference" as pli_reference,
+    t."PlantItemReference" as sai_number,
+    t."PlantItemEquipInstalledFromDate" as installed_from_date,
+    t."PlantItemEquipManufacturer" as manufacturer,
+    t."PlantItemEquipModel" as model,
+    t."PlantItemEquipStatus" as user_status,
+    t."PlantItemEquipAssetTypeCode" as equi_type_code,
+    t."PlantItemEquipAssetTypeDescription" as equi_type_name,
+    t."PlantEquipReference" as superequi_id,        -- plant equipment (not sub plant equipment)
+    t."SiteReference" as  site_reference,
     t."PlantItemCommonName",
-    t."PlantItemEquipManufacturer",
-    t."PlantItemEquipModel",
-    t."PlantItemEquipStatus",
-    t."PlantItemEquipAssetTypeCode",
+    t."PlantCommonName", 
     t."PlantItemEquipAssetTypeDescription",
     t."PlantEquipReference",
-    t."SubPlantEquipReference",
+    t."InstallationCommonName",
+    t."SubInstallationCommonName",    
 FROM read_sheet(
     getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
@@ -227,25 +335,25 @@ WHERE
 AND t."PlantItemEquipReference" IS NOT NULL;
 
 
-.print 'Loading ai2_sub_plant_item_landing...'
+.print 'Loading ai2_sub_plantitem_landing...'
 
-CREATE OR REPLACE TABLE ai2_sub_plant_item_landing AS
+create or replace table ai2_equi_sub_plantitem_landing as
 SELECT
-    t."SiteReference",
+    t."SubPlantItemEquipReference" as pli_reference,
+    t."SubPlantItemReference" as sai_number,
+    t."SubPlantItemEquipInstalledFromDate" as installed_from_date,
+    t."SubPlantItemEquipManufacturer" as manufacturer,
+    t."SubPlantItemEquipModel" as model,
+    t."SubPlantItemEquipStatus" as user_status,
+    t."SubPlantItemEquipAssetTypeCode" as equi_type_code,
+    t."SubPlantItemEquipAssetTypeDescription" as equi_type_name,
+    t."PlantItemEquipReference" as superequi_id,        -- plantitem equipment
+    t."SiteReference" as site_reference,
+    t."SubPlantItemCommonName",
+    t."SubPlantItemEquipAssetTypeDescription",
+    t."PlantItemCommonName",
     t."InstallationCommonName",
     t."SubInstallationCommonName",
-    t."SubPlantItemEquipReference",
-    t."SubPlantItemEquipInstalledFromDate",
-    t."SubPlantItemReference",
-    t."SubPlantItemCommonName",
-    t."SubPlantItemEquipManufacturer",
-    t."SubPlantItemEquipModel",
-    t."SubPlantItemEquipStatus",
-    t."SubPlantItemEquipAssetTypeCode",
-    t."SubPlantItemEquipAssetTypeDescription",
-    t."PlantEquipReference",
-    t."SubPlantEquipReference",
-    t."PlantItemEquipReference",
 FROM read_sheet(
     getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
@@ -258,237 +366,193 @@ AND t."SubPlantItemEquipReference" IS NOT NULL;
 
 
 
-
-
-
-.print 'Loading ai2_sub_installation_landing...'
-
-CREATE OR REPLACE TABLE ai2_sub_installation_landing AS
-SELECT
-    t."SiteReference",
-    t."SubInstallationReference",
-    t."SubInstallationCommonName",
-    t."SubInstallationStatus",
-    t."SubInstallationTypeDescription",
-    t."InstallationReference" AS "ParentRef",
-FROM read_sheet(
-    getvariable('ai2_masterdata_srcpath'), 
-    sheet='Sheet1', 
-    error_as_null=true, 
-    nulls=['NULL'], 
-    columns={'*': 'varchar'}) t
-WHERE
-    t."SubInstallationReference" IS NOT NULL;
-
-.print 'Loading ai2_process_group_landing...'
-
-CREATE OR REPLACE TABLE ai2_process_group_landing AS
-SELECT
-    t."SiteReference",
-    t."ProcessGroupReference",
-    coalesce(t."SubInstallationCommonName", t."InstallationCommonName") || '/' || t."ProcessGroupAssetTypeDescription" AS "CommonName",
-    t."ProcessGroupStatus",
-    t."ProcessGroupAssetTypeDescription",
-    coalesce(t."SubInstallationReference", t."InstallationReference") AS "ParentRef",
-    t."InstallationReference",
-    t."SubInstallationReference",
-FROM read_sheet(
-    getvariable('ai2_masterdata_srcpath'), 
-    sheet='Sheet1', 
-    error_as_null=true, 
-    nulls=['NULL'], 
-    columns={'*': 'varchar'}) t
-WHERE
-    t."ProcessGroupReference" IS NOT NULL;
-
-CREATE OR REPLACE TABLE ai2_process_landing AS
-SELECT
-    t."SiteReference",
-    t."ProcessReference",
-    coalesce(t."SubInstallationCommonName", t."InstallationCommonName") 
-        || '/' 
-        || if(t."ProcessGroupAssetTypeDescription" IS NULL, '', (t."ProcessGroupAssetTypeDescription" || '/'))
-        || t."ProcessAssetTypeDescription" AS "CommonName",
-    t."ProcessStatus",
-    t."ProcessAssetTypeDescription",
-    coalesce(t."ProcessGroupReference", t."SubInstallationReference", t."InstallationReference") AS "ParentRef",
-    t."InstallationReference",
-    t."SubInstallationReference",
-    t."ProcessGroupReference",
-FROM read_sheet(
-    getvariable('ai2_masterdata_srcpath'), 
-    sheet='Sheet1', 
-    error_as_null=true, 
-    nulls=['NULL'], 
-    columns={'*': 'varchar'}) t
-WHERE
-    t."ProcessReference" IS NOT NULL;
-
 -------------------------------------------------------------------------------
 -- final tables
-
--- ai2_equi
-
-DELETE FROM ai2_equi;
-
--- insert part 1
-.print 'Inserting ai2_plant data into ai2_equi...'
-
-INSERT OR REPLACE INTO ai2_equi BY NAME
-SELECT 
-    t."PlantEquipReference" AS pli_number,
-    regexp_extract(t."PlantCommonName", '/([^/]*)$', 1) AS equipment_name,
-    t."PlantEquipAssetTypeDescription" as equi_type_name,
-    t."PlantEquipAssetTypeCode" AS equi_type_code,
-    sqlserver_date(t."PlantEquipInstalledFromDate") AS installed_from_date,
-    t."PlantEquipManufacturer" AS manufacturer,
-    t."PlantEquipModel" AS model,
-    t."PlantEquipStatus" AS user_status,
-    t."PlantCommonName" AS common_name,
-    coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
-    t."PlantReference" AS sai_number,
-    NULL AS superequi_id,
-    t."SiteReference" as site_reference,
-FROM ai2_plant_landing t;
-
--- insert part 2    
-.print 'Inserting ai2_sub_plant data into ai2_equi...'
-
-INSERT OR REPLACE INTO ai2_equi BY NAME
-SELECT 
-    t."SubPlantEquipReference" AS pli_number,
-    regexp_extract(t."SubPlantCommonName", '/([^/]*)$', 1) AS equipment_name,
-    t."SubPlantEquipAssetTypeDescription" as equi_type_name,
-    t."SubPlantEquipAssetTypeCode" AS equi_type_code,
-    sqlserver_date(t."SubPlantEquipInstalledFromDate") AS installed_from_date,
-    t."SubPlantEquipManufacturer" AS manufacturer,
-    t."SubPlantEquipModel" AS model,
-    t."SubPlantEquipStatus" AS user_status,
-    t."SubPlantCommonName" AS common_name,
-    coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
-    t."SubPlantReference" AS sai_number,
-    t."PlantEquipReference" AS superequi_id,
-    t."SiteReference" as site_reference,
-FROM ai2_sub_plant_landing t;
-
-
--- insert part 3  
-.print 'Inserting ai2_plant_item data into ai2_equi...'
-
-INSERT OR REPLACE INTO ai2_equi BY NAME
-SELECT 
-    t."PlantItemEquipReference" AS pli_number,
-    regexp_extract(t."PlantItemCommonName", '/([^/]*)$', 1) AS equipment_name,
-    t."PlantItemEquipAssetTypeDescription" as equi_type_name,
-    t."PlantItemEquipAssetTypeCode" AS equi_type_code,
-    sqlserver_date(t."PlantItemEquipInstalledFromDate") AS installed_from_date,
-    t."PlantItemEquipManufacturer" AS manufacturer,
-    t."PlantItemEquipModel" AS model,
-    t."PlantItemEquipStatus" AS user_status,
-    t."PlantItemCommonName" AS common_name,
-    coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
-    t."PlantItemReference" AS sai_number,
-    t."PlantEquipReference" AS superequi_id,
-    t."SiteReference" as site_reference,
-FROM ai2_plant_item_landing t;
-
--- insert part 4 
-.print 'Inserting ai2_sub_plant_item data into ai2_equi...'
-
-INSERT OR REPLACE INTO ai2_equi BY NAME
-SELECT 
-    t."SubPlantItemEquipReference" AS pli_number,
-    regexp_extract(t."SubPlantItemCommonName", '/([^/]*)$', 1) AS equipment_name,
-    t."SubPlantItemEquipAssetTypeDescription" as equi_type_name,
-    t."SubPlantItemEquipAssetTypeCode" AS equi_type_code,
-    sqlserver_date(t."SubPlantItemEquipInstalledFromDate") AS installed_from_date,
-    t."SubPlantItemEquipManufacturer" AS manufacturer,
-    t."SubPlantItemEquipModel" AS model,
-    t."SubPlantItemEquipStatus" AS user_status,
-    t."SubPlantItemCommonName" AS common_name,
-    coalesce(t."SubInstallationCommonName", t."InstallationCommonName") AS site_or_installation_name,
-    t."SubPlantItemReference" AS sai_number,
-    t."PlantItemEquipReference" AS superequi_id,
-    t."SiteReference" as site_reference,
-FROM ai2_sub_plant_item_landing t;
-
-
-
--- Can't have a COPY statement with variables, do this in script, makefile...
--- COPY (SELECT * FROM ai2_equi) TO '$(AIB_MASTER_OUTPATH)' (FORMAT parquet, COMPRESSION uncompressed);
-
-
--- ai2_floc
-
-DELETE FROM ai2_floc;
-
-
-.print 'Inserting installation data into ai2_floc...'
-
-INSERT OR REPLACE INTO ai2_floc BY NAME
-SELECT 
-    t."SiteReference" as site_reference,
-    t."InstallationReference" AS sai_number,
-    any_value(t."InstallationCommonName") AS common_name,
-    any_value(t."InstallationStatus") as user_status,
-    any_value(t."InstallationTypeDescription") AS type_decription,
-    NULL AS parent_ref,
-    'INSTALLATION' AS floc_source_type
-FROM ai2_floc_installation_landing t
-GROUP BY t."SiteReference", t."InstallationReference";
-
-
-
-.print 'Inserting sub_installation data into ai2_floc...'
-
-INSERT OR REPLACE INTO ai2_floc BY NAME
-SELECT 
-    t."SiteReference" as site_reference,
-    t."SubInstallationReference" AS sai_number,
-    any_value(t."SubInstallationCommonName") AS common_name,
-    any_value(t."SubInstallationStatus") as user_status,
-    any_value(t."SubInstallationTypeDescription") AS type_decription,
-    any_value(t."ParentRef") AS parent_ref,
-    'SUB_INSTALLATION' AS floc_source_type
-FROM ai2_sub_installation_landing t
-GROUP BY t."SiteReference", t."SubInstallationReference";
-
-.print 'Inserting process_group data into ai2_floc...'
-
-INSERT OR REPLACE INTO ai2_floc BY NAME
-SELECT 
-    t."SiteReference" as site_reference,
-    t."ProcessGroupReference" AS sai_number,
-    any_value(t."CommonName") AS common_name,
-    any_value(t."ProcessGroupStatus") as user_status,
-    any_value(t."ProcessGroupAssetTypeDescription") AS type_decription,
-    any_value(t."ParentRef") AS parent_ref,
-    'PROCESS_GROUP' AS floc_source_type
-FROM ai2_process_group_landing t
-GROUP BY t."SiteReference", t."ProcessGroupReference";
-
-.print 'Inserting process data into ai2_floc...'
-
-INSERT OR REPLACE INTO ai2_floc BY NAME
-SELECT 
-    t."SiteReference" as site_reference,
-    t."ProcessReference" AS sai_number,
-    any_value(t."CommonName") AS common_name,
-    any_value(t."ProcessStatus") as user_status,
-    any_value(t."ProcessAssetTypeDescription") AS type_decription,
-    any_value(t."ParentRef") AS parent_ref,
-    'PROCESS' AS floc_source_type
-FROM ai2_process_landing t
-GROUP BY t."SiteReference", t."ProcessReference";
 
 -- ai2_site 
 
 -- Source has duplicates
 
-INSERT OR REPLACE INTO ai2_site_simple BY NAME
-SELECT 
-    t."SiteReference" AS sai_number,
-    any_value(t."SiteCommonName") AS site_name,
-FROM ai2_floc_site_landing t
-GROUP BY t."SiteReference";
+delete from ai2_site_simple;
+
+.print 'Inserting data into ai2_site_simple...'
+
+insert or replace into ai2_site_simple by name
+select 
+    t.sai_number as sai_number,
+    any_value(t.site_name) as site_name,
+from ai2_floc_site_landing t
+group by all;
+
+
+-- ai2_floc
+
+delete from ai2_floc;
+
+
+.print 'Inserting installation data into ai2_floc...'
+
+insert or replace into ai2_floc by name
+select 
+    t.sai_reference as sai_number,
+    t.common_name,
+    any_value(t.user_status) as user_status,
+    any_value(t.type_decription) as type_decription,
+    null as parent_ref,
+    'INSTALLATION' as floc_source_type,
+    t.site_reference,
+from ai2_floc_installation_landing t
+group by all;
+
+
+.print 'Inserting sub_installation data into ai2_floc...'
+
+insert or replace into ai2_floc by name
+select 
+    t.sai_reference as sai_number,
+    t.common_name,
+    any_value(t.user_status) as user_status,
+    any_value(t.type_decription) as type_decription,
+    any_value(t.parent_ref) as parent_ref,
+    'SUB_INSTALLATION' as floc_source_type,
+    t.site_reference,
+from ai2_floc_sub_installation_landing t
+group by all;
+
+
+.print 'Inserting process_group data into ai2_floc...'
+
+insert or replace into ai2_floc by name
+select 
+    t."sai_reference" as sai_number,
+    t.common_name,
+    any_value(t.user_status) as user_status,
+    any_value(t.type_decription) as type_decription,
+    any_value(t.parent_ref) as parent_ref,
+    'PROCESS_GROUP' as floc_source_type,
+    t.site_reference,
+from ai2_floc_process_group_landing t
+group by all;
+
+
+
+.print 'Inserting process data into ai2_floc...'
+
+insert or replace into ai2_floc by name
+select
+    t.sai_reference as sai_number,
+    t.common_name,
+    any_value(t.user_status) as user_status,
+    any_value(t.type_decription) as type_decription,
+    any_value(t.parent_ref) as parent_ref,
+    'PROCESS' as floc_source_type,
+    t.site_reference,
+from ai2_floc_process_landing t
+group by all;
+
+
+-- ai2_equi
+
+delete from ai2_equi;
+
+.print 'Inserting plant data into ai2_equi...'
+
+insert or replace into ai2_equi by name
+select 
+    t.pli_reference as pli_number,
+    split_plant_common_name(t."PlantCommonName", 
+        t."ProcessAssetTypeDescription", 
+        t."ProcessGroupAssetTypeDescription") as equipment_name,
+    make_common_name([t."PlantCommonName", 
+        t."PlantEquipAssetTypeDescription"]) as common_name,  -- add "EQUIPMENT: ..."
+    t.equi_type_name,
+    t.equi_type_code,
+    sqlserver_date(t.installed_from_date) as installed_from_date,
+    t.manufacturer,
+    t.model,
+    t.user_status,
+    coalesce(t."SubInstallationCommonName", t."InstallationCommonName") as site_or_installation_name,
+    t.sai_number,
+    null as superequi_id,
+    t.site_reference,
+from ai2_equi_plant_landing t;
+
+
+
+.print 'Inserting sub_plant data into ai2_equi...'
+
+insert or replace into ai2_equi by name
+select 
+    t.pli_reference as pli_number,
+    split_sub_plant_common_name(t."SubPlantCommonName", 
+        t."PlantCommonName") as equipment_name,
+    make_common_name([t."SubPlantCommonName", 
+        t."SubPlantEquipAssetTypeDescription"]) as common_name,  -- add "EQUIPMENT: ..."
+    t.equi_type_name,
+    t.equi_type_code,
+    sqlserver_date(t.installed_from_date) as installed_from_date,
+    t.manufacturer,
+    t.model,
+    t.user_status,
+    coalesce(t."SubInstallationCommonName", t."InstallationCommonName") as site_or_installation_name,
+    t.sai_number,
+    t.superequi_id,
+    t.site_reference,
+from ai2_equi_sub_plant_landing t;
+
+
+
+.print 'Inserting plantitem data into ai2_equi...'
+
+insert or replace into ai2_equi by name
+select 
+    t.pli_reference as pli_number,
+    split_sub_plant_common_name(t."PlantItemCommonName", 
+        t."PlantCommonName") as equipment_name,
+    make_common_name([t."PlantItemCommonName", 
+        t."PlantItemEquipAssetTypeDescription"]) as common_name,  -- add "EQUIPMENT: ..."
+    t.equi_type_name,
+    t.equi_type_code,
+    sqlserver_date(t.installed_from_date) as installed_from_date,
+    t.manufacturer,
+    t.model,
+    t.user_status,
+    coalesce(t."SubInstallationCommonName", t."InstallationCommonName") as site_or_installation_name,
+    t.sai_number,
+    t.superequi_id,
+    t.site_reference,
+from ai2_equi_plantitem_landing t;
+
+-- insert part 4 
+.print 'Inserting sub_plantitem data into ai2_equi...'
+
+insert or replace into ai2_equi by name
+select 
+    t.pli_reference as pli_number,
+    split_sub_plant_common_name(t."SubPlantItemCommonName", 
+        t."PlantItemCommonName") as equipment_name,
+    make_common_name([t."SubPlantItemCommonName", 
+        t."SubPlantItemEquipAssetTypeDescription"]) as common_name,  -- add "EQUIPMENT: ..."
+    t.equi_type_name,
+    t.equi_type_code,
+    sqlserver_date(t.installed_from_date) as installed_from_date,
+    t.manufacturer,
+    t.model,
+    t.user_status,
+    coalesce(t."SubInstallationCommonName", t."InstallationCommonName") as site_or_installation_name,
+    t.sai_number,
+    t.superequi_id,
+    t.site_reference,
+from ai2_equi_sub_plantitem_landing t;
+
+
+
+-- Can't have a COPY statement with variables, do this in script, makefile...
+-- COPY (SELECT * FROM ai2_equi) TO '$(AIB_MasTER_OUTPATH)' (FORMAT parquet, COMPRESSION uncompressed);
+
+
+
+
+
+
  
