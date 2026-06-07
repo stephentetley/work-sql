@@ -93,10 +93,6 @@ create or replace table ai2_masterdata.ai2_equi as
 select * from read_parquet(
     getvariable('asset_lake_resources') || '/ai2_masterdata/ai2_masterdata_equi.parquet');
 
-create or replace table ai2_masterdata.ai2_sites as
-select * from read_parquet(
-    getvariable('asset_lake_resources') || '/ai2_masterdata/ai2_masterdata_site_simple.parquet');
-
 
 -- s4 masterdata
 

@@ -46,30 +46,36 @@ with cte1_ai2_flocs as (
     select 
         t.*,
         t1.floc_description as process_group,
-        -- t2.funcloc_name as process_name,
-        -- t3.funcloc_name as system_name,
-        -- t4.funcloc_name as item_name,
+        t2.floc_description as process,
+        t3.floc_description as plant,
+        t4.floc_description as sub_plant,
+        t5.floc_description as plantitem,
+        t6.floc_description as sub_plantitem,
     from cte5_add_equipment_stats t
     left join asset_lake.ai2_masterdata.ai2_floc t1 
         on t1.sai_number = t.ai2_process_group_sainum
         and t1.floc_source_type = 'PROCESS_GROUP'
-    -- left join asset_lake.s4_masterdata.s4_floc t2 
-    --     on t2.functional_location = t.s4_functional_location[:13]
-    --     and t2.category = 3
-    -- left join asset_lake.s4_masterdata.s4_floc t3 
-    --     on t3.functional_location = t.s4_functional_location[:17]
-    --     and t3.category = 4
-    -- left join asset_lake.s4_masterdata.s4_floc t4
-    --     on t4.functional_location = t.s4_functional_location[:23]
-    --     and t4.category = 5
-    -- left join asset_lake.s4_masterdata.s4_floc t5
-    --     on t5.functional_location = t.s4_functional_location[:29]
-    --     and t5.category = 6
+    left join asset_lake.ai2_masterdata.ai2_floc t2
+        on t2.sai_number = t.ai2_process_sainum
+        and t2.floc_source_type = 'PROCESS'
+    left join asset_lake.ai2_masterdata.ai2_floc t3
+        on t3.sai_number = t.ai2_plant_sainum
+        and t3.floc_source_type = 'PLANT'
+    left join asset_lake.ai2_masterdata.ai2_floc t4
+        on t4.sai_number = t.ai2_sub_plant_sainum
+        and t4.floc_source_type = 'SUB_PLANT'
+    left join asset_lake.ai2_masterdata.ai2_floc t5
+        on t5.sai_number = t.ai2_plantitem_sainum
+        and t5.floc_source_type = 'PLANTITEM'
+    left join asset_lake.ai2_masterdata.ai2_floc t6
+        on t6.sai_number = t.ai2_sub_plantitem_sainum
+        and t6.floc_source_type = 'SUB_PLANTITEM'
 )
 select columns(lambda c: c not like '$_$_%' escape '$') from cte6_add_floc_names 
 order by ai2_common_name;
 
 describe ai2_floc_wide_table;
+select count(ai2_sai_number) as "count ai2 floc" from ai2_floc_wide_table;
 
 -- COPY (SELECT * FROM ai2_floc_wide_table) TO 'ai2_floc_wide_table.parquet' (FORMAT parquet, COMPRESSION snappy);
    

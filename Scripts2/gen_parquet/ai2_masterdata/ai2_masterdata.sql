@@ -147,6 +147,7 @@ create or replace temporary macro split_sub_plant_common_name(common_name varcha
 create or replace table ai2_floc_installation_landing as
 select
     t."InstallationReference" as sai_reference,
+    t."InstallationCommonName" as floc_description,
     t."InstallationCommonName" as common_name,
     t."InstallationStatus" as user_status,
     t."InstallationTypeCode",
@@ -167,6 +168,7 @@ where
 create or replace table ai2_floc_sub_installation_landing as
 select
     t."SubInstallationReference" as sai_reference,
+    t."SubInstallationCommonName" as floc_description,
     t."SubInstallationCommonName" as common_name,
     t."SubInstallationStatus" as user_status,
     t."SubInstallationTypeCode",
@@ -194,6 +196,7 @@ where
 create or replace table ai2_floc_process_group_landing as
 select
     t."ProcessGroupReference" as sai_reference,
+    t."ProcessGroupAssetTypeDescription" as floc_description,
     make_common_name([coalesce(t."SubInstallationCommonName", t."InstallationCommonName"), 
         t."ProcessGroupAssetTypeDescription"]) as common_name,        
     t."ProcessGroupStatus" as user_status,
@@ -223,6 +226,7 @@ where
 create or replace table ai2_floc_process_landing as
 select
     t."ProcessReference" as sai_reference,
+    t."ProcessAssetTypeDescription" as floc_description,
     make_common_name([coalesce(t."SubInstallationCommonName", t."InstallationCommonName"),
         t."ProcessGroupAssetTypeDescription",
         t."ProcessAssetTypeDescription"]) as common_name,
@@ -253,6 +257,9 @@ where
 create or replace table ai2_floc_plant_landing as
 select
     t."PlantReference" as sai_reference,
+    split_plant_common_name(t."PlantCommonName", 
+        t."ProcessAssetTypeDescription", 
+        t."ProcessGroupAssetTypeDescription") as floc_description,
     t."PlantCommonName" as common_name,
     t."PlantStatus" as user_status,
     t."PlantAssetTypeDescription" as type_decription,
@@ -283,6 +290,8 @@ where
 create or replace table ai2_floc_sub_plant_landing as
 select
     t."SubPlantReference" as sai_reference,
+    split_sub_plant_common_name(t."SubPlantCommonName", 
+        t."PlantCommonName") as floc_description,
     t."SubPlantCommonName" as common_name,
     t."SubPlantStatus" as user_status,
     t."SubPlantAssetTypeDescription" as type_decription,
@@ -315,6 +324,8 @@ where
 create or replace table ai2_floc_plantitem_landing as
 select
     t."PlantItemReference" as sai_reference,
+    split_sub_plant_common_name(t."PlantItemCommonName", 
+        t."PlantCommonName") as floc_description,
     t."PlantItemCommonName" as common_name,
     t."PlantItemStatus" as user_status,
     t."PlantItemAssetTypeDescription" as type_decription,
@@ -347,6 +358,8 @@ where
 create or replace table ai2_floc_sub_plantitem_landing as
 select
     t."SubPlantItemReference" as sai_reference,
+    split_sub_plant_common_name(t."SubPlantItemCommonName", 
+        t."PlantItemCommonName") as floc_description,
     t."SubPlantItemCommonName" as common_name,
     t."SubPlantItemStatus" as user_status,
     t."SubPlantItemAssetTypeDescription" as type_decription,
@@ -399,7 +412,6 @@ select
     t."ProcessAssetTypeDescription", 
     t."ProcessGroupAssetTypeDescription",
     t."PlantEquipAssetTypeDescription",
-    
     t."SubInstallationReference",
     t."SubInstallationCommonName",
     t."InstallationReference",
@@ -545,6 +557,7 @@ delete from ai2_floc;
 insert or replace into ai2_floc by name
 select 
     t.sai_reference as sai_number,
+    t.floc_description as floc_description,
     t.common_name,
     any_value(t.user_status) as user_status,
     any_value(t.type_decription) as type_decription,
@@ -569,6 +582,7 @@ group by all;
 insert or replace into ai2_floc by name
 select 
     t.sai_reference as sai_number,
+    t.floc_description as floc_description,
     t.common_name,
     any_value(t.user_status) as user_status,
     any_value(t.type_decription) as type_decription,
@@ -593,6 +607,7 @@ group by all;
 insert or replace into ai2_floc by name
 select 
     t.sai_reference as sai_number,
+    t.floc_description as floc_description,
     t.common_name,
     any_value(t.user_status) as user_status,
     any_value(t.type_decription) as type_decription,
@@ -620,6 +635,7 @@ group by all;
 insert or replace into ai2_floc by name
 select
     t.sai_reference as sai_number,
+    t.floc_description as floc_description,
     t.common_name,
     any_value(t.user_status) as user_status,
     any_value(t.type_decription) as type_decription,
@@ -646,6 +662,7 @@ group by all;
 insert or replace into ai2_floc by name
 select
     t.sai_reference as sai_number,
+    t.floc_description as floc_description,
     t.common_name,
     any_value(t.user_status) as user_status,
     any_value(t.type_decription) as type_decription,
@@ -671,6 +688,7 @@ group by all;
 insert or replace into ai2_floc by name
 select
     t.sai_reference as sai_number,
+    t.floc_description as floc_description,
     t.common_name,
     any_value(t.user_status) as user_status,
     any_value(t.type_decription) as type_decription,
@@ -697,6 +715,7 @@ group by all;
 insert or replace into ai2_floc by name
 select
     t.sai_reference as sai_number,
+    t.floc_description as floc_description,
     t.common_name,
     any_value(t.user_status) as user_status,
     any_value(t.type_decription) as type_decription,
@@ -722,6 +741,7 @@ group by all;
 insert or replace into ai2_floc by name
 select
     t.sai_reference as sai_number,
+    t.floc_description as floc_description,
     t.common_name,
     any_value(t.user_status) as user_status,
     any_value(t.type_decription) as type_decription,

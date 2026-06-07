@@ -47,4 +47,5 @@ select columns(lambda c: c not like '$_$_%' escape '$') from cte5_add_equipment_
 order by ai2_common_name;
 
 describe ai2_equi_wide_table;
+select count(ai2_pli_number) as "count ai2 equi" from ai2_equi_wide_table;
 
