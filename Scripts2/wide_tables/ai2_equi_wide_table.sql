@@ -42,8 +42,36 @@ with cte1_ai2_flocs as (
         t.ai2_superequi_id is not null as is_sub_equi,
         (equipment_list_count > 0) as is_super_equi,
     from cte4_add_equipment_list t
+), cte6_add_floc_names as (
+    select 
+        t.*,
+        t1.floc_description as process_group,
+        t2.floc_description as process,
+        t3.floc_description as plant,
+        t4.floc_description as sub_plant,
+        t5.floc_description as plantitem,
+        t6.floc_description as sub_plantitem,
+    from cte5_add_equipment_list_stats t
+    left join asset_lake.ai2_masterdata.ai2_floc t1 
+        on t1.sai_number = t.ai2_process_group_sainum
+        and t1.floc_source_type = 'PROCESS_GROUP'
+    left join asset_lake.ai2_masterdata.ai2_floc t2
+        on t2.sai_number = t.ai2_process_sainum
+        and t2.floc_source_type = 'PROCESS'
+    left join asset_lake.ai2_masterdata.ai2_floc t3
+        on t3.sai_number = t.ai2_plant_sainum
+        and t3.floc_source_type = 'PLANT'
+    left join asset_lake.ai2_masterdata.ai2_floc t4
+        on t4.sai_number = t.ai2_sub_plant_sainum
+        and t4.floc_source_type = 'SUB_PLANT'
+    left join asset_lake.ai2_masterdata.ai2_floc t5
+        on t5.sai_number = t.ai2_plantitem_sainum
+        and t5.floc_source_type = 'PLANTITEM'
+    left join asset_lake.ai2_masterdata.ai2_floc t6
+        on t6.sai_number = t.ai2_sub_plantitem_sainum
+        and t6.floc_source_type = 'SUB_PLANTITEM'
 )
-select columns(lambda c: c not like '$_$_%' escape '$') from cte5_add_equipment_list_stats  
+select columns(lambda c: c not like '$_$_%' escape '$') from cte6_add_floc_names  
 order by ai2_common_name;
 
 describe ai2_equi_wide_table;
