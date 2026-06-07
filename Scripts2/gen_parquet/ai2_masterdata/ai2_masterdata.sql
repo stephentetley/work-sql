@@ -29,18 +29,12 @@
 -- ## CREATE TABLE
 
 
-create or replace table ai2_site_simple (
-    -- e.g. 'SAI00123456'
-    sai_number varchar not null,
-    -- e.g. 'BRUNSWICK COMPLEX'
-    site_name varchar not null,
-    primary key (sai_number)
-);  
-
 create or replace table ai2_floc (
     -- e.g. 'SAI00123456'
     sai_number varchar not null,
-    -- e.g. 'WATERFALL/WPS'
+    -- e.g. 'PUMPING'
+    floc_description varchar,    
+    -- e.g. 'WATERFALL/WPS/WATER SERVICES/PUMPING'
     common_name varchar,
     -- e.g. 'OPERATIONAL'
     user_status varchar,
@@ -50,18 +44,20 @@ create or replace table ai2_floc (
     parent_ref varchar,
     -- derived, one of 'INSTALLATION' | 'SUB_INSTALLATION' | 'PROCESS_GROUP' | 'PROCESS' | ...
     floc_source_type varchar not null,
-    -- e.g. 'SAI00001000'
-    site_reference varchar,
+    -- e.g. 'SAI00123456', maybe null for type 2 sites
+    site_sainum varchar,
+    -- e.g. 'BRUNSWICK COMPLEX', maybe null for type 2 sites
+    site_name varchar,
     -- e.g. 'SAI00001340'
-    installation_or_subinstallation_number varchar,
+    installation_or_subinstallation_sainum varchar,
     -- e.g. 'SITENAME/SPS'
     installation_or_subinstallation_name varchar,
-    process_group_number varchar,
-    process_number varchar,
-    plant_number varchar,
-    sub_plant_number varchar,
-    plantitem_number varchar,
-    sub_plantitem_number varchar,
+    process_group_sainum varchar,
+    process_sainum varchar,
+    plant_sainum varchar,
+    sub_plant_sainum varchar,
+    plantitem_sainum varchar,
+    sub_plantitem_sainum varchar,
     primary key (sai_number)
 );  
 
@@ -89,18 +85,20 @@ create or replace table ai2_equi (
     sai_number varchar,
     -- e.g. 'PLI00012345' (calculated by looking at rows to the left)
     superequi_id varchar,
-    -- e.g. 'SAI00001000'
-    site_reference varchar,
+    -- e.g. 'SAI00123456', maybe null for type 2 sites
+    site_sainum varchar,
+    -- e.g. 'BRUNSWICK COMPLEX', maybe null for type 2 sites
+    site_name varchar,
     -- e.g. 'SAI00001340'
-    installation_or_subinstallation_number varchar,
+    installation_or_subinstallation_sainum varchar,
     -- e.g. 'SITENAME/SPS'
     installation_or_subinstallation_name varchar,
-    process_group_number varchar,
-    process_number varchar,
-    plant_number varchar,
-    sub_plant_number varchar,
-    plantitem_number varchar,
-    sub_plantitem_number varchar,
+    process_group_sainum varchar,
+    process_sainum varchar,
+    plant_sainum varchar,
+    sub_plant_sainum varchar,
+    plantitem_sainum varchar,
+    sub_plantitem_sainum varchar,
     primary key (pli_number)
 );    
 
@@ -144,23 +142,6 @@ create or replace temporary macro split_sub_plant_common_name(common_name varcha
 -- ## LOAD DATA
 
 
-.print 'Loading ai2_floc_site_landing...'
-
-create or replace table ai2_floc_site_landing as
-select
-    t."SiteReference" as sai_number,
-    t."SiteCommonName" as site_name,
-from read_sheet(
-    getvariable('ai2_masterdata_srcpath'), 
-    sheet='Sheet1', 
-    error_as_null=true, nulls=['NULL'], 
-    columns={'*': 'varchar'}) t
-where
-    t."SiteReference" is not null
-and t."SiteCommonName" is not null;
-
-
-
 .print 'Loading ai2_floc_installation_landing...'
 
 create or replace table ai2_floc_installation_landing as
@@ -170,7 +151,8 @@ select
     t."InstallationStatus" as user_status,
     t."InstallationTypeCode",
     t."InstallationTypeDescription" as type_decription,
-    t."SiteReference" as site_reference,
+    t."SiteReference" as site_sainum,
+    t."SiteCommonName" as site_name,
 from read_sheet(
     getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
@@ -191,7 +173,8 @@ select
     t."SubInstallationTypeDescription" as type_decription,
     t."SiteReference" as parent_ref,
     t."InstallationReference",
-    t."SiteReference" as site_reference,
+    t."SiteReference" as site_sainum,
+    t."SiteCommonName" as site_name,
 from read_sheet(
     getvariable('ai2_masterdata_srcpath'), 
     sheet='Sheet1', 
@@ -216,7 +199,8 @@ select
     t."ProcessGroupStatus" as user_status,
     t."ProcessGroupAssetTypeDescription" as type_decription, -- e.g. 'CONTROL SERVICES'
     coalesce(t."SubInstallationReference", t."InstallationReference") as parent_ref,
-    t."SiteReference" as site_reference,
+    t."SiteReference" as site_sainum,
+    t."SiteCommonName" as site_name,
     t."SubInstallationReference",
     t."SubInstallationCommonName",
     t."InstallationReference",
@@ -247,7 +231,8 @@ select
     coalesce(t."ProcessGroupReference", 
         t."SubInstallationReference", 
         t."InstallationReference") as parent_ref,
-    t."SiteReference" as site_reference,
+    t."SiteReference" as site_sainum,
+    t."SiteCommonName" as site_name,
     t."SubInstallationReference",
     t."SubInstallationCommonName",
     t."InstallationReference",
@@ -275,7 +260,8 @@ select
         t."ProcessGroupReference", 
         t."SubInstallationReference", 
         t."InstallationReference") as parent_ref,
-    t."SiteReference" as site_reference,
+    t."SiteReference" as site_sainum,
+    t."SiteCommonName" as site_name,
     t."SubInstallationReference",
     t."SubInstallationCommonName",
     t."InstallationReference",
@@ -305,7 +291,8 @@ select
         t."ProcessGroupReference", 
         t."SubInstallationReference", 
         t."InstallationReference") as parent_ref,
-    t."SiteReference" as site_reference,
+    t."SiteReference" as site_sainum,
+    t."SiteCommonName" as site_name,
     t."SubInstallationReference",
     t."SubInstallationCommonName",
     t."InstallationReference",
@@ -336,8 +323,8 @@ select
         t."ProcessGroupReference", 
         t."SubInstallationReference", 
         t."InstallationReference") as parent_ref,
-
-    t."SiteReference" as site_reference,
+    t."SiteReference" as site_sainum,
+    t."SiteCommonName" as site_name,
     t."SubInstallationReference",
     t."SubInstallationCommonName",
     t."InstallationReference",
@@ -369,7 +356,8 @@ select
         t."ProcessGroupReference", 
         t."SubInstallationReference", 
         t."InstallationReference") as parent_ref,
-    t."SiteReference" as site_reference,
+    t."SiteReference" as site_sainum,
+    t."SiteCommonName" as site_name,
     t."SubInstallationReference",
     t."SubInstallationCommonName",
     t."InstallationReference",
@@ -405,7 +393,8 @@ select
     t."PlantEquipStatus" as user_status,
     t."PlantEquipAssetTypeCode" as equi_type_code,
     t."PlantEquipAssetTypeDescription" as equi_type_name, -- e.g. 'EQUIPMENT: PLC'
-    t."SiteReference" as site_reference,
+    t."SiteReference" as site_sainum,
+    t."SiteCommonName" as site_name,
     t."PlantCommonName", 
     t."ProcessAssetTypeDescription", 
     t."ProcessGroupAssetTypeDescription",
@@ -440,7 +429,8 @@ select
     t."SubPlantEquipAssetTypeCode" as equi_type_code,
     t."SubPlantEquipAssetTypeDescription" as equi_type_name,
     t."PlantEquipReference" as superequi_id,
-    t."SiteReference" as site_reference,
+    t."SiteReference" as site_sainum,
+    t."SiteCommonName" as site_name,
     t."PlantCommonName",
     t."SubPlantCommonName",
     t."SubPlantEquipAssetTypeDescription",
@@ -473,8 +463,9 @@ SELECT
     t."PlantItemEquipStatus" as user_status,
     t."PlantItemEquipAssetTypeCode" as equi_type_code,
     t."PlantItemEquipAssetTypeDescription" as equi_type_name,
-    t."PlantEquipReference" as superequi_id,        -- plant equipment (not sub plant equipment)
-    t."SiteReference" as  site_reference,
+    t."PlantEquipReference" as superequi_id,
+    t."SiteReference" as site_sainum,
+    t."SiteCommonName" as site_name,
     t."PlantItemCommonName",
     t."PlantCommonName", 
     t."PlantItemEquipAssetTypeDescription",
@@ -512,7 +503,8 @@ SELECT
     t."SubPlantItemEquipAssetTypeCode" as equi_type_code,
     t."SubPlantItemEquipAssetTypeDescription" as equi_type_name,
     t."PlantItemEquipReference" as superequi_id,        -- plantitem equipment
-    t."SiteReference" as site_reference,
+    t."SiteReference" as site_sainum,
+    t."SiteCommonName" as site_name,
     t."SubPlantItemCommonName",
     t."SubPlantItemEquipAssetTypeDescription",
     t."PlantItemCommonName",
@@ -542,19 +534,6 @@ AND t."SubPlantItemEquipReference" IS NOT NULL;
 
 -- ai2_site 
 
--- Source has duplicates
-
-delete from ai2_site_simple;
-
-.print 'Inserting data into ai2_site_simple...'
-
-insert or replace into ai2_site_simple by name
-select 
-    t.sai_number as sai_number,
-    any_value(t.site_name) as site_name,
-from ai2_floc_site_landing t
-group by all;
-
 
 -- ai2_floc
 
@@ -571,15 +550,16 @@ select
     any_value(t.type_decription) as type_decription,
     null as parent_ref,
     'INSTALLATION' as floc_source_type,
-    t.site_reference,
-    t.sai_reference as installation_or_subinstallation_number,
+    t.site_sainum,
+    t.site_name,
+    t.sai_reference as installation_or_subinstallation_sainum,
     t.common_name as installation_or_subinstallation_name,
-    null as process_group_number,
-    null as process_number,
-    null as plant_number,
-    null as sub_plant_number,
-    null as plantitem_number,
-    null as sub_plantitem_number,
+    null as process_group_sainum,
+    null as process_sainum,
+    null as plant_sainum,
+    null as sub_plant_sainum,
+    null as plantitem_sainum,
+    null as sub_plantitem_sainum,
 from ai2_floc_installation_landing t
 group by all;
 
@@ -594,15 +574,16 @@ select
     any_value(t.type_decription) as type_decription,
     any_value(t.parent_ref) as parent_ref,
     'SUB_INSTALLATION' as floc_source_type,
-    t.site_reference,
-    t.sai_reference as installation_or_subinstallation_number,
+    t.site_sainum,
+    t.site_name,
+    t.sai_reference as installation_or_subinstallation_sainum,
     t.common_name as installation_or_subinstallation_name,
-    null as process_group_number,
-    null as process_number,
-    null as plant_number,
-    null as sub_plant_number,
-    null as plantitem_number,
-    null as sub_plantitem_number,
+    null as process_group_sainum,
+    null as process_sainum,
+    null as plant_sainum,
+    null as sub_plant_sainum,
+    null as plantitem_sainum,
+    null as sub_plantitem_sainum,
 from ai2_floc_sub_installation_landing t
 group by all;
 
@@ -617,17 +598,18 @@ select
     any_value(t.type_decription) as type_decription,
     any_value(t.parent_ref) as parent_ref,
     'PROCESS_GROUP' as floc_source_type,
-    t.site_reference,
+    t.site_sainum,
+    t.site_name,
     coalesce(t."SubInstallationReference", 
-        t."InstallationReference") as installation_or_subinstallation_number,
+        t."InstallationReference") as installation_or_subinstallation_sainum,
     coalesce(t."SubInstallationCommonName", 
         t."InstallationCommonName") as installation_or_subinstallation_name,
-    t.sai_reference as process_group_number,
-    null as process_number,
-    null as plant_number,
-    null as sub_plant_number,
-    null as plantitem_number,
-    null as sub_plantitem_number,        
+    t.sai_reference as process_group_sainum,
+    null as process_sainum,
+    null as plant_sainum,
+    null as sub_plant_sainum,
+    null as plantitem_sainum,
+    null as sub_plantitem_sainum,        
 from ai2_floc_process_group_landing t
 group by all;
 
@@ -643,17 +625,18 @@ select
     any_value(t.type_decription) as type_decription,
     any_value(t.parent_ref) as parent_ref,
     'PROCESS' as floc_source_type,
-    t.site_reference,
+    t.site_sainum,
+    t.site_name,
     coalesce(t."SubInstallationReference", 
-        t."InstallationReference") as installation_or_subinstallation_number,
+        t."InstallationReference") as installation_or_subinstallation_sainum,
     coalesce(t."SubInstallationCommonName", 
         t."InstallationCommonName") as installation_or_subinstallation_name,
-    t."ProcessGroupReference" as process_group_number,
-    t.sai_reference as process_number,
-    null as plant_number,
-    null as sub_plant_number,
-    null as plantitem_number,
-    null as sub_plantitem_number,
+    t."ProcessGroupReference" as process_group_sainum,
+    t.sai_reference as process_sainum,
+    null as plant_sainum,
+    null as sub_plant_sainum,
+    null as plantitem_sainum,
+    null as sub_plantitem_sainum,
 from ai2_floc_process_landing t
 group by all;
 
@@ -668,17 +651,18 @@ select
     any_value(t.type_decription) as type_decription,
     any_value(t.parent_ref) as parent_ref,
     'PLANT' as floc_source_type,
-    t.site_reference,
+    t.site_sainum,
+    t.site_name,
     coalesce(t."SubInstallationReference", 
-        t."InstallationReference") as installation_or_subinstallation_number,
+        t."InstallationReference") as installation_or_subinstallation_sainum,
     coalesce(t."SubInstallationCommonName", 
         t."InstallationCommonName") as installation_or_subinstallation_name,
-    t."ProcessGroupReference" as process_group_number,
-    t."ProcessReference" as process_number,
-    t.sai_reference plant_number,
-    null as sub_plant_number,
-    null as plantitem_number,
-    null as sub_plantitem_number,
+    t."ProcessGroupReference" as process_group_sainum,
+    t."ProcessReference" as process_sainum,
+    t.sai_reference as plant_sainum,
+    null as sub_plant_sainum,
+    null as plantitem_sainum,
+    null as sub_plantitem_sainum,
 from ai2_floc_plant_landing t
 group by all;
 
@@ -692,17 +676,18 @@ select
     any_value(t.type_decription) as type_decription,
     any_value(t.parent_ref) as parent_ref,
     'SUB_PLANT' as floc_source_type,
-    t.site_reference,
+    t.site_sainum,
+    t.site_name,
     coalesce(t."SubInstallationReference", 
-        t."InstallationReference") as installation_or_subinstallation_number,
+        t."InstallationReference") as installation_or_subinstallation_sainum,
     coalesce(t."SubInstallationCommonName", 
         t."InstallationCommonName") as installation_or_subinstallation_name,
-    t."ProcessGroupReference" as process_group_number,
-    t."ProcessReference" as process_number,
-    t."PlantReference" plant_number,
-    t.sai_reference as sub_plant_number,
-    null as plantitem_number,
-    null as sub_plantitem_number,
+    t."ProcessGroupReference" as process_group_sainum,
+    t."ProcessReference" as process_sainum,
+    t."PlantReference" as plant_sainum,
+    t.sai_reference as sub_plant_sainum,
+    null as plantitem_sainum,
+    null as sub_plantitem_sainum,
 from ai2_floc_sub_plant_landing t
 group by all;
 
@@ -717,17 +702,18 @@ select
     any_value(t.type_decription) as type_decription,
     any_value(t.parent_ref) as parent_ref,
     'PLANTITEM' as floc_source_type,
-    t.site_reference,
+    t.site_sainum,
+    t.site_name,
     coalesce(t."SubInstallationReference", 
-        t."InstallationReference") as installation_or_subinstallation_number,
+        t."InstallationReference") as installation_or_subinstallation_sainum,
     coalesce(t."SubInstallationCommonName", 
         t."InstallationCommonName") as installation_or_subinstallation_name,
-    t."ProcessGroupReference" as process_group_number,
-    t."ProcessReference" as process_number,
-    t."PlantReference" plant_number,
-    t."SubPlantReference" as sub_plant_number,
-    t.sai_reference as plantitem_number,
-    null as sub_plantitem_number,
+    t."ProcessGroupReference" as process_group_sainum,
+    t."ProcessReference" as process_sainum,
+    t."PlantReference" as plant_sainum,
+    t."SubPlantReference" as sub_plant_sainum,
+    t.sai_reference as plantitem_sainum,
+    null as sub_plantitem_sainum,
 from ai2_floc_plantitem_landing t
 group by all;
 
@@ -741,17 +727,18 @@ select
     any_value(t.type_decription) as type_decription,
     any_value(t.parent_ref) as parent_ref,
     'SUB_PLANTITEM' as floc_source_type,
-    t.site_reference,
+    t.site_sainum,
+    t.site_name,
     coalesce(t."SubInstallationReference", 
-        t."InstallationReference") as installation_or_subinstallation_number,
+        t."InstallationReference") as installation_or_subinstallation_sainum,
     coalesce(t."SubInstallationCommonName", 
         t."InstallationCommonName") as installation_or_subinstallation_name,
-    t."ProcessGroupReference" as process_group_number,
-    t."ProcessReference" as process_number,
-    t."PlantReference" plant_number,
-    t."SubPlantReference" as sub_plant_number,
-    t."PlantItemReference" as plantitem_number,
-    t.sai_reference as sub_plantitem_number,
+    t."ProcessGroupReference" as process_group_sainum,
+    t."ProcessReference" as process_sainum,
+    t."PlantReference" as plant_sainum,
+    t."SubPlantReference" as sub_plant_sainum,
+    t."PlantItemReference" as plantitem_sainum,
+    t.sai_reference as sub_plantitem_sainum,
 from ai2_floc_sub_plantitem_landing t
 group by all;
 
@@ -778,17 +765,18 @@ select
     t.user_status,
     t.sai_number,
     null as superequi_id,
-    t.site_reference,
+    t.site_sainum,
+    t.site_name,
     coalesce(t."SubInstallationReference", 
-        t."InstallationReference") as installation_or_subinstallation_number,
+        t."InstallationReference") as installation_or_subinstallation_sainum,
     coalesce(t."SubInstallationCommonName", 
         t."InstallationCommonName") as installation_or_subinstallation_name,
-    t."ProcessGroupReference" as process_group_number,
-    t."ProcessReference" as process_number,
-    t.sai_number plant_number,
-    null as sub_plant_number,
-    null as plantitem_number,
-    null as sub_plantitem_number,        
+    t."ProcessGroupReference" as process_group_sainum,
+    t."ProcessReference" as process_sainum,
+    t.sai_number as plant_sainum,
+    null as sub_plant_sainum,
+    null as plantitem_sainum,
+    null as sub_plantitem_sainum,        
 from ai2_equi_plant_landing t;
 
 
@@ -810,17 +798,18 @@ select
     t.user_status,
     t.sai_number,
     t.superequi_id,
-    t.site_reference,
+    t.site_sainum,
+    t.site_name,
     coalesce(t."SubInstallationReference", 
-        t."InstallationReference") as installation_or_subinstallation_number,
+        t."InstallationReference") as installation_or_subinstallation_sainum,
     coalesce(t."SubInstallationCommonName", 
         t."InstallationCommonName") as installation_or_subinstallation_name,
-    t."ProcessGroupReference" as process_group_number,
-    t."ProcessReference" as process_number,
-    t."PlantReference" plant_number,
-    t.sai_number as sub_plant_number,
-    null as plantitem_number,
-    null as sub_plantitem_number,
+    t."ProcessGroupReference" as process_group_sainum,
+    t."ProcessReference" as process_sainum,
+    t."PlantReference" as plant_sainum,
+    t.sai_number as sub_plant_sainum,
+    null as plantitem_sainum,
+    null as sub_plantitem_sainum,
 from ai2_equi_sub_plant_landing t;
 
 
@@ -833,7 +822,7 @@ select
     split_sub_plant_common_name(t."PlantItemCommonName", 
         t."PlantCommonName") as equipment_name,
     make_common_name([t."PlantItemCommonName", 
-        t."PlantItemEquipAssetTypeDescription"]) as common_name,  -- add "EQUIPMENT: ..."
+        t."PlantItemEquipAssetTypeDescription"]) as common_name,  -- add "EQUIPMENT: ..."      
     t.equi_type_name,
     t.equi_type_code,
     sqlserver_date(t.installed_from_date) as installed_from_date,
@@ -842,16 +831,18 @@ select
     t.user_status,
     t.sai_number,
     t.superequi_id,
+    t.site_sainum,
+    t.site_name,
     coalesce(t."SubInstallationReference", 
-        t."InstallationReference") as installation_or_subinstallation_number,
-    t.site_reference,coalesce(t."SubInstallationCommonName", 
+        t."InstallationReference") as installation_or_subinstallation_sainum,
+    coalesce(t."SubInstallationCommonName", 
         t."InstallationCommonName") as installation_or_subinstallation_name,
-    t."ProcessGroupReference" as process_group_number,
-    t."ProcessReference" as process_number,
-    t."PlantReference" plant_number,
-    t."SubPlantReference" as sub_plant_number,
-    t.sai_number as plantitem_number,
-    null as sub_plantitem_number,
+    t."ProcessGroupReference" as process_group_sainum,
+    t."ProcessReference" as process_sainum,
+    t."PlantReference" as plant_sainum,
+    t."SubPlantReference" as sub_plant_sainum,
+    t.sai_number as plantitem_sainum,
+    null as sub_plantitem_sainum,
 from ai2_equi_plantitem_landing t;
 
 -- insert part 4 
@@ -872,17 +863,18 @@ select
     t.user_status,
     t.sai_number,
     t.superequi_id,
-    t.site_reference,
+    t.site_sainum,
+    t.site_name,
     coalesce(t."SubInstallationReference", 
-        t."InstallationReference") as installation_or_subinstallation_number,
+        t."InstallationReference") as installation_or_subinstallation_sainum,
     coalesce(t."SubInstallationCommonName", 
         t."InstallationCommonName") as installation_or_subinstallation_name,
-    t."ProcessGroupReference" as process_group_number,
-    t."ProcessReference" as process_number,
-    t."PlantReference" plant_number,
-    t."SubPlantReference" as sub_plant_number,
-    t."PlantItemReference" as plantitem_number,
-    t.sai_number as sub_plantitem_number,        
+    t."ProcessGroupReference" as process_group_sainum,
+    t."ProcessReference" as process_sainum,
+    t."PlantReference" as plant_sainum,
+    t."SubPlantReference" as sub_plant_sainum,
+    t."PlantItemReference" as plantitem_sainum,
+    t.sai_number as sub_plantitem_sainum,        
 from ai2_equi_sub_plantitem_landing t;
 
 

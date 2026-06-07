@@ -37,7 +37,6 @@ set variable ai2_masterdata_srcpath = '$1';
 .read '$WORK_SQL/Scripts2/gen_parquet/ai2_masterdata/ai2_masterdata.sql'
 copy (select * from ai2_floc) to '$dest/ai2_masterdata_floc.parquet' (format parquet, compression snappy);
 copy (select * from ai2_equi) to '$dest/ai2_masterdata_equi.parquet' (format parquet, compression snappy);
-copy (select * from ai2_site_simple) to '$dest/ai2_masterdata_site_simple.parquet' (format parquet, compression snappy);
 EOF
 
     destfiles=`find "$dest" -maxdepth 1 -type f -iname "ai2_masterdata*.parquet"`
