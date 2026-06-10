@@ -9,6 +9,7 @@ with cte1_ai2_flocs as (
         (t.user_status = 'DISPOSED OF') as is_disposed_of,
         (t.user_status = 'NON OPERATIONAL') as is_non_op,
         (t.user_status = 'DECOMMISSIONED') as is_decommissioned,
+        (t.site_sainum is null) as is_type2,
     from asset_lake.ai2_masterdata.ai2_equi t
 ), cte2_add_s4_site_codes as (
     select 
@@ -70,8 +71,20 @@ with cte1_ai2_flocs as (
     left join asset_lake.ai2_masterdata.ai2_floc t6
         on t6.sai_number = t.ai2_sub_plantitem_sainum
         and t6.floc_source_type = 'SUB_PLANTITEM'
+), cte7_add_s4_equi_id_links as (
+    select
+        t.*,
+        list(t1.s4_equipment_id) filter (t1.s4_equipment_id is not null) as __s4_equi_id_list,
+    from cte6_add_floc_names t
+    left join asset_lake.s4_masterdata.s4_equi_plinum t1 on t1.ai2_plinum = t.ai2_pli_number
+    group by all
+), cte8_add_s4_equi_id_links_stats as (
+    select 
+        t.*, 
+        coalesce(t.__s4_equi_id_list, []) as s4_equi_id_list,
+    from cte7_add_s4_equi_id_links t
 )
-select columns(lambda c: c not like '$_$_%' escape '$') from cte6_add_floc_names  
+select columns(lambda c: c not like '$_$_%' escape '$') from cte8_add_s4_equi_id_links_stats  
 order by ai2_common_name;
 
 describe ai2_equi_wide_table;

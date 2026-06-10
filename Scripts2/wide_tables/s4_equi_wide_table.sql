@@ -5,7 +5,8 @@
 create or replace table s4_equi_wide_table as
 with cte1_s4_equi as (
     select 
-        columns(t.*) as 's4_\0',
+        columns(t.* exclude(obj_type)) as 's4_\0',
+        t.obj_type as s4_object_type,
         string_split(t.functional_location, '-')[1] as site_floc,
         string_split(t.functional_location, '-')[2] as function_code,
         string_split(t.functional_location, '-')[3] as process_group_code,
@@ -18,7 +19,7 @@ with cte1_s4_equi as (
         (status1 = 'OPER') as is_operational,
         (status1 = 'DISP') as is_disposed_of,
         (status1 = 'NOP') as is_non_op,
-        (status1 = 'DCOM') as is_decommissioned,       
+        (status1 = 'DCOM') as is_decommissioned,      
     from asset_lake.s4_masterdata.s4_equi t
 ), cte2_add_s4_site_name as (
     select 
@@ -85,8 +86,20 @@ with cte1_s4_equi as (
         contains(equipment_types_list, 'PODE') as has_subequi_power,
         contains(equipment_types_list, 'TRUT') as has_subequi_gearbox,
     from cte6_add_floc_names t
+), cte8_add_ai2_plinum_links as (
+    select
+        t.*,
+        list(t1.ai2_plinum) filter (t1.ai2_plinum is not null) as __ai2_plinums_list,
+    from cte7_specific_subequi t
+    left join asset_lake.s4_masterdata.s4_equi_plinum t1 on t1.s4_equipment_id = t.s4_equipment_id
+    group by all
+), cte9_add_ai2_plinum_links_stats as (
+    select 
+        t.*, 
+        coalesce(t.__ai2_plinums_list, []) as ai2_plinums_list,
+    from cte8_add_ai2_plinum_links t
 )
-select columns(lambda c: c not like '$_$_%' escape '$') from cte7_specific_subequi  
+select columns(lambda c: c not like '$_$_%' escape '$') from cte9_add_ai2_plinum_links_stats  
 order by s4_functional_location;
 
 
