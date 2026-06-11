@@ -24,9 +24,9 @@ fi
 if [[ ! -z "${WORK_SQL}" ]]; then
     
 duckdb <<EOF
-set variable eawr_as_fitted_globpath = '$1/*.json';
-.read '$WORK_SQL/Scripts2/gen_parquet/eawr_test_sheets_json/eawr_as_fitted_json.sql'
-copy (select * from eawr_as_fitted_circuits) to '$2' (format parquet, compression snappy);
+set variable eawr_dist_board_schedules_globpath = '$1/*.json';
+.read '$WORK_SQL/Scripts2/gen_parquet/eawr_test_sheets_json/eawr_dist_board_json.sql'
+copy (select * from eawr_dist_board_load) to '$2' (format parquet, compression snappy);
 EOF
 
     echo "Created $2"

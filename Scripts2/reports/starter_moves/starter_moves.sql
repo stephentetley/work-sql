@@ -40,7 +40,7 @@ with cte_moves as (
     select
         t.batch as batch_number,
         t.equipment_id as equipment,
-        equi_description(t.revised_starter_name, t1.status1) as description_medium,
+        t.revised_starter_name as description_medium,
         t1.status1 as status_of_an_object,
         t.super_equi_id as superord_equip,
         '0050' as position,

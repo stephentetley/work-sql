@@ -16,7 +16,7 @@
 
 
 -- Preliminaries: 
--- The variable `as_fitted_globpath` is set in DuckDb (i.e. not env var)
+-- The variable `eawr_as_fitted_globpath` is set in DuckDb (i.e. not env var)
 -- As fitted files have already been parsed/analyzed and saved as JSON.
 
 
@@ -27,12 +27,12 @@ create or replace temporary macro replace_empty(str varchar) as
 create or replace temporary macro norm_text(str varchar) as
     trim(str).regexp_replace('\s+', ' ', 'g').replace_empty();
 
-create or replace table as_fitted_circuits as
+create or replace table eawr_as_fitted_circuits as
 select 
     norm_text(columns(* exclude(checklist_year))),
     checklist_year as checklist_year,
 from read_json(
-    getvariable('as_fitted_globpath')
+    getvariable('eawr_as_fitted_globpath')
 );
 
 
