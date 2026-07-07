@@ -26,10 +26,10 @@ if [[ ! -z "${WORK_SQL}" ]]; then
 duckdb <<EOF
 set variable eawr_dist_board_schedules_globpath = '$1/*.json';
 .read '$WORK_SQL/Scripts2/gen_parquet/eawr_test_sheets_json/eawr_dist_board_json.sql'
-copy (select * from eawr_dist_board_load) to '$2' (format parquet, compression snappy);
+copy (select * from eawr_dist_board_load) to '$2/eawr_dist_board_load.parquet' (format parquet, compression snappy);
 EOF
 
-    echo "Created $2"
+    echo "Created $2/eawr_dist_board_load.parquet"
 else
     echo "Must set the env var WORK_SQL"
 fi
