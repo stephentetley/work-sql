@@ -1,8 +1,7 @@
--- run with
--- .read './Scripts2/wide_tables/s4_equi_wide_table.sql'
 
 
-create or replace table s4_equi_wide_table as
+
+create or replace table asset_lake.wide_tables.s4_equi as
 with cte1_s4_equi as (
     select 
         columns(t.* exclude(obj_type)) as 's4_\0',
@@ -102,10 +101,4 @@ with cte1_s4_equi as (
 select columns(lambda c: c not like '$_$_%' escape '$') from cte9_add_ai2_plinum_links_stats  
 order by s4_functional_location;
 
-
-
-describe s4_equi_wide_table;
-select count(s4_equipment_id) as "count should equal 321003" from s4_equi_wide_table;
-
--- select * from s4_equi_wide_table order by s4_functional_location limit 20;
 

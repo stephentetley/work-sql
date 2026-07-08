@@ -1,7 +1,8 @@
--- run with
--- .read './Scripts2/wide_tables/ai2_equi_wide_table.sql'
 
-create or replace table ai2_equi_wide_table as
+
+create schema if not exists asset_lake.wide_tables;
+
+create or replace table asset_lake.wide_tables.ai2_equi as
 with cte1_ai2_flocs as (
     select 
         columns(t.*) as 'ai2_\0',
@@ -87,6 +88,4 @@ with cte1_ai2_flocs as (
 select columns(lambda c: c not like '$_$_%' escape '$') from cte8_add_s4_equi_id_links_stats  
 order by ai2_common_name;
 
-describe ai2_equi_wide_table;
-select count(ai2_pli_number) as "count ai2 equi" from ai2_equi_wide_table;
 

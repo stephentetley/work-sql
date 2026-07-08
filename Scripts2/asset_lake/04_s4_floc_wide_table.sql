@@ -1,7 +1,6 @@
--- run with
--- .read './Scripts2/wide_tables/s4_floc_wide_table.sql'
 
-create or replace table s4_floc_wide_table as
+
+create or replace table asset_lake.wide_tables.s4_floc as
 with cte1_s4_flocs as (
     select 
         columns(t.*) as 's4_\0',
@@ -74,8 +73,3 @@ with cte1_s4_flocs as (
 )
 select columns(lambda c: c not like '$_$_%' escape '$') from cte6_add_easing_northing 
 order by s4_functional_location;
-
-describe s4_floc_wide_table;
-select count(s4_functional_location) as "count should equal 245061" from s4_floc_wide_table;
-
--- copy (select * from vw_floc_wide_table limit 100) to './data/vw_floc_wide_table.csv';
