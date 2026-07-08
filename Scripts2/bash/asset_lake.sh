@@ -19,10 +19,10 @@ if { [ ! -z "${WORK_SQL}" ] ; }; then
 duckdb <<EOF
 
 attach 'ducklake:$1' as asset_lake;
-use asset_lake;
+
 
 set variable asset_lake_resources = '$2';
-.read '$WORK_SQL/Scripts2/asset_lake/build_asset_lake.sql'
+.read '$WORK_SQL/Scripts2/asset_lake/01_build_asset_lake_level1.sql'
 
 EOF
 
