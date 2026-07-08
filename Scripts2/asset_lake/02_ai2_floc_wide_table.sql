@@ -1,8 +1,6 @@
--- run with
--- .read './Scripts2/wide_tables/ai2_floc_wide_table.sql'
+create schema if not exists asset_lake.wide_tables;
 
-
-create or replace table ai2_floc_wide_table as
+create or replace table asset_lake.wide_tables.ai2_floc as
 with cte1_ai2_flocs as (
     select 
         columns(t.*) as 'ai2_\0',
@@ -74,9 +72,3 @@ with cte1_ai2_flocs as (
 select columns(lambda c: c not like '$_$_%' escape '$') from cte6_add_floc_names 
 order by ai2_common_name;
 
-describe ai2_floc_wide_table;
-select count(ai2_sai_number) as "count ai2 floc" from ai2_floc_wide_table;
-
--- COPY (SELECT * FROM ai2_floc_wide_table) TO 'ai2_floc_wide_table.parquet' (FORMAT parquet, COMPRESSION snappy);
-   
-   -- select * from ai2_floc_wide_table where ai2_site_id = 'SAI00002748'
