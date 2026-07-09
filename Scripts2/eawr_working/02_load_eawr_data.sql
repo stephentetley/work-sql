@@ -31,7 +31,7 @@ with cte1_ungrouped as (
         location,
         any_value(file_name) as file_name,
         min(sheet_name) as sheet_name,
-        list(db_or_panels order by length(db_or_panels) asc) as db_or_panels, 
+        list(distinct db_or_panels order by length(db_or_panels) asc) as db_or_panels, 
     from cte1_ungrouped
     group by all
 ) 
