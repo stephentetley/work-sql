@@ -29,17 +29,24 @@ with cte1_max_level5 as (
     group by t.s4_site_floc
 ), cte3_indices as (
     select 
-        t.s4_site_floc, 
+        t.s4_site_floc as site_root_floc, 
         unnest(range(t.max_level5, t.max_level5 + t1.location_count)) as idx
     from cte1_max_level5 t
     join cte2_loc_counts t1 on t1.s4_site_floc = t.s4_site_floc  
-), cte4_new_flocs as (
+), cte4_just_new_flocs as (
     select 
-        t.s4_site_floc as site_root_floc, 
-        make_loc_floc(t.s4_site_floc, t1.idx) as level5_floc,
-        t.location as name,
+        t.site_root_floc, 
+        make_loc_floc(t.site_root_floc, t.idx) as level5_floc,
+    from cte3_indices t
+), cte5_elaborated_new_flocs as (
+    select 
+        t.site_root_floc, 
+        t.level5_floc,
         'ELF' as object_type,
-    from eawr.reported_locations t
-    join cte3_indices t1 on t1.s4_site_floc = t.s4_site_floc
-) 
-select * from cte4_new_flocs;
+        any_value(t1.location) as location,
+    from cte4_just_new_flocs t
+    join eawr.reported_locations t1 on t1.s4_site_floc = t.site_root_floc
+    group by t.site_root_floc, t.level5_floc, object_type
+)
+select * from cte5_elaborated_new_flocs
+order by site_root_floc;
