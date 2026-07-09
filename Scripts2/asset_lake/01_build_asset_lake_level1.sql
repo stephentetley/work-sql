@@ -120,6 +120,17 @@ select * from read_parquet(
     getvariable('asset_lake_resources') || '/s4_masterdata/s4_masterdata_equi_to_sainum.parquet');
 
 
+-- s4 masterdata
+
+create schema if not exists asset_lake.eawr_circuits;
+
+create or replace table asset_lake.eawr_circuits.as_fitted_circuits as
+select * from read_parquet(
+    getvariable('asset_lake_resources') || '/eawr/eawr_as_fitted_circuits.parquet');
+
+create or replace table asset_lake.eawr_circuits.dist_board_loads as
+select * from read_parquet(
+    getvariable('asset_lake_resources') || '/eawr/eawr_dist_board_loads.parquet');
 
 
 

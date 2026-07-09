@@ -27,6 +27,7 @@ set variable asset_lake_resources = '$2';
 .read '$WORK_SQL/Scripts2/asset_lake/03_ai2_equi_wide_table.sql'
 .read '$WORK_SQL/Scripts2/asset_lake/04_s4_floc_wide_table.sql'
 .read '$WORK_SQL/Scripts2/asset_lake/05_s4_equi_wide_table.sql'
+.read '$WORK_SQL/Scripts2/asset_lake/06_eawr.sql'
 
 EOF
 
